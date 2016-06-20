@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/coordinatorLayout">
+
+    <!-- Stop auto focussing the EditText -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@android:color/transparent"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="6dp"
+            android:clipChildren="false"
+            android:transitionName="card"
+            app:cardElevation="4dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <EditText
+                    android:id="@+id/title"
+                    android:layout_width="match_parent"
+                    android:layout_height="36sp"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:inputType="text|textCapSentences"
+                    android:hint="@string/title"
+                    android:background="@android:color/transparent"
+                    android:transitionName="title"/>
+
+                <EditText
+                    android:id="@+id/subtitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="24sp"
+                    android:textSize="14sp"
+                    android:inputType="text|textCapSentences"
+                    android:hint="@string/subtitle"
+                    android:maxLength="72"
+                    android:background="@android:color/transparent"
+                    android:transitionName="subtitle"/>
+
+                <EditText
+                    android:id="@+id/content"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="96dp"
+                    android:textSize="18sp"
+                    android:gravity="start"
+                    android:inputType="textMultiLine|textCapSentences"
+                    android:hint="@string/content"
+                    android:layout_marginTop="16dp"
+                    android:background="@android:color/transparent"
+                    android:autoLink="all"
+                    android:transitionName="content"/>
+
+            </LinearLayout>
+
+        </android.support.v7.widget.CardView>
+
+    </ScrollView>
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_note"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/fab_margin"
+        android:src="@drawable/ic_done_white_24dp"
+        android:layout_gravity="bottom|end"
+        android:onClick="onClick"/>
+
+</android.support.design.widget.CoordinatorLayout>
