@@ -24,8 +24,16 @@
         </activity>
         <activity android:name=".ui.NoteActivity"
             android:label="@string/note"
+            android:windowSoftInputMode="stateHidden"
             android:theme="@style/AppTheme">
         </activity>
+
+        <activity android:name=".ui.SettingsActivity"
+            android:label="@string/note"
+            android:windowSoftInputMode="stateHidden"
+            android:theme="@style/AppTheme">
+        </activity>
+
     </application>
 
 </manifest>

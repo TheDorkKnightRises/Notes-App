@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical" android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/coordinatorLayout">
 
@@ -18,61 +20,128 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <android.support.v7.widget.CardView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="6dp"
-            android:clipChildren="false"
-            android:transitionName="card"
-            app:cardElevation="4dp">
+            android:orientation="vertical">
 
-            <LinearLayout
+            <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
+                android:clipChildren="false"
+                android:transitionName="card"
+                app:cardElevation="4dp">
 
-                <EditText
-                    android:id="@+id/title"
-                    android:layout_width="match_parent"
-                    android:layout_height="36sp"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:inputType="text|textCapSentences"
-                    android:hint="@string/title"
-                    android:background="@android:color/transparent"
-                    android:transitionName="title"/>
-
-                <EditText
-                    android:id="@+id/subtitle"
-                    android:layout_width="match_parent"
-                    android:layout_height="24sp"
-                    android:textSize="14sp"
-                    android:inputType="text|textCapSentences"
-                    android:hint="@string/subtitle"
-                    android:maxLength="72"
-                    android:background="@android:color/transparent"
-                    android:transitionName="subtitle"/>
-
-                <EditText
-                    android:id="@+id/content"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:minHeight="96dp"
-                    android:textSize="18sp"
-                    android:gravity="start"
-                    android:inputType="textMultiLine|textCapSentences"
-                    android:hint="@string/content"
-                    android:layout_marginTop="16dp"
-                    android:background="@android:color/transparent"
-                    android:autoLink="all"
-                    android:transitionName="content"/>
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
-            </LinearLayout>
+                    <EditText
+                        android:id="@+id/title"
+                        android:layout_width="match_parent"
+                        android:layout_height="36sp"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:inputType="text|textCapSentences"
+                        android:hint="@string/title"
+                        android:textAppearance="@style/TextAppearance.AppCompat"
+                        android:background="@android:color/transparent"
+                        android:transitionName="title"/>
 
-        </android.support.v7.widget.CardView>
+                    <EditText
+                        android:id="@+id/subtitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="24sp"
+                        android:textSize="14sp"
+                        android:inputType="text|textCapSentences"
+                        android:hint="@string/subtitle"
+                        android:maxLength="72"
+                        android:background="@android:color/transparent"
+                        android:transitionName="subtitle"/>
+
+                    <EditText
+                        android:id="@+id/content"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="96dp"
+                        android:textSize="18sp"
+                        android:gravity="start"
+                        android:inputType="textMultiLine|textCapSentences"
+                        android:hint="@string/content"
+                        android:layout_marginTop="16dp"
+                        android:background="@android:color/transparent"
+                        android:textAppearance="@style/TextAppearance.AppCompat"
+                        android:autoLink="all"
+                        android:transitionName="content"/>
+
+                    <TextView
+                        android:id="@+id/note_date"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end"
+                        android:maxLines="2"
+                        tools:text="@string/updated"
+                        android:transitionName="time"/>
+
+                </LinearLayout>
+
+            </android.support.v7.widget.CardView>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="128dp"/>
+
+        </LinearLayout>
 
     </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="#363636"
+        android:layout_gravity="bottom">
+        <ImageButton
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="48dp"
+            android:contentDescription="@string/share"
+            android:padding="0dp"
+            android:layout_margin="0dp"
+            style="@style/Base.Widget.AppCompat.Button.Borderless"
+            android:src="@drawable/ic_share_white_24dp"
+            android:onClick="share"/>
+        <ImageButton
+            android:id="@+id/notif_button"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="48dp"
+            android:contentDescription="@string/notif"
+            android:padding="0dp"
+            android:layout_margin="0dp"
+            style="@style/Base.Widget.AppCompat.Button.Borderless"
+            android:src="@drawable/ic_notifications_active_white_24dp"
+            android:onClick="notif"/>
+        <ImageButton
+            android:id="@+id/archive_button"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="48dp"
+            android:contentDescription="@string/archive"
+            android:padding="0dp"
+            android:layout_margin="0dp"
+            style="@style/Base.Widget.AppCompat.Button.Borderless"
+            android:src="@drawable/ic_archive_white_24dp"
+            android:onClick="archive"/>
+        <ImageButton
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            style="@style/Base.Widget.AppCompat.Button.Borderless"/>
+    </LinearLayout>
+
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_note"
         android:layout_width="wrap_content"

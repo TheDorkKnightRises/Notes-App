@@ -1,6 +1,7 @@
 package thedorkknightrises.notes.ui;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -19,10 +20,13 @@ import thedorkknightrises.notes.R;
  * Created by Samriddha Basu on 6/20/2016.
  */
 public class AboutActivity extends AppCompatActivity {
-    TextView textView;
+    SharedPreferences pref;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        pref = getSharedPreferences("Prefs", MODE_PRIVATE);
+        if (pref.getBoolean("lightTheme", false))
+            setTheme(R.style.AppTheme_Light);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);

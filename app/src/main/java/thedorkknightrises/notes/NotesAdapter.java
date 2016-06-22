@@ -71,12 +71,35 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(context, NoteActivity.class);
+                i.putExtra("id", note.id);
                 i.putExtra("title", note.title);
                 i.putExtra("subtitle", note.subtitle);
                 i.putExtra("content", note.content);
-                i.putExtra("time", note.time);
+                i.putExtra("time", note.time.substring(0, 16));
 
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    holder.card.setTransitionName("card");
+                    holder.title.setTransitionName("title");
+                    holder.title.setTransitionName("subtitle");
+                    holder.title.setTransitionName("content");
+                    holder.date.setTransitionName("time");
+                    Pair<View, String> p1 = Pair.create(holder.card, "card");
+                    Pair<View, String> p2 = Pair.create((View) holder.title, "title");
+                    Pair<View, String> p3 = Pair.create((View) holder.subtitle, "subtitle");
+                    Pair<View, String> p4 = Pair.create((View) holder.content, "content");
+                    Pair<View, String> p5 = Pair.create((View) holder.date, "time");
+                    ActivityOptionsCompat options;
+                    if (!note.subtitle.equals("")) {
+                        options = ActivityOptionsCompat.
+                                makeSceneTransitionAnimation(activity, p1, p2, p3, p4, p5);
+                    } else {
+                        options = ActivityOptionsCompat.
+                                makeSceneTransitionAnimation(activity, p1, p2, p4, p5);
+                    }
 
+                    context.startActivity(i, options.toBundle());
+                }
+                else
                     context.startActivity(i);
             }
         };

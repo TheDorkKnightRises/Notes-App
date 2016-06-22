@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <group android:checkableBehavior="single">
+    <group>
+        <item
+            android:id="@+id/nav_notes"
+            android:icon="@drawable/ic_note_white_24dp"
+            android:title="@string/notes" />
+        <item
+            android:id="@+id/nav_archive"
+            android:icon="@drawable/ic_archive_white_24dp"
+            android:title="@string/archive" />
     </group>
 
     <group android:id="@+id/settings_nav">

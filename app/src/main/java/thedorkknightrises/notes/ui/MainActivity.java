@@ -1,16 +1,23 @@
 package thedorkknightrises.notes.ui;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.PointF;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.LinearSmoothScroller;
 import android.support.v7.widget.RecyclerView;
 import android.transition.Slide;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -20,9 +27,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.logging.Handler;
 
 import thedorkknightrises.notes.NoteObj;
 import thedorkknightrises.notes.NotesAdapter;
@@ -31,20 +40,29 @@ import thedorkknightrises.notes.db.NotesDbHelper;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+    static boolean changed = true;
     protected NotesDbHelper dbHelper;
     ArrayList<NoteObj> noteObjArrayList;
     RecyclerView recyclerView;
+    TextView blankText;
+    FloatingActionButton fab;
     public static NotesAdapter notesAdapter;
-    boolean grid = false;
+    public static boolean added = false;
+    SharedPreferences pref;
+    static boolean themeChanged = false;
+    static boolean archive = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        pref = getSharedPreferences("Prefs", MODE_PRIVATE);
+        if (pref.getBoolean("lightTheme", false))
+            setTheme(R.style.AppTheme_Light_NoActionBar);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -68,25 +86,56 @@ public class MainActivity extends AppCompatActivity
 
         dbHelper = new NotesDbHelper(this);
 
+        blankText = (TextView) findViewById(R.id.blankTextView);
+
+        if (archive) {
+            getSupportActionBar().setTitle(R.string.archive);
+            noteObjArrayList = dbHelper.getAllNotesFromArchive();
+            blankText.setText(R.string.blank_archive);
+            fab.setVisibility(View.GONE);
+        }
+        else {
+            noteObjArrayList = dbHelper.getAllNotes();
+        }
+
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-            LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-            layoutManager.setReverseLayout(true);
-            layoutManager.setStackFromEnd(true);
-            recyclerView.setLayoutManager(layoutManager);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+        notesAdapter = new NotesAdapter(noteObjArrayList, this, MainActivity.this);
+        recyclerView.setAdapter(notesAdapter);
+
+
+        if (noteObjArrayList.size() == 0)
+            blankText.setVisibility(View.VISIBLE);
+        else
+            blankText.setVisibility(View.GONE);
 
     }
 
 
     @Override
     public void onResume() {
-        noteObjArrayList = dbHelper.getAllNotes();
-        notesAdapter = new NotesAdapter(noteObjArrayList, this, MainActivity.this);
-        recyclerView.setAdapter(notesAdapter);
+        if (changed) {
+            noteObjArrayList = archive?dbHelper.getAllNotesFromArchive():dbHelper.getAllNotes();
+            notesAdapter = new NotesAdapter(noteObjArrayList, this, MainActivity.this);
+            recyclerView.setAdapter(notesAdapter);
 
-        if (noteObjArrayList.size()==0)
-            findViewById(R.id.blankTextView).setVisibility(View.VISIBLE);
-        else
-            findViewById(R.id.blankTextView).setVisibility(View.GONE);
+            if (noteObjArrayList.size() == 0)
+                blankText.setVisibility(View.VISIBLE);
+            else
+                blankText.setVisibility(View.GONE);
+            changed = false;
+            added = false;
+        }
+
+        if (themeChanged) {
+            if (pref.getBoolean("lightTheme", false))
+                setTheme(R.style.AppTheme_Light_NoActionBar);
+            else setTheme(R.style.AppTheme_NoActionBar);
+            themeChanged = false;
+            recreate();
+        }
+        super.onPostResume();
 
         super.onResume();
     }
@@ -123,10 +172,13 @@ public class MainActivity extends AppCompatActivity
                     .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            dbHelper.deleteAllNotes();
-                            noteObjArrayList = dbHelper.getAllNotes();
-                            recyclerView.setAdapter(new NotesAdapter(noteObjArrayList, getApplicationContext(), MainActivity.this));
-                            findViewById(R.id.blankTextView).setVisibility(View.VISIBLE);
+                            if (archive)
+                                dbHelper.deleteAllNotesFromArchive();
+                            else dbHelper.deleteAllNotes();
+                            noteObjArrayList.clear();
+                            recyclerView.removeAllViewsInLayout();
+                            blankText.setVisibility(View.VISIBLE);
+                            changed = false;
                         }
                     })
                     .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -148,17 +200,43 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == 1) {
+        if (id == R.id.nav_notes) {
+            archive = false;
+            getSupportActionBar().setTitle(R.string.notes);
+            blankText.setText(R.string.blank);
+            noteObjArrayList = dbHelper.getAllNotes();
+            notesAdapter = new NotesAdapter(noteObjArrayList, this, MainActivity.this);
+            recyclerView.setAdapter(notesAdapter);
 
+            if (noteObjArrayList.size() == 0)
+                blankText.setVisibility(View.VISIBLE);
+            else
+                blankText.setVisibility(View.GONE);
+            fab.setVisibility(View.VISIBLE);
+        } else if (id == R.id.nav_archive) {
+            archive = true;
+            getSupportActionBar().setTitle(R.string.archive);
+            blankText.setText(R.string.blank_archive);
+            noteObjArrayList = dbHelper.getAllNotesFromArchive();
+            notesAdapter = new NotesAdapter(noteObjArrayList, this, MainActivity.this);
+            recyclerView.setAdapter(notesAdapter);
+
+            if (noteObjArrayList.size() == 0)
+                blankText.setVisibility(View.VISIBLE);
+            else
+                blankText.setVisibility(View.GONE);
+            fab.setVisibility(View.GONE);
         } else if (id == R.id.nav_about) {
             Intent i = new Intent(this, AboutActivity.class);
             startActivity(i);
         } else if (id == R.id.nav_settings) {
-            Toast.makeText(this, "Settings not implemented yet", Toast.LENGTH_LONG).show();
+            Intent i = new Intent(MainActivity.this, SettingsActivity.class);
+            startActivity(i);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
 }

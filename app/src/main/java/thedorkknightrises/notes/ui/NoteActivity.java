@@ -1,30 +1,30 @@
 package thedorkknightrises.notes.ui;
 
 import android.annotation.TargetApi;
-import android.app.Activity;
-import android.database.sqlite.SQLiteDatabase;
+import android.app.NotificationManager;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.transition.Slide;
-import android.transition.Transition;
-import android.transition.TransitionInflater;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.InputMethod;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Calendar;
 
-import thedorkknightrises.notes.NoteObj;
 import thedorkknightrises.notes.R;
 import thedorkknightrises.notes.db.NotesDbHelper;
 
@@ -39,14 +39,24 @@ public class NoteActivity extends AppCompatActivity {
     protected EditText titleText;
     protected EditText subtitleText;
     protected EditText contentText;
+    protected TextView timeText;
     FloatingActionButton fab;
-    String title;
-    String subtitle;
-    String content;
-    String time;
+    View toolbar;
+    private  int id = -1;
+    private String title;
+    private String subtitle;
+    private String content;
+    private String time;
+    SharedPreferences pref;
+    boolean lightTheme;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        pref = getSharedPreferences("Prefs", MODE_PRIVATE);
+        lightTheme = pref.getBoolean("lightTheme", false);
+        if (lightTheme)
+            setTheme(R.style.AppTheme_Light);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note);
 
@@ -59,7 +69,9 @@ public class NoteActivity extends AppCompatActivity {
         titleText = (EditText) findViewById(R.id.title);
         subtitleText = (EditText) findViewById(R.id.subtitle);
         contentText = (EditText) findViewById(R.id.content);
+        timeText = (TextView) findViewById(R.id.note_date);
         fab = (FloatingActionButton) findViewById(R.id.fab_note);
+        toolbar = findViewById(R.id.toolbar);
 
         dbHelper = new NotesDbHelper(this);
 
@@ -67,35 +79,75 @@ public class NoteActivity extends AppCompatActivity {
         if (bundle != null)
         {
             editMode = false;
-
-            titleText.setText(bundle.getString("title"));
-            titleText.setEnabled(false);
-            titleText.setTextColor(getResources().getColor(R.color.white));
-
-            if (bundle.getString("subtitle").equals(""))
-                subtitleText.setVisibility(View.GONE);
-            else {
-                subtitleText.setText(bundle.getString("subtitle"));
-                subtitleText.setEnabled(false);
-                subtitleText.setTextColor(getResources().getColor(R.color.white));
-            }
-
-            contentText.setText(bundle.getString("content"));
-            contentText.setEnabled(false);
-            contentText.setTextColor(getResources().getColor(R.color.light_gray));
+            id = bundle.getInt("id");
+            title = bundle.getString("title");
+            subtitle = bundle.getString("subtitle");
+            content = bundle.getString("content");
             time = bundle.getString("time");
         }
         else {
             editMode = true;
-            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                setupWindowAnimations();
-            }
+        }
+
+        if (savedInstanceState != null) {
+            editMode = savedInstanceState.getBoolean("editMode");
+            id = savedInstanceState.getInt("id");
+            title = savedInstanceState.getString("title");
+            subtitle = savedInstanceState.getString("subtitle");
+            content = savedInstanceState.getString("content");
+            time = savedInstanceState.getString("time");
         }
 
         if (!editMode) {
+
+            titleText.setText(title);
+            titleText.setEnabled(false);
+            if (lightTheme)
+                titleText.setTextColor(getResources().getColor(R.color.black));
+            else titleText.setTextColor(getResources().getColor(R.color.white));
+
+            if (subtitle.equals(""))
+                subtitleText.setVisibility(View.GONE);
+            else {
+                subtitleText.setText(subtitle);
+                subtitleText.setEnabled(false);
+                if (lightTheme)
+                    subtitleText.setTextColor(getResources().getColor(R.color.dark_gray));
+                else subtitleText.setTextColor(getResources().getColor(R.color.light_gray));
+            }
+
+            contentText.setText(content);
+            contentText.setEnabled(false);
+            if (lightTheme)
+                contentText.setTextColor(getResources().getColor(R.color.black));
+            else contentText.setTextColor(getResources().getColor(R.color.white));
+
+            timeText.setText(time);
+
             fab.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_mode_edit_white_24dp));
+        } else {
+            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+                setupWindowAnimations();
+            }
+            toolbar.setVisibility(View.GONE);
+            timeText.setText("");
         }
 
+        if (MainActivity.archive)
+            ((ImageButton)findViewById(R.id.archive_button)).setImageDrawable(getResources().getDrawable(R.drawable.ic_unarchive_white_24dp));
+
+    }
+
+
+    @Override
+    protected void onSaveInstanceState(Bundle bundle)   {
+        bundle.putBoolean("editMode", editMode);
+        bundle.putInt("id", id);
+        bundle.putString("title", title);
+        bundle.putString("subtitle", subtitle);
+        bundle.putString("content", content);
+        bundle.putString("time", time);
+        super.onSaveInstanceState(bundle);
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -130,11 +182,18 @@ public class NoteActivity extends AppCompatActivity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == android.R.id.home)
+        int itemId = item.getItemId();
+        if (itemId == android.R.id.home) {
+            if (MainActivity.added) {
+                SharedPreferences.Editor editor = pref.edit();
+                editor.putInt("id", id + 1);
+                editor.commit();
+            }
             onBackPressed();
-        else if (id == R.id.delete) {
-            dbHelper.deleteNote(time);
+        }
+        else if (itemId == R.id.delete) {
+            dbHelper.deleteNote(id);
+            MainActivity.changed = true;
             finish();
         }
         return super.onOptionsItemSelected(item);
@@ -148,32 +207,92 @@ public class NoteActivity extends AppCompatActivity {
             if (title.equals("") || content.equals(""))
                 Snackbar.make(coordinatorLayout, R.string.incomplete, Snackbar.LENGTH_LONG).show();
             else {
-                if (time != null)
-                    dbHelper.deleteNote(time);
+                if (id == -1) {
+                    id = pref.getInt("id", 1);
+                    MainActivity.added = true;
+                }   else dbHelper.deleteNote(id);
                 Calendar c = Calendar.getInstance();
-                time = c.getTime().toString();
-                dbHelper.addNote(title, subtitle, content, time);
+                time = c.getTime().toString().substring(0, 16);
+                dbHelper.addNote(id, title, subtitle, content, time+":"+c.get(Calendar.SECOND));
                 editMode = false;
+                MainActivity.changed = true;
                 titleText.setEnabled(false);
-                titleText.setTextColor(getResources().getColor(R.color.white));
-                subtitleText.setEnabled(false);
-                subtitleText.setTextColor(getResources().getColor(R.color.white));
+                if (lightTheme)
+                    titleText.setTextColor(getResources().getColor(R.color.black));
+                else titleText.setTextColor(getResources().getColor(R.color.white));
+                if (!subtitle.equals("")) {
+                    subtitleText.setEnabled(false);
+                    if (lightTheme)
+                        subtitleText.setTextColor(getResources().getColor(R.color.dark_gray));
+                    else subtitleText.setTextColor(getResources().getColor(R.color.light_gray));
+                } else subtitleText.setVisibility(View.GONE);
                 contentText.setEnabled(false);
-                contentText.setTextColor(getResources().getColor(R.color.white));
+                if (lightTheme)
+                    contentText.setTextColor(getResources().getColor(R.color.black));
+                else contentText.setTextColor(getResources().getColor(R.color.white));
+
                 fab.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_mode_edit_white_24dp));
                 onPrepareOptionsMenu(menu);
             }
+            toolbar.setVisibility(View.VISIBLE);
+            timeText.setText(time);
+            editMode = false;
         } else {
-            editMode = true;
             titleText.setEnabled(true);
             subtitleText.setEnabled(true);
             contentText.setEnabled(true);
-            contentText.requestFocusFromTouch();
+            contentText.requestFocus();
             contentText.setSelection(contentText.getText().length());
             subtitleText.setVisibility(View.VISIBLE);
             fab.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_done_white_24dp));
             onPrepareOptionsMenu(menu);
+            toolbar.setVisibility(View.GONE);
+            timeText.setText("");
+            editMode = true;
         }
 
+    }
+
+    public void share(View v)   {
+        Intent share = new Intent(Intent.ACTION_SEND);
+        if (subtitle.equals(""))
+            share.putExtra(Intent.EXTRA_TEXT, getResources().getString(R.string.title)+": "+title+"\n"+content);
+        else share.putExtra(Intent.EXTRA_TEXT, getResources().getString(R.string.title)+": "+title+"\n"+getResources().getString(R.string.description)+": "+subtitle+"\n\n"+content);
+        share.setType("text/plain");
+        startActivity(Intent.createChooser(share, getResources().getString(R.string.share_title)));
+    }
+
+    public void notif(View v)   {
+        NotificationCompat.Builder notif =
+                new NotificationCompat.Builder(this)
+                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setContentTitle(title)
+                        .setContentInfo(subtitle)
+                        .setContentText(content)
+                        .setStyle(new NotificationCompat.BigTextStyle().bigText(content).setSummaryText(time))
+                        .setColor(Color.argb(255, 32, 128, 200));
+        // Sets an ID for the notification
+        int mNotificationId = id;
+        // Gets an instance of the NotificationManager service
+        NotificationManager mNotifyMgr =
+                (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        // Builds the notification and issues it.
+        mNotifyMgr.notify(mNotificationId, notif.build());
+    }
+
+    public void archive(View v) {
+        if(MainActivity.archive) {
+            Toast.makeText(this, R.string.removed_archive, Toast.LENGTH_SHORT).show();
+            dbHelper.addNote(id, title, subtitle, content, time);
+            dbHelper.deleteNoteFromArchive(id);
+            MainActivity.changed = true;
+            finish();
+        } else {
+            Toast.makeText(this, R.string.added_archive, Toast.LENGTH_SHORT).show();
+            dbHelper.addNoteToArchive(id, title, subtitle, content, time);
+            dbHelper.deleteNote(id);
+            MainActivity.changed = true;
+            finish();
+        }
     }
 }

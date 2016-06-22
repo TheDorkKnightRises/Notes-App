@@ -147,17 +147,17 @@
                         android:padding="8dp"
                         android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
                         android:text="@string/license_info"/>
-                    <TextView
+                    <Button
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="8dp"
-                        android:padding="8dp"
-                        android:layout_marginBottom="@dimen/activity_vertical_margin"
-                        android:autoLink="web"
-                        android:linksClickable="true"
-                        android:textColorLink="@color/colorAccent"
-                        android:textStyle="italic"
-                        android:text="@string/copyright"/>
+                        android:layout_height="56dp"
+                        style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
+                        android:text="@string/copyright_notice"
+                        android:onClick="onNoticeClick"/>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_margin="2dp"
+                        android:background="#666666"/>
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
