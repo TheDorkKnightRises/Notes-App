@@ -2,10 +2,10 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
+    android:id="@+id/coordinatorLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/coordinatorLayout">
+    android:orientation="vertical">
 
     <!-- Stop auto focussing the EditText -->
     <LinearLayout
@@ -42,38 +42,38 @@
                         android:id="@+id/title"
                         android:layout_width="match_parent"
                         android:layout_height="36sp"
+                        android:background="@android:color/transparent"
+                        android:hint="@string/title"
+                        android:inputType="text|textCapSentences"
+                        android:textAppearance="@style/TextAppearance.AppCompat"
                         android:textSize="20sp"
                         android:textStyle="bold"
-                        android:inputType="text|textCapSentences"
-                        android:hint="@string/title"
-                        android:textAppearance="@style/TextAppearance.AppCompat"
-                        android:background="@android:color/transparent"
                         android:transitionName="title"/>
 
                     <EditText
                         android:id="@+id/subtitle"
                         android:layout_width="match_parent"
                         android:layout_height="24sp"
-                        android:textSize="14sp"
-                        android:inputType="text|textCapSentences"
-                        android:hint="@string/subtitle"
-                        android:maxLength="72"
                         android:background="@android:color/transparent"
+                        android:hint="@string/subtitle"
+                        android:inputType="text|textCapSentences"
+                        android:maxLength="72"
+                        android:textSize="14sp"
                         android:transitionName="subtitle"/>
 
                     <EditText
                         android:id="@+id/content"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:minHeight="96dp"
-                        android:textSize="18sp"
-                        android:gravity="start"
-                        android:inputType="textMultiLine|textCapSentences"
-                        android:hint="@string/content"
                         android:layout_marginTop="16dp"
-                        android:background="@android:color/transparent"
-                        android:textAppearance="@style/TextAppearance.AppCompat"
                         android:autoLink="all"
+                        android:background="@android:color/transparent"
+                        android:gravity="start"
+                        android:hint="@string/content"
+                        android:inputType="textMultiLine|textCapSentences"
+                        android:minHeight="96dp"
+                        android:textAppearance="@style/TextAppearance.AppCompat"
+                        android:textSize="18sp"
                         android:transitionName="content"/>
 
                     <TextView
@@ -82,8 +82,8 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="end"
                         android:maxLines="2"
-                        tools:text="@string/updated"
-                        android:transitionName="time"/>
+                        android:transitionName="time"
+                        tools:text="@string/updated" />
 
                 </LinearLayout>
 
@@ -101,54 +101,53 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:background="#363636"
-        android:layout_gravity="bottom">
+        android:layout_gravity="bottom"
+        android:background="#363636">
         <ImageButton
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="48dp"
-            android:contentDescription="@string/share"
-            android:padding="0dp"
-            android:layout_margin="0dp"
             style="@style/Base.Widget.AppCompat.Button.Borderless"
-            android:src="@drawable/ic_share_white_24dp"
-            android:onClick="share"/>
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_margin="0dp"
+            android:layout_weight="1"
+            android:contentDescription="@string/share"
+            android:onClick="share"
+            android:padding="0dp"
+            android:src="@drawable/ic_share_white_24dp" />
         <ImageButton
             android:id="@+id/notif_button"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="48dp"
-            android:contentDescription="@string/notif"
-            android:padding="0dp"
-            android:layout_margin="0dp"
             style="@style/Base.Widget.AppCompat.Button.Borderless"
-            android:src="@drawable/ic_notifications_active_white_24dp"
-            android:onClick="notif"/>
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_margin="0dp"
+            android:layout_weight="1"
+            android:contentDescription="@string/notif"
+            android:onClick="notif"
+            android:padding="0dp"
+            android:src="@drawable/ic_notifications_active_white_24dp" />
         <ImageButton
             android:id="@+id/archive_button"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="48dp"
-            android:contentDescription="@string/archive"
-            android:padding="0dp"
-            android:layout_margin="0dp"
             style="@style/Base.Widget.AppCompat.Button.Borderless"
-            android:src="@drawable/ic_archive_white_24dp"
-            android:onClick="archive"/>
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_margin="0dp"
+            android:layout_weight="1"
+            android:contentDescription="@string/archive"
+            android:onClick="archive"
+            android:padding="0dp"
+            android:src="@drawable/ic_archive_white_24dp" />
         <ImageButton
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
-            style="@style/Base.Widget.AppCompat.Button.Borderless"/>
+            android:layout_weight="1" />
     </LinearLayout>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_note"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/fab_margin"
-        android:src="@drawable/ic_done_white_24dp"
         android:layout_gravity="bottom|end"
-        android:onClick="onClick"/>
+        android:layout_margin="@dimen/fab_margin"
+        android:onClick="onClick"
+        android:src="@drawable/ic_done_white_24dp" />
 
 </android.support.design.widget.CoordinatorLayout>

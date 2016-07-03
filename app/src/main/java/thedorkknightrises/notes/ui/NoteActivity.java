@@ -32,7 +32,6 @@ import thedorkknightrises.notes.db.NotesDbHelper;
  * Created by Samriddha Basu on 6/20/2016.
  */
 public class NoteActivity extends AppCompatActivity {
-    private Menu menu;
     protected Boolean editMode;
     protected CoordinatorLayout coordinatorLayout;
     protected NotesDbHelper dbHelper;
@@ -42,13 +41,14 @@ public class NoteActivity extends AppCompatActivity {
     protected TextView timeText;
     FloatingActionButton fab;
     View toolbar;
+    SharedPreferences pref;
+    boolean lightTheme;
+    private Menu menu;
     private  int id = -1;
     private String title;
     private String subtitle;
     private String content;
     private String time;
-    SharedPreferences pref;
-    boolean lightTheme;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -192,7 +192,9 @@ public class NoteActivity extends AppCompatActivity {
             onBackPressed();
         }
         else if (itemId == R.id.delete) {
-            dbHelper.deleteNote(id);
+            if (MainActivity.archive)
+                dbHelper.deleteNoteFromArchive(id);
+            else dbHelper.deleteNote(id);
             MainActivity.changed = true;
             finish();
         }
@@ -201,9 +203,9 @@ public class NoteActivity extends AppCompatActivity {
 
     public void onClick(View v) {
         if (editMode) {
-            title = titleText.getText().toString();
-            subtitle = subtitleText.getText().toString();
-            content = contentText.getText().toString();
+            title = titleText.getText().toString().trim();
+            subtitle = subtitleText.getText().toString().trim();
+            content = contentText.getText().toString().trim();
             if (title.equals("") || content.equals(""))
                 Snackbar.make(coordinatorLayout, R.string.incomplete, Snackbar.LENGTH_LONG).show();
             else {
@@ -233,10 +235,11 @@ public class NoteActivity extends AppCompatActivity {
 
                 fab.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_mode_edit_white_24dp));
                 onPrepareOptionsMenu(menu);
+
+                toolbar.setVisibility(View.VISIBLE);
+                timeText.setText(time);
+                editMode = false;
             }
-            toolbar.setVisibility(View.VISIBLE);
-            timeText.setText(time);
-            editMode = false;
         } else {
             titleText.setEnabled(true);
             subtitleText.setEnabled(true);
@@ -267,10 +270,11 @@ public class NoteActivity extends AppCompatActivity {
                 new NotificationCompat.Builder(this)
                         .setSmallIcon(R.mipmap.ic_launcher)
                         .setContentTitle(title)
-                        .setContentInfo(subtitle)
                         .setContentText(content)
                         .setStyle(new NotificationCompat.BigTextStyle().bigText(content).setSummaryText(time))
                         .setColor(Color.argb(255, 32, 128, 200));
+        if (!subtitle.equals(""))
+            notif.setContentInfo(subtitle);
         // Sets an ID for the notification
         int mNotificationId = id;
         // Gets an instance of the NotificationManager service
