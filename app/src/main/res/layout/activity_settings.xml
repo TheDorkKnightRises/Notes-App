@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
     <LinearLayout
@@ -18,8 +16,8 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
             android:clickable="true"
-            app:cardElevation="4dp"
-            android:foreground="?android:attr/selectableItemBackground">
+            android:foreground="?android:attr/selectableItemBackground"
+            app:cardElevation="4dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -43,29 +41,29 @@
                     android:id="@+id/theme_switch_row"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:minHeight="80dp"
                     android:background="?android:attr/selectableItemBackground"
                     android:clickable="true"
                     android:gravity="center_vertical"
+                    android:minHeight="80dp"
+                    android:onClick="onCheckedChange"
                     android:paddingBottom="@dimen/activity_horizontal_margin"
                     android:paddingLeft="8dp"
                     android:paddingRight="8dp"
-                    android:paddingTop="@dimen/activity_horizontal_margin"
-                    android:onClick="onCheckedChange">
+                    android:paddingTop="@dimen/activity_horizontal_margin">
 
                     <LinearLayout
                         android:id="@+id/res_setting"
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="8dp"
                         android:layout_marginStart="8dp"
+                        android:layout_weight="1"
                         android:orientation="vertical">
 
                         <TextView
                             android:layout_width="wrap_content"
-                            android:layout_weight="1"
                             android:layout_height="wrap_content"
+                            android:layout_weight="1"
                             android:gravity="center_vertical"
                             android:paddingTop="4dp"
                             android:text="Use light theme"
@@ -82,8 +80,7 @@
                     <android.support.v7.widget.SwitchCompat
                         android:id="@+id/theme_switch"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:onClick="onCheckedChange"/>
+                        android:layout_height="wrap_content" />
 
                 </LinearLayout>
 

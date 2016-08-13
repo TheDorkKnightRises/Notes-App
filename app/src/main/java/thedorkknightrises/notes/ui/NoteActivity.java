@@ -237,6 +237,7 @@ public class NoteActivity extends AppCompatActivity {
                 onPrepareOptionsMenu(menu);
 
                 toolbar.setVisibility(View.VISIBLE);
+                findViewById(R.id.note_update).setVisibility(View.VISIBLE);
                 timeText.setText(time);
                 editMode = false;
             }
@@ -250,6 +251,7 @@ public class NoteActivity extends AppCompatActivity {
             fab.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_done_white_24dp));
             onPrepareOptionsMenu(menu);
             toolbar.setVisibility(View.GONE);
+            findViewById(R.id.note_update).setVisibility(View.GONE);
             timeText.setText("");
             editMode = true;
         }

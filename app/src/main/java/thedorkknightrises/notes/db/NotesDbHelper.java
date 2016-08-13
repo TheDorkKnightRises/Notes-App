@@ -2,7 +2,6 @@ package thedorkknightrises.notes.db;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -117,7 +116,7 @@ public class NotesDbHelper extends SQLiteOpenHelper {
         };
 
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.query(NotesDb.Note.TABLE_NAME, projection, null, null, null, null, NotesDb.Note.COLUMN_NAME_TIME + " DESC");
+        Cursor cursor = db.query(NotesDb.Note.TABLE_NAME, projection, null, null, null, null, NotesDb.Note._ID + " DESC");
 
         if (cursor.moveToFirst()) {
             do {
@@ -148,7 +147,7 @@ public class NotesDbHelper extends SQLiteOpenHelper {
         };
 
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.query(NotesDb.Archive.TABLE_NAME, projection, null, null, null, null, NotesDb.Archive.COLUMN_NAME_TIME + " DESC");
+        Cursor cursor = db.query(NotesDb.Archive.TABLE_NAME, projection, null, null, null, null, NotesDb.Archive._ID + " DESC");
 
         if (cursor.moveToFirst()) {
             do {

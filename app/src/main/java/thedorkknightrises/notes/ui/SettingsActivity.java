@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CompoundButton;
 
 import thedorkknightrises.notes.R;
 
@@ -36,17 +37,22 @@ public class SettingsActivity extends AppCompatActivity {
         pref= getSharedPreferences("Prefs", MODE_PRIVATE);
 
         theme_switch.setChecked(pref.getBoolean("lightTheme", false));
+
+        theme_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                onCheckedChange(theme_switch);
+            }
+        });
     }
 
     public void onCheckedChange(View v)
     {
-        if (v.equals(findViewById(R.id.theme_switch)) || v.equals(findViewById(R.id.theme_switch_row))) {
+        if (v.equals(theme_switch) || v.equals(findViewById(R.id.theme_switch_row))) {
             Boolean b = pref.getBoolean("lightTheme", false);
             SharedPreferences.Editor e = pref.edit();
             e.putBoolean("lightTheme", !b);
             e.commit();
-            if (!v.equals(theme_switch))
-                theme_switch.toggle();
             MainActivity.themeChanged = true;
             recreate();
         }

@@ -76,14 +76,31 @@
                         android:textSize="18sp"
                         android:transitionName="content"/>
 
-                    <TextView
-                        android:id="@+id/note_date"
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="end"
-                        android:maxLines="2"
-                        android:transitionName="time"
-                        tools:text="@string/updated" />
+                        android:gravity="end">
+
+                        <TextView
+                            android:id="@+id/note_update"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="start"
+                            android:maxLines="2"
+                            android:paddingLeft="8dp"
+                            android:paddingRight="8dp"
+                            android:text="@string/updated" />
+
+                        <TextView
+                            android:id="@+id/note_date"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="end"
+                            android:maxLines="2"
+                            android:transitionName="time"
+                            tools:text="@string/updated" />
+
+                    </LinearLayout>
 
                 </LinearLayout>
 
@@ -136,6 +153,7 @@
             android:padding="0dp"
             android:src="@drawable/ic_archive_white_24dp" />
         <ImageButton
+            style="@style/Base.Widget.AppCompat.Button.Borderless"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1" />
