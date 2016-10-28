@@ -2,6 +2,7 @@ package thedorkknightrises.notes.ui;
 
 import android.annotation.TargetApi;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -12,6 +13,7 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.transition.Slide;
@@ -26,6 +28,7 @@ import android.widget.Toast;
 import java.util.Calendar;
 
 import thedorkknightrises.notes.R;
+import thedorkknightrises.notes.db.NotesDb;
 import thedorkknightrises.notes.db.NotesDbHelper;
 
 /**
@@ -75,6 +78,15 @@ public class NoteActivity extends AppCompatActivity {
 
         dbHelper = new NotesDbHelper(this);
 
+        if (savedInstanceState != null) {
+            editMode = savedInstanceState.getBoolean("editMode");
+            id = savedInstanceState.getInt("id");
+            title = savedInstanceState.getString("title");
+            subtitle = savedInstanceState.getString("subtitle");
+            content = savedInstanceState.getString("content");
+            time = savedInstanceState.getString("time");
+        }
+
         Bundle bundle = getIntent().getExtras();
         if (bundle != null)
         {
@@ -87,15 +99,6 @@ public class NoteActivity extends AppCompatActivity {
         }
         else {
             editMode = true;
-        }
-
-        if (savedInstanceState != null) {
-            editMode = savedInstanceState.getBoolean("editMode");
-            id = savedInstanceState.getInt("id");
-            title = savedInstanceState.getString("title");
-            subtitle = savedInstanceState.getString("subtitle");
-            content = savedInstanceState.getString("content");
-            time = savedInstanceState.getString("time");
         }
 
         if (!editMode) {
@@ -186,7 +189,7 @@ public class NoteActivity extends AppCompatActivity {
         if (itemId == android.R.id.home) {
             if (MainActivity.added) {
                 SharedPreferences.Editor editor = pref.edit();
-                editor.putInt("id", id + 1);
+                editor.putInt(NotesDb.Note._ID, id + 1);
                 editor.commit();
             }
             onBackPressed();
@@ -196,6 +199,9 @@ public class NoteActivity extends AppCompatActivity {
                 dbHelper.deleteNoteFromArchive(id);
             else dbHelper.deleteNote(id);
             MainActivity.changed = true;
+            NotificationManager mNotifyMgr =
+                    (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            mNotifyMgr.cancel(id);
             finish();
         }
         return super.onOptionsItemSelected(item);
@@ -210,7 +216,7 @@ public class NoteActivity extends AppCompatActivity {
                 Snackbar.make(coordinatorLayout, R.string.incomplete, Snackbar.LENGTH_LONG).show();
             else {
                 if (id == -1) {
-                    id = pref.getInt("id", 1);
+                    id = pref.getInt(NotesDb.Note._ID, 1);
                     MainActivity.added = true;
                 }   else dbHelper.deleteNote(id);
                 Calendar c = Calendar.getInstance();
@@ -268,17 +274,35 @@ public class NoteActivity extends AppCompatActivity {
     }
 
     public void notif(View v)   {
+        String info;
+        if (!subtitle.equals("")) info = subtitle;
+        else info = time;
         NotificationCompat.Builder notif =
                 new NotificationCompat.Builder(this)
                         .setSmallIcon(R.mipmap.ic_launcher)
                         .setContentTitle(title)
                         .setContentText(content)
-                        .setStyle(new NotificationCompat.BigTextStyle().bigText(content).setSummaryText(time))
+                        .setContentInfo(info)
                         .setColor(Color.argb(255, 32, 128, 200));
-        if (!subtitle.equals(""))
-            notif.setContentInfo(subtitle);
+        notif.setStyle(new NotificationCompat.BigTextStyle().bigText(content).setSummaryText(time));
         // Sets an ID for the notification
         int mNotificationId = id;
+        Intent resultIntent = new Intent(this, NoteActivity.class);
+        resultIntent.putExtra(NotesDb.Note._ID, id);
+        resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_TITLE, title);
+        resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_SUBTITLE, subtitle);
+        resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_CONTENT, content);
+        resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_TIME, time.substring(0, 16));
+
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        // Adds the Intent to the top of the stack
+        stackBuilder.addNextIntent(resultIntent);
+        // Gets a PendingIntent containing the entire back stack
+        PendingIntent resultPendingIntent =
+                stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        notif.setContentIntent(resultPendingIntent);
+
         // Gets an instance of the NotificationManager service
         NotificationManager mNotifyMgr =
                 (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
@@ -292,12 +316,18 @@ public class NoteActivity extends AppCompatActivity {
             dbHelper.addNote(id, title, subtitle, content, time);
             dbHelper.deleteNoteFromArchive(id);
             MainActivity.changed = true;
+            NotificationManager mNotifyMgr =
+                    (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            mNotifyMgr.cancel(id);
             finish();
         } else {
             Toast.makeText(this, R.string.added_archive, Toast.LENGTH_SHORT).show();
             dbHelper.addNoteToArchive(id, title, subtitle, content, time);
             dbHelper.deleteNote(id);
             MainActivity.changed = true;
+            NotificationManager mNotifyMgr =
+                    (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            mNotifyMgr.cancel(id);
             finish();
         }
     }

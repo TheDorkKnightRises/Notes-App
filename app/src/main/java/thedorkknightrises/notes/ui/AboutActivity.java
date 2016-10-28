@@ -9,10 +9,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.common.GoogleApiAvailability;
+import com.mikepenz.aboutlibraries.LibsBuilder;
 
 import thedorkknightrises.notes.R;
 
@@ -46,7 +45,7 @@ public class AboutActivity extends AppCompatActivity {
 
     public void onLinkClick(View v) {
         String text = (String) ((Button) v).getText();
-        String uri = new String();
+        String uri;
         if (text.equals(getString(R.string.gplus))) {
             uri = "https://plus.google.com/u/0/+SamriddhaBasu";
         } else if (text.equals(getString(R.string.github))) {
@@ -64,8 +63,19 @@ public class AboutActivity extends AppCompatActivity {
     }
 
     public void onNoticeClick(View v) {
-        AlertDialog.Builder alert = new AlertDialog.Builder(this);
-        alert.setMessage(R.string.copyright)
-                .show();
+        switch (v.getId()) {
+            case R.id.legal:
+                new LibsBuilder()
+                        //start the activity
+                        .start(this);
+                break;
+            case R.id.copyright:
+                AlertDialog.Builder alert = new AlertDialog.Builder(this);
+                alert.setMessage(getString(R.string.copyright))
+                        .show();
+                break;
+        }
     }
+
+
 }

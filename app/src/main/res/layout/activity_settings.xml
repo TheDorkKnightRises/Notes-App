@@ -1,93 +1,212 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rootview"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:clipToPadding="false"
-        android:fitsSystemWindows="false"
-        android:orientation="vertical"
-        android:paddingBottom="8dp">
+    android:layout_height="match_parent">
 
-        <android.support.v7.widget.CardView
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:clickable="true"
-            android:foreground="?android:attr/selectableItemBackground"
-            app:cardElevation="4dp">
+            android:clipToPadding="false"
+            android:fitsSystemWindows="false"
+            android:orientation="vertical"
+            android:paddingBottom="8dp">
 
-            <LinearLayout
+            <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/app_head"
-                    android:layout_width="match_parent"
-                    android:layout_height="36dp"
-                    android:layout_margin="8dp"
-                    android:gravity="center_vertical"
-                    android:paddingLeft="8dp"
-                    android:paddingStart="8dp"
-                    android:text="App Settings"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                    android:textColor="@color/colorAccent"
-                    android:textSize="14sp" />
+                android:layout_marginBottom="8dp"
+                android:clickable="true"
+                android:foreground="?android:attr/selectableItemBackground"
+                app:cardElevation="4dp">
 
                 <LinearLayout
-                    android:id="@+id/theme_switch_row"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:clickable="true"
-                    android:gravity="center_vertical"
-                    android:minHeight="80dp"
-                    android:onClick="onCheckedChange"
-                    android:paddingBottom="@dimen/activity_horizontal_margin"
-                    android:paddingLeft="8dp"
-                    android:paddingRight="8dp"
-                    android:paddingTop="@dimen/activity_horizontal_margin">
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/app_head"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="8dp"
+                        android:paddingLeft="8dp"
+                        android:paddingRight="8dp"
+                        android:paddingTop="8dp"
+                        android:text="App Settings"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                        android:textColor="@color/colorAccent"
+                        android:textSize="14sp" />
 
                     <LinearLayout
-                        android:id="@+id/res_setting"
-                        android:layout_width="0dp"
+                        android:id="@+id/theme_switch_row"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="8dp"
-                        android:layout_marginStart="8dp"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
+                        android:background="?android:attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:gravity="center_vertical"
+                        android:minHeight="80dp"
+                        android:onClick="onCheckedChange"
+                        android:paddingBottom="@dimen/activity_horizontal_margin"
+                        android:paddingLeft="8dp"
+                        android:paddingRight="8dp"
+                        android:paddingTop="@dimen/activity_horizontal_margin">
 
-                        <TextView
-                            android:layout_width="wrap_content"
+                        <LinearLayout
+                            android:id="@+id/res_setting"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
+                            android:layout_marginLeft="8dp"
+                            android:layout_marginStart="8dp"
                             android:layout_weight="1"
-                            android:gravity="center_vertical"
-                            android:paddingTop="4dp"
-                            android:text="Use light theme"
-                            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-                            android:textSize="18sp" />
+                            android:orientation="vertical">
 
-                        <TextView
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:gravity="center_vertical"
+                                android:paddingTop="4dp"
+                                android:text="Use light theme"
+                                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                                android:textSize="18sp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Throughout the app" />
+
+                        </LinearLayout>
+
+                        <android.support.v7.widget.SwitchCompat
+                            android:id="@+id/theme_switch"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Throughout the app"/>
+                            android:layout_height="wrap_content" />
 
                     </LinearLayout>
 
-                    <android.support.v7.widget.SwitchCompat
-                        android:id="@+id/theme_switch"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:clickable="true"
+                android:foreground="?android:attr/selectableItemBackground"
+                app:cardElevation="4dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/drive_head"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="8dp"
+                        android:paddingLeft="8dp"
+                        android:paddingRight="8dp"
+                        android:paddingTop="8dp"
+                        android:text="Drive Backup"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                        android:textColor="@color/colorAccent"
+                        android:textSize="14sp" />
+
+                    <LinearLayout
+                        android:id="@+id/drive_backup"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:gravity="center_vertical"
+                        android:minHeight="80dp"
+                        android:onClick="driveBackup"
+                        android:paddingBottom="@dimen/activity_horizontal_margin"
+                        android:paddingLeft="8dp"
+                        android:paddingRight="8dp"
+                        android:paddingTop="@dimen/activity_horizontal_margin">
+
+                        <LinearLayout
+                            android:id="@+id/drive_backup_row"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="8dp"
+                            android:layout_marginStart="8dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:gravity="center_vertical"
+                                android:paddingTop="4dp"
+                                android:text="Backup to Google Drive"
+                                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                                android:textSize="18sp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Save your current notes to the cloud" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/drive_restore_row"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:gravity="center_vertical"
+                        android:minHeight="80dp"
+                        android:onClick="driveRestore"
+                        android:paddingBottom="@dimen/activity_horizontal_margin"
+                        android:paddingLeft="8dp"
+                        android:paddingRight="8dp"
+                        android:paddingTop="@dimen/activity_horizontal_margin">
+
+                        <LinearLayout
+                            android:id="@+id/drive_restore"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="8dp"
+                            android:layout_marginStart="8dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:gravity="center_vertical"
+                                android:paddingTop="4dp"
+                                android:text="Restore from Google Drive"
+                                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                                android:textSize="18sp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Note that this will overwrite all locally existing notes" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
 
                 </LinearLayout>
 
-            </LinearLayout>
+            </android.support.v7.widget.CardView>
 
-        </android.support.v7.widget.CardView>
+        </LinearLayout>
 
-    </LinearLayout>
+    </ScrollView>
 
-</ScrollView>
+</android.support.design.widget.CoordinatorLayout>

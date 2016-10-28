@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity
     public static NotesAdapter notesAdapter;
     public static boolean added = false;
     static boolean changed = true;
-    static boolean themeChanged = false;
+    static boolean lightTheme;
     static boolean archive = false;
     protected NotesDbHelper dbHelper;
     ArrayList<NoteObj> noteObjArrayList;
@@ -45,7 +45,8 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         pref = getSharedPreferences("Prefs", MODE_PRIVATE);
-        if (pref.getBoolean("lightTheme", false))
+        lightTheme = pref.getBoolean("lightTheme", false);
+        if (lightTheme)
             setTheme(R.style.AppTheme_Light_NoActionBar);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -117,11 +118,11 @@ public class MainActivity extends AppCompatActivity
             added = false;
         }
 
-        if (themeChanged) {
-            if (pref.getBoolean("lightTheme", false))
-                setTheme(R.style.AppTheme_Light_NoActionBar);
-            else setTheme(R.style.AppTheme_NoActionBar);
-            themeChanged = false;
+        if (lightTheme != pref.getBoolean("lightTheme", false)) {
+            if (lightTheme)
+                setTheme(R.style.AppTheme_NoActionBar);
+            else setTheme(R.style.AppTheme_Light_NoActionBar);
+            lightTheme = !lightTheme;
             recreate();
         }
         super.onPostResume();

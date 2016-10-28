@@ -18,22 +18,34 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.AboutActivity"
+        <activity
+            android:name=".ui.AboutActivity"
             android:label="@string/action_about"
-            android:theme="@style/AppTheme">
-        </activity>
-        <activity android:name=".ui.NoteActivity"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".ui.NoteActivity"
             android:label="@string/note"
-            android:windowSoftInputMode="stateHidden"
-            android:theme="@style/AppTheme">
-        </activity>
-
-        <activity android:name=".ui.SettingsActivity"
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name=".ui.SettingsActivity"
             android:label="@string/note"
-            android:windowSoftInputMode="stateHidden"
-            android:theme="@style/AppTheme">
-        </activity>
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="stateHidden" />
 
+        <receiver android:name=".widget.NotesWidget">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/notes_widget_info" />
+        </receiver>
+
+        <service
+            android:name=".widget.NotesWidgetService"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
     </application>
 
 </manifest>

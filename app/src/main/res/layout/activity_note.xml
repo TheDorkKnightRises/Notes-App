@@ -41,7 +41,7 @@
                     <EditText
                         android:id="@+id/title"
                         android:layout_width="match_parent"
-                        android:layout_height="36sp"
+                        android:layout_height="32sp"
                         android:background="@android:color/transparent"
                         android:hint="@string/title"
                         android:inputType="text|textCapSentences"
@@ -58,7 +58,7 @@
                         android:hint="@string/subtitle"
                         android:inputType="text|textCapSentences"
                         android:maxLength="72"
-                        android:textSize="14sp"
+                        android:textSize="18sp"
                         android:transitionName="subtitle"/>
 
                     <EditText
@@ -89,7 +89,8 @@
                             android:maxLines="2"
                             android:paddingLeft="8dp"
                             android:paddingRight="8dp"
-                            android:text="@string/updated" />
+                            android:text="@string/updated"
+                            android:visibility="gone" />
 
                         <TextView
                             android:id="@+id/note_date"

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/note_card_widget"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#dd424242"
+    android:orientation="vertical"
+    android:padding="8dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/note_title"
+            android:layout_width="0dp"
+            android:layout_height="28sp"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:gravity="center_vertical"
+            android:textAppearance="@style/TextAppearance.AppCompat"
+            android:textColor="#fff"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            tools:text="Title" />
+
+        <TextView
+            android:id="@+id/note_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#eee"
+            android:textSize="12sp"
+            tools:text="Date and time" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/note_subtitle"
+        android:layout_width="match_parent"
+        android:layout_height="18sp"
+        android:ellipsize="end"
+        android:gravity="center_vertical"
+        android:maxLines="1"
+        android:textColor="#ccc"
+        android:textSize="14sp"
+        tools:text="Description (optional)" />
+
+    <TextView
+        android:id="@+id/note_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:autoLink="all"
+        android:ellipsize="end"
+        android:maxLines="5"
+        android:textAppearance="@style/TextAppearance.AppCompat"
+        android:textColor="#eee"
+        android:textSize="16sp"
+        tools:text="Lorem ipsum dolor" />
+</LinearLayout>

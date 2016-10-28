@@ -43,6 +43,8 @@
     <string name="archive">Archive</string>
     <string name="added_archive">Added to archive</string>
     <string name="removed_archive">Removed from archive</string>
+    <string name="refresh">Refresh</string>
+    <string name="edit">Edit</string>
 
     <string name="yes">Yes</string>
     <string name="no">No</string>
@@ -57,5 +59,10 @@
     <string name="source">Source code</string>
     <string name="play_store">Rate the app</string>
     <string name="license">Licenses</string>
-    <string name="notices">Legal notices</string>
+    <string name="notices">3rd Party Libraries</string>
+    <string name="loading">Loading…</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
+    <string name="no_items">No items to show</string>
+    <string name="open_app">Open app</string>
 </resources>
