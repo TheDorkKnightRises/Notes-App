@@ -8,31 +8,17 @@
     android:orientation="vertical"
     android:padding="8dp">
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/note_title"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <TextView
-            android:id="@+id/note_title"
-            android:layout_width="0dp"
-            android:layout_height="20sp"
-            android:layout_weight="1"
-            android:ellipsize="end"
-            android:gravity="center_vertical"
-            android:textAppearance="@style/TextAppearance.AppCompat"
-            android:textColor="#fff"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            tools:text="Title" />
-
-        <TextView
-            android:id="@+id/note_date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="#eee"
-            android:textSize="12sp"
-            tools:text="Date and time" />
-    </LinearLayout>
+        android:layout_height="20sp"
+        android:ellipsize="end"
+        android:gravity="center_vertical"
+        android:textAppearance="@style/TextAppearance.AppCompat"
+        android:textColor="#fff"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        tools:text="Title" />
 
     <TextView
         android:id="@+id/note_subtitle"
@@ -57,4 +43,12 @@
         android:textColor="#eee"
         android:textSize="16sp"
         tools:text="Lorem ipsum dolor" />
+
+    <TextView
+        android:id="@+id/note_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#eee"
+        android:textSize="12sp"
+        tools:text="Date and time" />
 </LinearLayout>
