@@ -5,7 +5,9 @@
     android:id="@+id/coordinatorLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".ui.NoteActivity">
+
 
     <!-- Stop auto focussing the EditText -->
     <LinearLayout
@@ -18,14 +20,16 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="true">
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:padding="2dp">
 
             <android.support.v7.widget.CardView
+                android:id="@+id/note_card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:clipChildren="false"
@@ -35,13 +39,14 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="?attr/actionBarSize"
                     android:orientation="vertical"
                     android:padding="16dp">
 
                     <EditText
                         android:id="@+id/title"
                         android:layout_width="match_parent"
-                        android:layout_height="32sp"
+                        android:layout_height="28sp"
                         android:background="@android:color/transparent"
                         android:hint="@string/title"
                         android:inputType="text|textCapSentences"
@@ -53,12 +58,13 @@
                     <EditText
                         android:id="@+id/subtitle"
                         android:layout_width="match_parent"
-                        android:layout_height="24sp"
+                        android:layout_height="wrap_content"
                         android:background="@android:color/transparent"
+                        android:gravity="start"
                         android:hint="@string/subtitle"
-                        android:inputType="text|textCapSentences"
-                        android:maxLength="72"
-                        android:textSize="18sp"
+                        android:inputType="text|textMultiLine|textCapSentences"
+                        android:maxLength="40"
+                        android:textSize="16sp"
                         android:transitionName="subtitle"/>
 
                     <EditText
@@ -108,57 +114,121 @@
             </android.support.v7.widget.CardView>
 
             <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="128dp"/>
+                android:layout_width="match_parent"
+                android:layout_height="96dp"
+                android:layout_below="@id/note_card" />
 
-        </LinearLayout>
+            <LinearLayout
+                android:id="@+id/toolbar_note"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:elevation="6dp">
+
+                <ImageView
+                    android:id="@+id/close"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:contentDescription="@string/discard"
+                    android:foreground="?attr/selectableItemBackgroundBorderless"
+                    android:onClick="close"
+                    android:padding="16dp"
+                    android:src="@drawable/ic_clear_white_24dp" />
+
+                <LinearLayout
+                    android:layout_width="0px"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <ImageView
+                    android:id="@+id/delete"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:contentDescription="@string/delete"
+                    android:foreground="?attr/selectableItemBackgroundBorderless"
+                    android:onClick="delete"
+                    android:padding="16dp"
+                    android:src="@drawable/ic_delete_white_24dp" />
+            </LinearLayout>
+
+        </RelativeLayout>
 
     </ScrollView>
 
     <LinearLayout
-        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:background="#363636">
-        <ImageButton
-            style="@style/Base.Widget.AppCompat.Button.Borderless"
-            android:layout_width="0dp"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_gravity="bottom"
+            android:background="#11000000" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_gravity="bottom"
+            android:background="#22000000" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_gravity="bottom"
+            android:background="#44000000" />
+
+        <LinearLayout
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:layout_margin="0dp"
-            android:layout_weight="1"
-            android:contentDescription="@string/share"
-            android:onClick="share"
-            android:padding="0dp"
-            android:src="@drawable/ic_share_white_24dp" />
-        <ImageButton
-            android:id="@+id/notif_button"
-            style="@style/Base.Widget.AppCompat.Button.Borderless"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:layout_margin="0dp"
-            android:layout_weight="1"
-            android:contentDescription="@string/notif"
-            android:onClick="notif"
-            android:padding="0dp"
-            android:src="@drawable/ic_notifications_active_white_24dp" />
-        <ImageButton
-            android:id="@+id/archive_button"
-            style="@style/Base.Widget.AppCompat.Button.Borderless"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:layout_margin="0dp"
-            android:layout_weight="1"
-            android:contentDescription="@string/archive"
-            android:onClick="archive"
-            android:padding="0dp"
-            android:src="@drawable/ic_archive_white_24dp" />
-        <ImageButton
-            style="@style/Base.Widget.AppCompat.Button.Borderless"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            android:layout_gravity="bottom"
+            android:background="#363636">
+
+            <ImageButton
+                style="@style/Base.Widget.AppCompat.Button.Borderless"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_margin="0dp"
+                android:layout_weight="1"
+                android:contentDescription="@string/share"
+                android:onClick="share"
+                android:padding="0dp"
+                android:src="@drawable/ic_share_white_24dp" />
+
+            <ImageButton
+                android:id="@+id/notif_button"
+                style="@style/Base.Widget.AppCompat.Button.Borderless"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_margin="0dp"
+                android:layout_weight="1"
+                android:contentDescription="@string/notif"
+                android:onClick="notif"
+                android:padding="0dp"
+                android:src="@drawable/ic_notifications_active_white_24dp" />
+
+            <ImageButton
+                android:id="@+id/archive_button"
+                style="@style/Base.Widget.AppCompat.Button.Borderless"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_margin="0dp"
+                android:layout_weight="1"
+                android:contentDescription="@string/archive"
+                android:onClick="archive"
+                android:padding="0dp"
+                android:src="@drawable/ic_archive_white_24dp" />
+
+            <ImageButton
+                style="@style/Base.Widget.AppCompat.Button.Borderless"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+        </LinearLayout>
+
     </LinearLayout>
+
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_note"

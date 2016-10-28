@@ -24,6 +24,12 @@
         <item name="windowNoTitle">true</item>
     </style>
 
+    <style name="Note" parent="AppTheme.NoActionBar"></style>
+
+    <style name="NoteLight" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="AlertDialog.AppCompat">

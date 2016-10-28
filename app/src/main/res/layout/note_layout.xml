@@ -4,43 +4,34 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:padding="2dp">
 
     <android.support.v7.widget.CardView
         android:id="@+id/note_card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="6dp"
+        android:layout_marginBottom="4dp"
         app:cardElevation="4dp">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="16dp">
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
                 <TextView
                     android:id="@+id/note_title"
-                    android:layout_width="0dp"
-                    android:layout_height="32sp"
-                    android:layout_weight="1"
+                    android:layout_width="match_parent"
+                    android:layout_height="28sp"
                     android:ellipsize="end"
                     android:gravity="center_vertical"
                     android:textAppearance="@style/TextAppearance.AppCompat"
                     android:textSize="20sp"
                     android:textStyle="bold"
                     tools:text="Title"/>
-                <TextView
-                    android:id="@+id/note_date"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    tools:text="Date and time"/>
-            </LinearLayout>
             <TextView
                 android:id="@+id/note_subtitle"
                 android:layout_width="match_parent"
-                android:layout_height="20sp"
+                android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:gravity="center_vertical"
                 android:maxLines="1"
@@ -54,10 +45,17 @@
                 android:layout_marginTop="8dp"
                 android:autoLink="all"
                 android:ellipsize="end"
-                android:maxLines="5"
+                android:maxLines="3"
                 android:textAppearance="@style/TextAppearance.AppCompat"
                 android:textSize="18sp"
                 tools:text="Lorem ipsum dolor"/>
+
+            <TextView
+                android:id="@+id/note_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                tools:text="Date and time" />
         </LinearLayout>
     </android.support.v7.widget.CardView>
 

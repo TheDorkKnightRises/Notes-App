@@ -17,8 +17,8 @@ import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.transition.Slide;
+import android.view.Gravity;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -58,14 +58,10 @@ public class NoteActivity extends AppCompatActivity {
         pref = getSharedPreferences("Prefs", MODE_PRIVATE);
         lightTheme = pref.getBoolean("lightTheme", false);
         if (lightTheme)
-            setTheme(R.style.AppTheme_Light);
+            setTheme(R.style.NoteLight);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note);
-
-        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_clear_white_24dp);
-        getSupportActionBar().setHomeActionContentDescription(R.string.discard);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
 
@@ -141,6 +137,14 @@ public class NoteActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onResume() {
+        View deleteBtn = findViewById(R.id.delete);
+        if (!editMode) {
+            deleteBtn.setVisibility(View.VISIBLE);
+        } else deleteBtn.setVisibility(View.GONE);
+        super.onResume();
+    }
 
     @Override
     protected void onSaveInstanceState(Bundle bundle)   {
@@ -155,56 +159,34 @@ public class NoteActivity extends AppCompatActivity {
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void setupWindowAnimations() {
-        Slide slide = new Slide();
-        slide.setDuration(300);
+        Slide slide = new Slide(Gravity.TOP);
+        slide.addTarget(R.id.note_card);
+        slide.addTarget(R.id.note_title);
+        slide.addTarget(R.id.note_subtitle);
+        slide.addTarget(R.id.note_content);
         getWindow().setEnterTransition(slide);
+        getWindow().setExitTransition(slide);
         getWindow().setReenterTransition(slide);
     }
 
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-
-        MenuItem deletebtn = menu.findItem(R.id.delete);
-        if (!editMode) {
-            deletebtn.setVisible(true);
-        } else deletebtn.setVisible(false);
-        return true;
+    public void close(View v) {
+        if (MainActivity.added) {
+            SharedPreferences.Editor editor = pref.edit();
+            editor.putInt(NotesDb.Note._ID, id + 1);
+            editor.commit();
+        }
+        onBackPressed();
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        this.menu = menu;
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.note_menu, menu);
-
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int itemId = item.getItemId();
-        if (itemId == android.R.id.home) {
-            if (MainActivity.added) {
-                SharedPreferences.Editor editor = pref.edit();
-                editor.putInt(NotesDb.Note._ID, id + 1);
-                editor.commit();
-            }
-            onBackPressed();
-        }
-        else if (itemId == R.id.delete) {
-            if (MainActivity.archive)
-                dbHelper.deleteNoteFromArchive(id);
-            else dbHelper.deleteNote(id);
-            MainActivity.changed = true;
-            NotificationManager mNotifyMgr =
-                    (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-            mNotifyMgr.cancel(id);
-            finish();
-        }
-        return super.onOptionsItemSelected(item);
+    public void delete(View v) {
+        if (MainActivity.archive)
+            dbHelper.deleteNoteFromArchive(id);
+        else dbHelper.deleteNote(id);
+        MainActivity.changed = true;
+        NotificationManager mNotifyMgr =
+                (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        mNotifyMgr.cancel(id);
+        finish();
     }
 
     public void onClick(View v) {
@@ -261,6 +243,7 @@ public class NoteActivity extends AppCompatActivity {
             timeText.setText("");
             editMode = true;
         }
+        onResume();
 
     }
 
