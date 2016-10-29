@@ -33,7 +33,6 @@ import com.google.android.gms.drive.MetadataChangeSet;
 import com.google.android.gms.drive.query.Filters;
 import com.google.android.gms.drive.query.Query;
 import com.google.android.gms.drive.query.SearchableField;
-import com.google.firebase.crash.FirebaseCrash;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -243,7 +242,6 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
                 inputStream = new FileInputStream(file);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
-                FirebaseCrash.report(e);
             }
 
             byte[] buf = new byte[1024];
@@ -256,7 +254,6 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
                 }
             } catch (IOException e) {
                 e.printStackTrace();
-                FirebaseCrash.report(e);
             }
 
             MetadataChangeSet metadataChangeSet = new MetadataChangeSet.Builder()
@@ -310,12 +307,10 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
                     input.close();
                 } catch (Exception e) {
                     e.printStackTrace();
-                    FirebaseCrash.report(e);
                     return false;
                 }
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
-                FirebaseCrash.report(e);
                 return false;
             }
             BackupDbHelper backupDbHelper = new BackupDbHelper(context);
