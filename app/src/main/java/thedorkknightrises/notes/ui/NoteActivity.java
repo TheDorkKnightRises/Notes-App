@@ -16,6 +16,7 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.text.util.Linkify;
 import android.transition.Slide;
 import android.view.Gravity;
 import android.view.Menu;
@@ -197,12 +198,12 @@ public class NoteActivity extends AppCompatActivity {
             if (title.equals("") || content.equals(""))
                 Snackbar.make(coordinatorLayout, R.string.incomplete, Snackbar.LENGTH_LONG).show();
             else {
+                Calendar c = Calendar.getInstance();
                 if (id == -1) {
                     id = pref.getInt(NotesDb.Note._ID, 1);
                     MainActivity.added = true;
                 }   else dbHelper.deleteNote(id);
-                Calendar c = Calendar.getInstance();
-                time = c.getTime().toString().substring(0, 16);
+                time = c.getTime().toString().substring(0, 19);
                 dbHelper.addNote(id, title, subtitle, content, time+":"+c.get(Calendar.SECOND));
                 editMode = false;
                 MainActivity.changed = true;
@@ -217,6 +218,7 @@ public class NoteActivity extends AppCompatActivity {
                     else subtitleText.setTextColor(getResources().getColor(R.color.light_gray));
                 } else subtitleText.setVisibility(View.GONE);
                 contentText.setEnabled(false);
+                Linkify.addLinks(contentText, Linkify.ALL);
                 if (lightTheme)
                     contentText.setTextColor(getResources().getColor(R.color.black));
                 else contentText.setTextColor(getResources().getColor(R.color.white));
@@ -275,7 +277,7 @@ public class NoteActivity extends AppCompatActivity {
         resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_TITLE, title);
         resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_SUBTITLE, subtitle);
         resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_CONTENT, content);
-        resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_TIME, time.substring(0, 16));
+        resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_TIME, time.substring(0, 19));
 
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
         // Adds the Intent to the top of the stack

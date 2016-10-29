@@ -30,11 +30,11 @@ import thedorkknightrises.notes.db.NotesDbHelper;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-    public static NotesAdapter notesAdapter;
     public static boolean added = false;
     static boolean changed = true;
     static boolean lightTheme;
     static boolean archive = false;
+    public NotesAdapter notesAdapter;
     protected NotesDbHelper dbHelper;
     ArrayList<NoteObj> noteObjArrayList;
     RecyclerView recyclerView;

@@ -22,7 +22,7 @@
     along with this program.  If not, see http://www.gnu.org/licenses/</string>
     <string name="license_icon">App icon is from Moonshine Icon Pack by Pedro Peguero Jr. available under Creative Commons Attribution 4.0 International (CC BY 4.0) license</string>
 
-    <string name="blank">No notes yet\n Add a new note by tapping the floating button below</string>
+    <string name="blank">No notes saved\n Add a new note by tapping the floating button below</string>
     <string name="blank_archive">No notes archived</string>
 
     <string name="title">Title</string>
@@ -45,6 +45,16 @@
     <string name="removed_archive">Removed from archive</string>
     <string name="refresh">Refresh</string>
     <string name="edit">Edit</string>
+
+    <string name="app_settings">App Settings</string>
+    <string name="light_theme">Use light theme</string>
+    <string name="light_theme_sub">Throughout the app</string>
+    <string name="restored">Restore complete</string>
+    <string name="drive">Google Drive Backup</string>
+    <string name="backup">Backup to Drive</string>
+    <string name="backup_sub">Save your current notes to the cloud</string>
+    <string name="restore">Restore from Drive</string>
+    <string name="restore_sub">Retrieve previously backup up notes from the cloud</string>
 
     <string name="yes">Yes</string>
     <string name="no">No</string>

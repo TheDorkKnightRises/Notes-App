@@ -1,5 +1,6 @@
 package thedorkknightrises.notes.ui;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
@@ -40,6 +41,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import thedorkknightrises.notes.R;
+import thedorkknightrises.notes.db.BackupDbHelper;
 import thedorkknightrises.notes.db.NotesDbHelper;
 
 /**
@@ -211,6 +213,7 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
 
     public void fetchFile(DriveId driveId) {
         DriveFile file = driveId.asDriveFile();
+        final Context context = this;
         file.open(mGoogleApiClient, DriveFile.MODE_READ_ONLY, null)
                 .setResultCallback(new ResultCallback<DriveApi.DriveContentsResult>() {
                     @Override
@@ -223,9 +226,8 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
                         // to the actual byte stream
                         DriveContents contents = result.getDriveContents();
                         InputStream input = contents.getInputStream();
-
+                        File file = getDatabasePath(BackupDbHelper.DATABASE_NAME);
                         try {
-                            File file = getDatabasePath(NotesDbHelper.DATABASE_NAME);
                             OutputStream output = new FileOutputStream(file);
                             try {
                                 byte[] buffer = new byte[4 * 1024]; // or other buffer size
@@ -242,7 +244,11 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
                         } catch (FileNotFoundException e) {
                             e.printStackTrace();
                         }
+                        BackupDbHelper backupDbHelper = new BackupDbHelper(context);
+                        backupDbHelper.merge(getApplicationContext());
+                        file.delete();
                         MainActivity.changed = true;
+                        Toast.makeText(context, getString(R.string.restored), Toast.LENGTH_SHORT).show();
                         finish();
                     }
                 });

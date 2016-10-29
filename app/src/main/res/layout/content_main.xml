@@ -11,19 +11,21 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:paddingBottom="96dp" />
 
     <TextView
         android:id="@+id/blankTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:maxWidth="320dp"
-        android:textSize="16sp"
-        android:text="@string/blank"
-        android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
         android:gravity="center"
+        android:maxWidth="320dp"
         android:paddingBottom="64dp"
+        android:text="@string/blank"
+        android:textSize="16sp"
         android:visibility="gone"/>
 
 </RelativeLayout>

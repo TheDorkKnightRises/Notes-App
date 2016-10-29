@@ -4,21 +4,16 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.util.Pair;
-import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import thedorkknightrises.notes.db.NotesDb;
-import thedorkknightrises.notes.ui.MainActivity;
 import thedorkknightrises.notes.ui.NoteActivity;
 
 /**
@@ -66,7 +61,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
             holder.subtitle.setVisibility(View.GONE);
         } else holder.subtitle.setText(note.subtitle);
         holder.content.setText(note.content);
-        holder.date.setText(note.time.substring(0, 16));
+        holder.date.setText(note.time.substring(0, 19));
         View.OnClickListener onClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -75,7 +70,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
                 i.putExtra("title", note.title);
                 i.putExtra("subtitle", note.subtitle);
                 i.putExtra("content", note.content);
-                i.putExtra("time", note.time.substring(0, 16));
+                i.putExtra("time", note.time.substring(0, 19));
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     holder.card.setTransitionName("card");

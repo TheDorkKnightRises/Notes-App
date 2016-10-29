@@ -6,4 +6,4 @@
 .DS_Store
 /build
 /captures
-signing.gradle
+keystore.jks

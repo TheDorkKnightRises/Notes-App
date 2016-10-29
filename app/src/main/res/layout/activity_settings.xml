@@ -114,7 +114,7 @@
                         android:paddingLeft="8dp"
                         android:paddingRight="8dp"
                         android:paddingTop="8dp"
-                        android:text="Drive Backup"
+                        android:text="@string/drive"
                         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                         android:textColor="@color/colorAccent"
                         android:textSize="14sp" />
@@ -147,14 +147,14 @@
                                 android:layout_height="wrap_content"
                                 android:gravity="center_vertical"
                                 android:paddingTop="4dp"
-                                android:text="Backup to Google Drive"
+                                android:text="@string/backup"
                                 android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
                                 android:textSize="18sp" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Save your current notes to the cloud" />
+                                android:text="@string/backup_sub" />
 
                         </LinearLayout>
 
@@ -188,14 +188,14 @@
                                 android:layout_height="wrap_content"
                                 android:gravity="center_vertical"
                                 android:paddingTop="4dp"
-                                android:text="Restore from Google Drive"
+                                android:text="@string/restore"
                                 android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
                                 android:textSize="18sp" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Note that this will overwrite all locally existing notes" />
+                                android:text="@string/restore_sub" />
 
                         </LinearLayout>
 

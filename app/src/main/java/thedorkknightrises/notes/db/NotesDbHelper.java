@@ -25,7 +25,7 @@ public class NotesDbHelper extends SQLiteOpenHelper {
                     NotesDb.Note.COLUMN_NAME_TITLE + TEXT_TYPE + COMMA_SEP +
                     NotesDb.Note.COLUMN_NAME_SUBTITLE + TEXT_TYPE + COMMA_SEP +
                     NotesDb.Note.COLUMN_NAME_CONTENT + TEXT_TYPE + COMMA_SEP +
-                    NotesDb.Note.COLUMN_NAME_TIME + TEXT_TYPE + " )";
+                    NotesDb.Note.COLUMN_NAME_TIME + TEXT_TYPE + " UNIQUE )";
     private static final String SQL_DELETE_ENTRIES =
             "DROP TABLE IF EXISTS " + NotesDb.Note.TABLE_NAME;
     private static final String SQL_CREATE_ENTRIES_ARCHIVE =
@@ -34,7 +34,7 @@ public class NotesDbHelper extends SQLiteOpenHelper {
                     NotesDb.Archive.COLUMN_NAME_TITLE + TEXT_TYPE + COMMA_SEP +
                     NotesDb.Archive.COLUMN_NAME_SUBTITLE + TEXT_TYPE + COMMA_SEP +
                     NotesDb.Archive.COLUMN_NAME_CONTENT + TEXT_TYPE + COMMA_SEP +
-                    NotesDb.Archive.COLUMN_NAME_TIME + TEXT_TYPE + " )";
+                    NotesDb.Archive.COLUMN_NAME_TIME + TEXT_TYPE + " UNIQUE )";
     private static final String SQL_DELETE_ENTRIES_ARCHIVE =
             "DROP TABLE IF EXISTS " + NotesDb.Archive.TABLE_NAME;
 
@@ -57,7 +57,7 @@ public class NotesDbHelper extends SQLiteOpenHelper {
         onUpgrade(db, oldVersion, newVersion);
     }
 
-    public void addNote(int id, String title, String subtitle, String content, String time) {
+    public void addNote(long id, String title, String subtitle, String content, String time) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -72,7 +72,7 @@ public class NotesDbHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    public void addNoteToArchive(int id, String title, String subtitle, String content, String time) {
+    public void addNoteToArchive(long id, String title, String subtitle, String content, String time) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -88,25 +88,24 @@ public class NotesDbHelper extends SQLiteOpenHelper {
     }
 
 
-    public void deleteNote(int id) {
+    public void deleteNote(long id) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(NotesDb.Note.TABLE_NAME, NotesDb.Note._ID + " = ?",
-                new String[]{Integer.toString(id)});
+                new String[]{Long.toString(id)});
         Log.d("DB", "Deleted");
         db.close();
     }
 
-    public void deleteNoteFromArchive(int id) {
+    public void deleteNoteFromArchive(long id) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(NotesDb.Archive.TABLE_NAME, NotesDb.Archive._ID + " = ?",
-                new String[]{Integer.toString(id)});
+                new String[]{Long.toString(id)});
         Log.d("DB", "Deleted from archive");
         db.close();
     }
 
     public ArrayList<NoteObj> getAllNotes() {
         ArrayList<NoteObj> mList = new ArrayList<NoteObj>();
-        String selectQuery = "SELECT  * FROM " + NotesDb.Note.TABLE_NAME;
         String[] projection = {
                 NotesDb.Note._ID,
                 NotesDb.Note.COLUMN_NAME_TITLE,
@@ -191,15 +190,22 @@ public class NotesDbHelper extends SQLiteOpenHelper {
         return result;
     }
 
-    public int getCount() {
+    public int getLargestId() {
 
         SQLiteDatabase db = this.getWritableDatabase();
 
         Cursor cursor = db.query(NotesDb.Note.TABLE_NAME, new String[]{NotesDb.Note._ID}, null, null, null, null, null);
-        int count = cursor.getCount();
+        int n = 0;
+
+        if (cursor.moveToFirst()) {
+            do {
+                if (cursor.getInt(0) > n) n = cursor.getInt(0);
+            } while (cursor.moveToNext());
+        }
 
         cursor.close();
         db.close();
-        return count;
+        return n;
     }
+
 }
