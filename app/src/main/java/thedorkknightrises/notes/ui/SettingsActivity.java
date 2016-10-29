@@ -1,9 +1,11 @@
 package thedorkknightrises.notes.ui;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -31,6 +33,7 @@ import com.google.android.gms.drive.MetadataChangeSet;
 import com.google.android.gms.drive.query.Filters;
 import com.google.android.gms.drive.query.Query;
 import com.google.android.gms.drive.query.SearchableField;
+import com.google.firebase.crash.FirebaseCrash;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -132,6 +135,7 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
 
     public void driveBackup(View v) {
         final File file = this.getDatabasePath(NotesDbHelper.DATABASE_NAME);
+        final Context context = this;
 
         Drive.DriveApi.newDriveContents(mGoogleApiClient)
                 .setResultCallback(new ResultCallback<DriveApi.DriveContentsResult>() {
@@ -144,56 +148,17 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
                         final DriveContents driveContents = result.getDriveContents();
 
                         // Perform I/O off the UI thread.
-                        new Thread() {
-                            @Override
-                            public void run() {
-                                // write content to DriveContents
-                                OutputStream outputStream = driveContents.getOutputStream();
-
-                                FileInputStream inputStream = null;
-                                try {
-                                    inputStream = new FileInputStream(file);
-                                } catch (FileNotFoundException e) {
-                                    e.printStackTrace();
-                                }
-
-                                byte[] buf = new byte[1024];
-                                int bytesRead;
-                                try {
-                                    if (inputStream != null) {
-                                        while ((bytesRead = inputStream.read(buf)) > 0) {
-                                            outputStream.write(buf, 0, bytesRead);
-                                        }
-                                    }
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-
-                                MetadataChangeSet metadataChangeSet = new MetadataChangeSet.Builder()
-                                        .setMimeType(MimeTypeMap.getSingleton().getMimeTypeFromExtension("db"))
-                                        .setTitle(NotesDbHelper.DATABASE_NAME)
-                                        .build();
-
-                                // create a file in selected folder
-                                Drive.DriveApi.getAppFolder(mGoogleApiClient)
-                                        .createFile(mGoogleApiClient, metadataChangeSet, driveContents)
-                                        .setResultCallback(new ResultCallback<DriveFolder.DriveFileResult>() {
-                                            @Override
-                                            public void onResult(@NonNull DriveFolder.DriveFileResult result) {
-                                                if (!result.getStatus().isSuccess()) {
-                                                    Log.d("DRIVE_BACKUP", "Error while trying to create the file");
-                                                    return;
-                                                }
-                                                Snackbar.make(findViewById(R.id.rootview), "Backup successful!", Snackbar.LENGTH_SHORT).show();
-                                            }
-                                        });
-                            }
-                        }.start();
+                        new BackupFileTask(context, driveContents, file).execute();
                     }
                 });
     }
 
     public void driveRestore(View v) {
+        final Context context = this;
+        final ProgressDialog progress = new ProgressDialog(context);
+        progress.setMessage(getString(R.string.restoring));
+        progress.setCancelable(false);
+        progress.show();
         Query query = new Query.Builder().addFilter(Filters.and(
                 Filters.eq(SearchableField.TITLE, NotesDbHelper.DATABASE_NAME)))
                 .build();
@@ -202,56 +167,36 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
             public void onResult(@NonNull DriveApi.MetadataBufferResult result) {
                 if (!result.getStatus().isSuccess()) {
                     Toast.makeText(SettingsActivity.this, "Could not retrieve backup", Toast.LENGTH_SHORT).show();
+                    progress.dismiss();
                     return;
                 }
-                if (result.getMetadataBuffer().iterator().hasNext())
-                    fetchFile(result.getMetadataBuffer().iterator().next().getDriveId());
+                if (result.getMetadataBuffer().iterator().hasNext()) {
+                    DriveFile file = result.getMetadataBuffer().iterator().next().getDriveId().asDriveFile();
+                    file.open(mGoogleApiClient, DriveFile.MODE_READ_ONLY, null)
+                            .setResultCallback(new ResultCallback<DriveApi.DriveContentsResult>() {
+                                @Override
+                                public void onResult(@NonNull DriveApi.DriveContentsResult result) {
+                                    if (!result.getStatus().isSuccess()) {
+                                        progress.dismiss();
+                                        return;
+                                    }
+
+                                    // DriveContents object contains pointers
+                                    // to the actual byte stream
+                                    DriveContents contents = result.getDriveContents();
+                                    File file = getDatabasePath(BackupDbHelper.DATABASE_NAME);
+
+                                    new FetchFileTask(context, contents, file, progress).execute();
+                                }
+                            });
+                }
             }
         });
 
     }
 
     public void fetchFile(DriveId driveId) {
-        DriveFile file = driveId.asDriveFile();
-        final Context context = this;
-        file.open(mGoogleApiClient, DriveFile.MODE_READ_ONLY, null)
-                .setResultCallback(new ResultCallback<DriveApi.DriveContentsResult>() {
-                    @Override
-                    public void onResult(@NonNull DriveApi.DriveContentsResult result) {
-                        if (!result.getStatus().isSuccess()) {
-                            return;
-                        }
 
-                        // DriveContents object contains pointers
-                        // to the actual byte stream
-                        DriveContents contents = result.getDriveContents();
-                        InputStream input = contents.getInputStream();
-                        File file = getDatabasePath(BackupDbHelper.DATABASE_NAME);
-                        try {
-                            OutputStream output = new FileOutputStream(file);
-                            try {
-                                byte[] buffer = new byte[4 * 1024]; // or other buffer size
-                                int read;
-
-                                while ((read = input.read(buffer)) != -1) {
-                                    output.write(buffer, 0, read);
-                                }
-                                output.flush();
-                                input.close();
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        } catch (FileNotFoundException e) {
-                            e.printStackTrace();
-                        }
-                        BackupDbHelper backupDbHelper = new BackupDbHelper(context);
-                        backupDbHelper.merge(getApplicationContext());
-                        file.delete();
-                        MainActivity.changed = true;
-                        Toast.makeText(context, getString(R.string.restored), Toast.LENGTH_SHORT).show();
-                        finish();
-                    }
-                });
     }
 
 
@@ -275,5 +220,119 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
     @Override
     public void onConnectionSuspended(int i) {
 
+    }
+
+    public class BackupFileTask extends AsyncTask<Void, Void, Void> {
+        private Context context;
+        private DriveContents driveContents;
+        private File file;
+
+        public BackupFileTask(Context context, DriveContents driveContents, File file) {
+            this.context = context;
+            this.driveContents = driveContents;
+            this.file = file;
+        }
+
+        @Override
+        protected Void doInBackground(Void... objects) {
+            // write content to DriveContents
+            OutputStream outputStream = driveContents.getOutputStream();
+
+            FileInputStream inputStream = null;
+            try {
+                inputStream = new FileInputStream(file);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                FirebaseCrash.report(e);
+            }
+
+            byte[] buf = new byte[1024];
+            int bytesRead;
+            try {
+                if (inputStream != null) {
+                    while ((bytesRead = inputStream.read(buf)) > 0) {
+                        outputStream.write(buf, 0, bytesRead);
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                FirebaseCrash.report(e);
+            }
+
+            MetadataChangeSet metadataChangeSet = new MetadataChangeSet.Builder()
+                    .setMimeType(MimeTypeMap.getSingleton().getMimeTypeFromExtension("db"))
+                    .setTitle(NotesDbHelper.DATABASE_NAME)
+                    .build();
+
+            // create a file in selected folder
+            Drive.DriveApi.getAppFolder(mGoogleApiClient)
+                    .createFile(mGoogleApiClient, metadataChangeSet, driveContents)
+                    .setResultCallback(new ResultCallback<DriveFolder.DriveFileResult>() {
+                        @Override
+                        public void onResult(@NonNull DriveFolder.DriveFileResult result) {
+                            if (!result.getStatus().isSuccess()) {
+                                Log.d("DRIVE_BACKUP", "Error while trying to create the file");
+                                return;
+                            }
+                            Toast.makeText(context, "Backup successful!", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+            return null;
+        }
+    }
+
+    public class FetchFileTask extends AsyncTask<Void, Void, Boolean> {
+        private Context context;
+        private DriveContents driveContents;
+        private File file;
+        private ProgressDialog progress;
+
+        public FetchFileTask(Context context, DriveContents driveContents, File file, ProgressDialog progressDialog) {
+            this.context = context;
+            this.driveContents = driveContents;
+            this.file = file;
+            this.progress = progressDialog;
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... objects) {
+            InputStream input = driveContents.getInputStream();
+            try {
+                OutputStream output = new FileOutputStream(file);
+                try {
+                    byte[] buffer = new byte[4 * 1024]; // or other buffer size
+                    int read;
+
+                    while ((read = input.read(buffer)) != -1) {
+                        output.write(buffer, 0, read);
+                    }
+                    output.flush();
+                    input.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    FirebaseCrash.report(e);
+                    return false;
+                }
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                FirebaseCrash.report(e);
+                return false;
+            }
+            BackupDbHelper backupDbHelper = new BackupDbHelper(context);
+            backupDbHelper.merge(getApplicationContext());
+
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            file.delete();
+            if (result) {
+                MainActivity.changed = true;
+                Toast.makeText(context, getString(R.string.restored), Toast.LENGTH_SHORT).show();
+            } else
+                Toast.makeText(context, getString(R.string.error_restore), Toast.LENGTH_SHORT).show();
+            progress.dismiss();
+        }
     }
 }
