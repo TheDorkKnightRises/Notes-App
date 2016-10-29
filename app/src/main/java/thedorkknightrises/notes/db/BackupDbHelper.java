@@ -69,6 +69,14 @@ public class BackupDbHelper extends SQLiteOpenHelper {
             } while (cursor.moveToNext());
         }
 
+        cursor = db.query(NotesDb.Archive.TABLE_NAME, projection, null, null, null, null, NotesDb.Archive._ID + " DESC");
+
+        if (cursor.moveToFirst()) {
+            do {
+                notesDbHelper.addNoteToArchive(cursor.getInt(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4));
+            } while (cursor.moveToNext());
+        }
+
         cursor.close();
         db.close();
     }
