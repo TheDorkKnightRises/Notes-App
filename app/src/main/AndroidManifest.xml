@@ -28,7 +28,7 @@
             android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".ui.SettingsActivity"
-            android:label="@string/note"
+            android:label="@string/action_settings"
             android:theme="@style/AppTheme"
             android:windowSoftInputMode="stateHidden" />
 

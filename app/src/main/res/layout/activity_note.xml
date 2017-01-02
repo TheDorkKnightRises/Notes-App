@@ -181,6 +181,24 @@
             android:background="#44000000" />
 
         <LinearLayout
+            android:id="@+id/archive_hint"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_gravity="center"
+            android:background="#363636"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:paddingEnd="96dp"
+                android:paddingRight="96dp"
+                android:text="@string/archive_hint" />
+
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="48dp"

@@ -61,7 +61,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
             holder.subtitle.setVisibility(View.GONE);
         } else holder.subtitle.setText(note.subtitle);
         holder.content.setText(note.content);
-        holder.date.setText(note.time.substring(0, 19));
+        holder.date.setText(note.time);
         View.OnClickListener onClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -70,7 +70,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
                 i.putExtra("title", note.title);
                 i.putExtra("subtitle", note.subtitle);
                 i.putExtra("content", note.content);
-                i.putExtra("time", note.time.substring(0, 19));
+                i.putExtra("time", note.time);
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     holder.card.setTransitionName("card");

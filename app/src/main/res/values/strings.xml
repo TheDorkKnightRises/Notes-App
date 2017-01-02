@@ -9,7 +9,7 @@
     <string name="license_info">The source code for this app is available under the GNU GPL v3 License</string>
     <string name="copyright_notice">Copyright Notice</string>
     <string name="copyright" translatable="false">
-    Copyright © 2016  Samriddha Basu
+    Copyright © 2017  Samriddha Basu
         \n\nThis program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
@@ -43,6 +43,7 @@
     <string name="archive">Archive</string>
     <string name="added_archive">Added to archive</string>
     <string name="removed_archive">Removed from archive</string>
+    <string name="archive_hint">Editing will unarchive this note</string>
     <string name="refresh">Refresh</string>
     <string name="edit">Edit</string>
     <string name="error">Error</string>

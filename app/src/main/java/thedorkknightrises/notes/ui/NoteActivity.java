@@ -18,6 +18,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.util.Linkify;
 import android.transition.Slide;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.View;
@@ -26,6 +27,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import thedorkknightrises.notes.R;
@@ -45,8 +47,10 @@ public class NoteActivity extends AppCompatActivity {
     protected TextView timeText;
     FloatingActionButton fab;
     View toolbar;
+    View archive_hint;
     SharedPreferences pref;
     boolean lightTheme;
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
     private Menu menu;
     private  int id = -1;
     private String title;
@@ -72,6 +76,7 @@ public class NoteActivity extends AppCompatActivity {
         timeText = (TextView) findViewById(R.id.note_date);
         fab = (FloatingActionButton) findViewById(R.id.fab_note);
         toolbar = findViewById(R.id.toolbar);
+        archive_hint = findViewById(R.id.archive_hint);
 
         dbHelper = new NotesDbHelper(this);
 
@@ -133,9 +138,10 @@ public class NoteActivity extends AppCompatActivity {
             timeText.setText("");
         }
 
-        if (MainActivity.archive)
-            ((ImageButton)findViewById(R.id.archive_button)).setImageDrawable(getResources().getDrawable(R.drawable.ic_unarchive_white_24dp));
-
+        if (MainActivity.archive) {
+            ((ImageButton) findViewById(R.id.archive_button)).setImageDrawable(getResources().getDrawable(R.drawable.ic_unarchive_white_24dp));
+            archive_hint.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -203,8 +209,9 @@ public class NoteActivity extends AppCompatActivity {
                     id = pref.getInt(NotesDb.Note._ID, 1);
                     MainActivity.added = true;
                 }   else dbHelper.deleteNote(id);
-                time = c.getTime().toString().substring(0, 19);
-                dbHelper.addNote(id, title, subtitle, content, time+":"+c.get(Calendar.SECOND));
+                time = sdf.format(c.getTime());
+                Log.d("TIME", time);
+                dbHelper.addNote(id, title, subtitle, content, time);
                 editMode = false;
                 MainActivity.changed = true;
                 titleText.setEnabled(false);
@@ -226,6 +233,11 @@ public class NoteActivity extends AppCompatActivity {
                 fab.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_mode_edit_white_24dp));
                 onPrepareOptionsMenu(menu);
 
+                if (MainActivity.archive) {
+                    dbHelper.deleteNoteFromArchive(id);
+                    MainActivity.archive = false;
+                }
+                archive_hint.setVisibility(View.GONE);
                 toolbar.setVisibility(View.VISIBLE);
                 findViewById(R.id.note_update).setVisibility(View.VISIBLE);
                 timeText.setText(time);
@@ -277,7 +289,7 @@ public class NoteActivity extends AppCompatActivity {
         resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_TITLE, title);
         resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_SUBTITLE, subtitle);
         resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_CONTENT, content);
-        resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_TIME, time.substring(0, 19));
+        resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_TIME, time);
 
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
         // Adds the Intent to the top of the stack

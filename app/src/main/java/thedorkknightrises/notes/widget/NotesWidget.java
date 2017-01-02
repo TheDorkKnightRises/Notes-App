@@ -28,7 +28,7 @@ public class NotesWidget extends AppWidgetProvider {
     public void onReceive(Context context, Intent intent) {
         Log.d("WIDGET", "onReceive");
         if (intent.getAction().equals(TAP_ACTION)) {
-            int id = intent.getIntExtra(NotesDb.Note._ID, -1);
+            int id = intent.getExtras().getInt(NotesDb.Note._ID, -1);
             if (id != -1) {
                 Intent i = new Intent(context, NoteActivity.class);
                 i.putExtras(intent.getExtras());
@@ -84,7 +84,7 @@ public class NotesWidget extends AppWidgetProvider {
             Intent tapIntent = new Intent(context, NotesWidget.class);
             // Set the action for the intent.
             // When the user touches a particular view, it will have the effect of
-            // broadcasting TOAST_ACTION.
+            // broadcasting TAP_ACTION.
             tapIntent.setAction(NotesWidget.TAP_ACTION);
             tapIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
             intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));

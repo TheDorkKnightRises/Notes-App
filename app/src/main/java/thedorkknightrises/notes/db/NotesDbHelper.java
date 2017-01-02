@@ -115,17 +115,11 @@ public class NotesDbHelper extends SQLiteOpenHelper {
         };
 
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.query(NotesDb.Note.TABLE_NAME, projection, null, null, null, null, NotesDb.Note._ID + " DESC");
+        Cursor cursor = db.query(NotesDb.Note.TABLE_NAME, projection, null, null, null, null, NotesDb.Note.COLUMN_NAME_TIME + " DESC");
 
         if (cursor.moveToFirst()) {
             do {
-                NoteObj noteObj = new NoteObj(0, "", "", "", "");
-                noteObj.setId(cursor.getInt(0));
-                noteObj.setTitle(cursor.getString(1));
-                noteObj.setSubtitle(cursor.getString(2));
-                noteObj.setContent(cursor.getString(3));
-                noteObj.setTime(cursor.getString(4));
-
+                NoteObj noteObj = new NoteObj(cursor.getInt(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4));
                 mList.add(noteObj);
             } while (cursor.moveToNext());
         }
@@ -146,17 +140,11 @@ public class NotesDbHelper extends SQLiteOpenHelper {
         };
 
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.query(NotesDb.Archive.TABLE_NAME, projection, null, null, null, null, NotesDb.Archive._ID + " DESC");
+        Cursor cursor = db.query(NotesDb.Archive.TABLE_NAME, projection, null, null, null, null, NotesDb.Archive.COLUMN_NAME_TIME + " DESC");
 
         if (cursor.moveToFirst()) {
             do {
-                NoteObj noteObj = new NoteObj(0, "", "", "", "");
-                noteObj.setId(cursor.getInt(0));
-                noteObj.setTitle(cursor.getString(1));
-                noteObj.setSubtitle(cursor.getString(2));
-                noteObj.setContent(cursor.getString(3));
-                noteObj.setTime(cursor.getString(4));
-
+                NoteObj noteObj = new NoteObj(cursor.getInt(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4));
                 mList.add(noteObj);
             } while (cursor.moveToNext());
         }

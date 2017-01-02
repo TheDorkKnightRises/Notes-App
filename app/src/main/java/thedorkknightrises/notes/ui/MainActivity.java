@@ -118,6 +118,10 @@ public class MainActivity extends AppCompatActivity
             added = false;
         }
 
+        if (archive)
+            getSupportActionBar().setTitle(R.string.archive);
+        else getSupportActionBar().setTitle(R.string.notes);
+
         if (lightTheme != pref.getBoolean("lightTheme", false)) {
             if (lightTheme)
                 setTheme(R.style.AppTheme_NoActionBar);
