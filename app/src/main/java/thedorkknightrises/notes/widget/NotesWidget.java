@@ -10,7 +10,7 @@ import android.util.Log;
 import android.widget.RemoteViews;
 
 import thedorkknightrises.notes.R;
-import thedorkknightrises.notes.db.NotesDb;
+import thedorkknightrises.notes.data.NotesDb;
 import thedorkknightrises.notes.ui.MainActivity;
 import thedorkknightrises.notes.ui.NoteActivity;
 

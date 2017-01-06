@@ -17,6 +17,9 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
         </activity>
         <activity
             android:name=".ui.AboutActivity"
@@ -45,6 +48,38 @@
         <service
             android:name=".widget.NotesWidgetService"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
+
+        <provider
+            android:name=".data.NotesProvider"
+            android:authorities="thedorkknightrises.notes.provider"
+            android:enabled="true"
+            android:exported="false"
+            android:label="@string/provider_desc" />
+
+        <activity
+            android:name=".ui.SearchActivity"
+            android:launchMode="singleTop"
+            android:parentActivityName=".ui.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
+
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.MainActivity" />
+
+        </activity>
+
+        <meta-data
+            android:name="android.app.default_searchable"
+            android:value=".SearchResultsActivity" />
+
     </application>
 
 </manifest>

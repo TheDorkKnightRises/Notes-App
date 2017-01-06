@@ -43,8 +43,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import thedorkknightrises.notes.R;
-import thedorkknightrises.notes.db.BackupDbHelper;
-import thedorkknightrises.notes.db.NotesDbHelper;
+import thedorkknightrises.notes.data.BackupDbHelper;
+import thedorkknightrises.notes.data.NotesDbHelper;
 
 /**
  * Created by Samriddha Basu on 6/22/2016.

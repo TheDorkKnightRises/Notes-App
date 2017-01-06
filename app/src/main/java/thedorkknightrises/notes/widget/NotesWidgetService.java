@@ -11,8 +11,8 @@ import java.util.ArrayList;
 
 import thedorkknightrises.notes.NoteObj;
 import thedorkknightrises.notes.R;
-import thedorkknightrises.notes.db.NotesDb;
-import thedorkknightrises.notes.db.NotesDbHelper;
+import thedorkknightrises.notes.data.NotesDb;
+import thedorkknightrises.notes.data.NotesDbHelper;
 
 /**
  * Created by Samriddha Basu on 10/28/2016.

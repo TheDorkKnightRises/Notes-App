@@ -7,6 +7,7 @@
     <string name="gplus">Google+</string>
     <string name="github">GitHub</string>
     <string name="license_info">The source code for this app is available under the GNU GPL v3 License</string>
+    <string name="provider_desc">Content Provider for Notes app</string>
     <string name="copyright_notice">Copyright Notice</string>
     <string name="copyright" translatable="false">
     Copyright © 2017  Samriddha Basu
@@ -36,7 +37,7 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="delete">Delete</string>
     <string name="delete_all">Delete all</string>
-    <string name="confirm_delete">Are you sure you want to delete all notes? (This action cannot be undone!)</string>
+    <string name="confirm_delete">Are you sure you want to delete all notes? This action cannot be undone!</string>
     <string name="discard">Close</string>
     <string name="note">Note</string>
     <string name="notes">Notes</string>
@@ -47,6 +48,9 @@
     <string name="refresh">Refresh</string>
     <string name="edit">Edit</string>
     <string name="error">Error</string>
+    <string name="search">Search</string>
+    <string name="search_hint">Search your notes</string>
+    <string name="search_archive">Search archived notes</string>
 
     <string name="app_settings">App Settings</string>
     <string name="light_theme">Use light theme</string>

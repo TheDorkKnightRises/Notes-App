@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import thedorkknightrises.notes.NoteObj;
 import thedorkknightrises.notes.NotesAdapter;
 import thedorkknightrises.notes.R;
-import thedorkknightrises.notes.db.NotesDbHelper;
+import thedorkknightrises.notes.data.NotesDbHelper;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -150,6 +150,7 @@ public class MainActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
+
         return true;
     }
 
@@ -182,6 +183,8 @@ public class MainActivity extends AppCompatActivity
                         }
                     })
                     .show();
+        } else if (id == R.id.search) {
+            startActivity(new Intent(this, SearchActivity.class));
         }
 
         return super.onOptionsItemSelected(item);

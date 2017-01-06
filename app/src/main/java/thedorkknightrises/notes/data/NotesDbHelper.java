@@ -1,4 +1,4 @@
-package thedorkknightrises.notes.db;
+package thedorkknightrises.notes.data;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -196,4 +196,30 @@ public class NotesDbHelper extends SQLiteOpenHelper {
         return n;
     }
 
+    public ArrayList<NoteObj> searchDB(String query, boolean archive) {
+        ArrayList<NoteObj> mList = new ArrayList<NoteObj>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        String[] projection = {
+                NotesDb.Note._ID,
+                NotesDb.Note.COLUMN_NAME_TITLE,
+                NotesDb.Note.COLUMN_NAME_SUBTITLE,
+                NotesDb.Note.COLUMN_NAME_CONTENT,
+                NotesDb.Note.COLUMN_NAME_TIME
+        };
+        String name = archive ? NotesDb.Archive.TABLE_NAME : NotesDb.Note.TABLE_NAME;
+        Cursor cursor = db.query(name, projection,
+                NotesDb.Note.COLUMN_NAME_TITLE + " LIKE " + "'%" + query + "%' OR " + NotesDb.Note.COLUMN_NAME_SUBTITLE + " LIKE " + "'%" + query + "%' OR " + NotesDb.Note.COLUMN_NAME_CONTENT + " LIKE " + "'%" + query + "%'",
+                null, null, null, null, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                NoteObj noteObj = new NoteObj(cursor.getInt(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4));
+                mList.add(noteObj);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        db.close();
+        return mList;
+    }
 }

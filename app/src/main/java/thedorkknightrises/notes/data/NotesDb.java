@@ -1,4 +1,4 @@
-package thedorkknightrises.notes.db;
+package thedorkknightrises.notes.data;
 
 import android.provider.BaseColumns;
 

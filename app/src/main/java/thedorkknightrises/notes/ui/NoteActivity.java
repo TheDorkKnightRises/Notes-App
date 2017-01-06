@@ -31,8 +31,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import thedorkknightrises.notes.R;
-import thedorkknightrises.notes.db.NotesDb;
-import thedorkknightrises.notes.db.NotesDbHelper;
+import thedorkknightrises.notes.data.NotesDb;
+import thedorkknightrises.notes.data.NotesDbHelper;
 
 /**
  * Created by Samriddha Basu on 6/20/2016.
@@ -80,20 +80,11 @@ public class NoteActivity extends AppCompatActivity {
 
         dbHelper = new NotesDbHelper(this);
 
-        if (savedInstanceState != null) {
-            editMode = savedInstanceState.getBoolean("editMode");
-            id = savedInstanceState.getInt("id");
-            title = savedInstanceState.getString("title");
-            subtitle = savedInstanceState.getString("subtitle");
-            content = savedInstanceState.getString("content");
-            time = savedInstanceState.getString("time");
-        }
-
         Bundle bundle = getIntent().getExtras();
         if (bundle != null)
         {
             editMode = false;
-            id = bundle.getInt("id");
+            id = bundle.getInt(NotesDb.Note._ID);
             title = bundle.getString("title");
             subtitle = bundle.getString("subtitle");
             content = bundle.getString("content");
@@ -101,6 +92,15 @@ public class NoteActivity extends AppCompatActivity {
         }
         else {
             editMode = true;
+        }
+
+        if (savedInstanceState != null) {
+            editMode = savedInstanceState.getBoolean("editMode");
+            id = savedInstanceState.getInt(NotesDb.Note._ID);
+            title = savedInstanceState.getString("title");
+            subtitle = savedInstanceState.getString("subtitle");
+            content = savedInstanceState.getString("content");
+            time = savedInstanceState.getString("time");
         }
 
         if (!editMode) {
@@ -156,7 +156,7 @@ public class NoteActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle bundle)   {
         bundle.putBoolean("editMode", editMode);
-        bundle.putInt("id", id);
+        bundle.putInt(NotesDb.Note._ID, id);
         bundle.putString("title", title);
         bundle.putString("subtitle", subtitle);
         bundle.putString("content", content);
@@ -284,6 +284,7 @@ public class NoteActivity extends AppCompatActivity {
         notif.setStyle(new NotificationCompat.BigTextStyle().bigText(content).setSummaryText(time));
         // Sets an ID for the notification
         int mNotificationId = id;
+        Log.d("NOTIFICATION ID", String.valueOf(id));
         Intent resultIntent = new Intent(this, NoteActivity.class);
         resultIntent.putExtra(NotesDb.Note._ID, id);
         resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_TITLE, title);

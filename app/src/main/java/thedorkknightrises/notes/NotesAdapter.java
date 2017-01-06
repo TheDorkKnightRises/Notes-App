@@ -10,10 +10,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import thedorkknightrises.notes.data.NotesDb;
 import thedorkknightrises.notes.ui.NoteActivity;
 
 /**
@@ -65,8 +67,10 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
         View.OnClickListener onClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                InputMethodManager inputManager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+                inputManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
                 Intent i = new Intent(context, NoteActivity.class);
-                i.putExtra("id", note.id);
+                i.putExtra(NotesDb.Note._ID, note.id);
                 i.putExtra("title", note.title);
                 i.putExtra("subtitle", note.subtitle);
                 i.putExtra("content", note.content);
