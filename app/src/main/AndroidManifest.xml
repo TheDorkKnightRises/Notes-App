@@ -27,8 +27,16 @@
             android:theme="@style/AppTheme" />
         <activity
             android:name=".ui.NoteActivity"
+            android:parentActivityName=".ui.MainActivity"
             android:theme="@style/Note"
-            android:windowSoftInputMode="stateHidden" />
+            android:windowSoftInputMode="stateHidden">
+
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.MainActivity" />
+
+        </activity>
+
         <activity
             android:name=".ui.SettingsActivity"
             android:label="@string/action_settings"

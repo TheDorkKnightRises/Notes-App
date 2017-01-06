@@ -1,5 +1,7 @@
 package thedorkknightrises.notes.ui;
 
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -27,13 +29,14 @@ import thedorkknightrises.notes.NoteObj;
 import thedorkknightrises.notes.NotesAdapter;
 import thedorkknightrises.notes.R;
 import thedorkknightrises.notes.data.NotesDbHelper;
+import thedorkknightrises.notes.widget.NotesWidget;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     public static boolean added = false;
     static boolean changed = true;
     static boolean lightTheme;
-    static boolean archive = false;
+    static int archive = 0;
     public NotesAdapter notesAdapter;
     protected NotesDbHelper dbHelper;
     ArrayList<NoteObj> noteObjArrayList;
@@ -78,15 +81,14 @@ public class MainActivity extends AppCompatActivity
 
         blankText = (TextView) findViewById(R.id.blankTextView);
 
-        if (archive) {
+        if (archive == 1) {
             getSupportActionBar().setTitle(R.string.archive);
-            noteObjArrayList = dbHelper.getAllNotesFromArchive();
             blankText.setText(R.string.blank_archive);
             fab.setVisibility(View.GONE);
         }
-        else {
-            noteObjArrayList = dbHelper.getAllNotes();
-        }
+
+        noteObjArrayList = dbHelper.getAllNotes(archive);
+
 
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
@@ -106,7 +108,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onResume() {
         if (changed) {
-            noteObjArrayList = archive?dbHelper.getAllNotesFromArchive():dbHelper.getAllNotes();
+            noteObjArrayList = dbHelper.getAllNotes(archive);
             notesAdapter = new NotesAdapter(noteObjArrayList, this, MainActivity.this);
             recyclerView.setAdapter(notesAdapter);
 
@@ -116,9 +118,10 @@ public class MainActivity extends AppCompatActivity
                 blankText.setVisibility(View.GONE);
             changed = false;
             added = false;
+            updateWidgets();
         }
 
-        if (archive)
+        if (archive == 1)
             getSupportActionBar().setTitle(R.string.archive);
         else getSupportActionBar().setTitle(R.string.notes);
 
@@ -167,9 +170,7 @@ public class MainActivity extends AppCompatActivity
                     .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            if (archive)
-                                dbHelper.deleteAllNotesFromArchive();
-                            else dbHelper.deleteAllNotes();
+                            dbHelper.deleteAllNotes(archive);
                             noteObjArrayList.clear();
                             recyclerView.removeAllViewsInLayout();
                             blankText.setVisibility(View.VISIBLE);
@@ -198,10 +199,10 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_notes) {
-            archive = false;
+            archive = 0;
             getSupportActionBar().setTitle(R.string.notes);
             blankText.setText(R.string.blank);
-            noteObjArrayList = dbHelper.getAllNotes();
+            noteObjArrayList = dbHelper.getAllNotes(archive);
             notesAdapter = new NotesAdapter(noteObjArrayList, this, MainActivity.this);
             recyclerView.setAdapter(notesAdapter);
 
@@ -211,10 +212,10 @@ public class MainActivity extends AppCompatActivity
                 blankText.setVisibility(View.GONE);
             fab.setVisibility(View.VISIBLE);
         } else if (id == R.id.nav_archive) {
-            archive = true;
+            archive = 1;
             getSupportActionBar().setTitle(R.string.archive);
             blankText.setText(R.string.blank_archive);
-            noteObjArrayList = dbHelper.getAllNotesFromArchive();
+            noteObjArrayList = dbHelper.getAllNotes(archive);
             notesAdapter = new NotesAdapter(noteObjArrayList, this, MainActivity.this);
             recyclerView.setAdapter(notesAdapter);
 
@@ -234,6 +235,16 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public void updateWidgets() {
+        Intent intent = new Intent();
+        intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+        AppWidgetManager man = AppWidgetManager.getInstance(this);
+        int[] ids = man.getAppWidgetIds(
+                new ComponentName(this, NotesWidget.class));
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
+        sendBroadcast(intent);
     }
 
 }

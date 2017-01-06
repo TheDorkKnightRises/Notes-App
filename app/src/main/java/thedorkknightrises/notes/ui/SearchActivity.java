@@ -84,7 +84,7 @@ public class SearchActivity extends AppCompatActivity {
                 (android.support.v7.widget.SearchView) menu.findItem(R.id.search).getActionView();
         searchView.setSearchableInfo(
                 searchManager.getSearchableInfo(getComponentName()));
-        if (MainActivity.archive) searchView.setQueryHint(getText(R.string.search_archive));
+        if (MainActivity.archive == 1) searchView.setQueryHint(getText(R.string.search_archive));
         searchView.onActionViewExpanded();
         searchView.setIconified(false);
 

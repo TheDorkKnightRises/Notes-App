@@ -36,13 +36,13 @@ public class NotesWidgetService extends RemoteViewsService {
         @Override
         public void onCreate() {
             NotesDbHelper notesDbHelper = new NotesDbHelper(context);
-            notes = notesDbHelper.getAllNotes();
+            notes = notesDbHelper.getAllNotes(0);
         }
 
         @Override
         public void onDataSetChanged() {
             NotesDbHelper notesDbHelper = new NotesDbHelper(context);
-            notes = notesDbHelper.getAllNotes();
+            notes = notesDbHelper.getAllNotes(0);
         }
 
         @Override
@@ -74,6 +74,8 @@ public class NotesWidgetService extends RemoteViewsService {
                 extras.putString(NotesDb.Note.COLUMN_NAME_SUBTITLE, noteObj.getSubtitle());
                 extras.putString(NotesDb.Note.COLUMN_NAME_CONTENT, noteObj.getContent());
                 extras.putString(NotesDb.Note.COLUMN_NAME_TIME, noteObj.getTime());
+                extras.putInt(NotesDb.Note.COLUMN_NAME_ARCHIVED, noteObj.getArchived());
+                extras.putInt(NotesDb.Note.COLUMN_NAME_NOTIFIED, noteObj.getNotified());
                 Intent fillInIntent = new Intent();
                 fillInIntent.putExtras(extras);
                 // Make it possible to distinguish the individual on-click

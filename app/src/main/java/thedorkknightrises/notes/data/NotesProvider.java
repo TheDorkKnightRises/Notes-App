@@ -29,13 +29,11 @@ public class NotesProvider extends ContentProvider {
          * in the path
          */
         sUriMatcher.addURI("thedorkknightrises.notes.provider", NotesDb.Note.TABLE_NAME, 1);
-        sUriMatcher.addURI("thedorkknightrises.notes.provider", NotesDb.Archive.TABLE_NAME, 3);
         /*
          * Sets the code for a single row to 2. In this case, the "#" wildcard is
          * used
          */
         sUriMatcher.addURI("thedorkknightrises.notes.provider", NotesDb.Note.TABLE_NAME + "/#", 2);
-        sUriMatcher.addURI("thedorkknightrises.notes.provider", NotesDb.Archive.TABLE_NAME + "/#", 4);
         sUriMatcher.addURI("thedorkknightrises.notes.provider", SUGGEST_URI_PATH_QUERY + "/*", 5);
     }
 
@@ -61,17 +59,6 @@ public class NotesProvider extends ContentProvider {
                 }
                 delCount = db.delete(NotesDb.Note.TABLE_NAME, where, selectionArgs);
                 break;
-            case 3:
-                delCount = db.delete(NotesDb.Archive.TABLE_NAME, selection, selectionArgs);
-                break;
-            case 4:
-                String idStrArc = uri.getLastPathSegment();
-                String whereArc = NotesDb.Note._ID + " = " + idStrArc;
-                if (!TextUtils.isEmpty(selection)) {
-                    whereArc += " AND " + selection;
-                }
-                delCount = db.delete(NotesDb.Note.TABLE_NAME, whereArc, selectionArgs);
-                break;
             default:
                 // no support for deleting photos or entities -
                 // photos are deleted by a trigger when the item is deleted
@@ -91,10 +78,6 @@ public class NotesProvider extends ContentProvider {
                 return ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + NotesDb.Note.TABLE_NAME;
             case 2:
                 return ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + NotesDb.Note.TABLE_NAME;
-            case 3:
-                return ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + NotesDb.Archive.TABLE_NAME;
-            case 4:
-                return ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + NotesDb.Archive.TABLE_NAME;
             default:
                 throw new IllegalArgumentException("Unsupported URI: " + uri);
         }
@@ -107,9 +90,6 @@ public class NotesProvider extends ContentProvider {
         switch (sUriMatcher.match(uri)) {
             case 1:
                 id = db.insertWithOnConflict(NotesDb.Note.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
-                return getUriForId(id, uri);
-            case 3:
-                id = db.insertWithOnConflict(NotesDb.Archive.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
                 return getUriForId(id, uri);
             default:
                 throw new IllegalArgumentException("Unsupported URI for insertion: " + uri);
@@ -150,14 +130,6 @@ public class NotesProvider extends ContentProvider {
                 builder.appendWhere(NotesDb.Note._ID + " = "
                         + uri.getLastPathSegment());
                 break;
-            case 3:
-                builder.setTables(NotesDb.Archive.TABLE_NAME);
-                break;
-            case 4:
-                builder.setTables(NotesDb.Archive.TABLE_NAME);
-                // limit query to one row at most:
-                builder.appendWhere(NotesDb.Archive._ID + " = " + uri.getLastPathSegment());
-                break;
             case 5:
                 String query = Uri.decode(uri.getLastPathSegment());
                 selection = NotesDb.Note.COLUMN_NAME_TITLE + " LIKE" + "'%" + query + "%' OR " + NotesDb.Note.COLUMN_NAME_SUBTITLE + " LIKE" + "'%" + query + "%' OR " + NotesDb.Note.COLUMN_NAME_CONTENT + " LIKE" + "'%" + query + "%'";
@@ -184,17 +156,6 @@ public class NotesProvider extends ContentProvider {
                     where += " AND " + selection;
                 }
                 updateCount = db.update(NotesDb.Note.TABLE_NAME, values, where, selectionArgs);
-                break;
-            case 3:
-                updateCount = db.update(NotesDb.Archive.TABLE_NAME, values, selection, selectionArgs);
-                break;
-            case 4:
-                String idStr1 = uri.getLastPathSegment();
-                String where1 = NotesDb.Archive._ID + " = " + idStr1;
-                if (!TextUtils.isEmpty(selection)) {
-                    where1 += " AND " + selection;
-                }
-                updateCount = db.update(NotesDb.Archive.TABLE_NAME, values, where1, selectionArgs);
                 break;
             default:
                 // no support for updating photos!

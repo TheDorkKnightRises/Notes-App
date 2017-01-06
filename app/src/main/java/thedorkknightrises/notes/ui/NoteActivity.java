@@ -50,13 +50,15 @@ public class NoteActivity extends AppCompatActivity {
     View archive_hint;
     SharedPreferences pref;
     boolean lightTheme;
-    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private Menu menu;
     private  int id = -1;
     private String title;
     private String subtitle;
     private String content;
     private String time;
+    private int archived = 0;
+    private int notified = 0;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -85,10 +87,12 @@ public class NoteActivity extends AppCompatActivity {
         {
             editMode = false;
             id = bundle.getInt(NotesDb.Note._ID);
-            title = bundle.getString("title");
-            subtitle = bundle.getString("subtitle");
-            content = bundle.getString("content");
-            time = bundle.getString("time");
+            title = bundle.getString(NotesDb.Note.COLUMN_NAME_TITLE);
+            subtitle = bundle.getString(NotesDb.Note.COLUMN_NAME_SUBTITLE);
+            content = bundle.getString(NotesDb.Note.COLUMN_NAME_CONTENT);
+            time = bundle.getString(NotesDb.Note.COLUMN_NAME_TIME);
+            archived = bundle.getInt(NotesDb.Note.COLUMN_NAME_ARCHIVED);
+            notified = bundle.getInt(NotesDb.Note.COLUMN_NAME_NOTIFIED);
         }
         else {
             editMode = true;
@@ -97,10 +101,12 @@ public class NoteActivity extends AppCompatActivity {
         if (savedInstanceState != null) {
             editMode = savedInstanceState.getBoolean("editMode");
             id = savedInstanceState.getInt(NotesDb.Note._ID);
-            title = savedInstanceState.getString("title");
-            subtitle = savedInstanceState.getString("subtitle");
-            content = savedInstanceState.getString("content");
-            time = savedInstanceState.getString("time");
+            title = savedInstanceState.getString(NotesDb.Note.COLUMN_NAME_TITLE);
+            subtitle = savedInstanceState.getString(NotesDb.Note.COLUMN_NAME_SUBTITLE);
+            content = savedInstanceState.getString(NotesDb.Note.COLUMN_NAME_CONTENT);
+            time = savedInstanceState.getString(NotesDb.Note.COLUMN_NAME_TIME);
+            archived = savedInstanceState.getInt(NotesDb.Note.COLUMN_NAME_ARCHIVED);
+            notified = savedInstanceState.getInt(NotesDb.Note.COLUMN_NAME_NOTIFIED);
         }
 
         if (!editMode) {
@@ -138,9 +144,13 @@ public class NoteActivity extends AppCompatActivity {
             timeText.setText("");
         }
 
-        if (MainActivity.archive) {
+        if (archived == 1) {
             ((ImageButton) findViewById(R.id.archive_button)).setImageDrawable(getResources().getDrawable(R.drawable.ic_unarchive_white_24dp));
             archive_hint.setVisibility(View.VISIBLE);
+        }
+
+        if (notified == 1) {
+            ((ImageButton) findViewById(R.id.notif_button)).setImageDrawable(getResources().getDrawable(R.drawable.ic_notifications_off_white_24dp));
         }
     }
 
@@ -157,10 +167,12 @@ public class NoteActivity extends AppCompatActivity {
     protected void onSaveInstanceState(Bundle bundle)   {
         bundle.putBoolean("editMode", editMode);
         bundle.putInt(NotesDb.Note._ID, id);
-        bundle.putString("title", title);
-        bundle.putString("subtitle", subtitle);
-        bundle.putString("content", content);
-        bundle.putString("time", time);
+        bundle.putString(NotesDb.Note.COLUMN_NAME_TITLE, title);
+        bundle.putString(NotesDb.Note.COLUMN_NAME_SUBTITLE, subtitle);
+        bundle.putString(NotesDb.Note.COLUMN_NAME_CONTENT, content);
+        bundle.putString(NotesDb.Note.COLUMN_NAME_CONTENT, time);
+        bundle.putInt(NotesDb.Note.COLUMN_NAME_ARCHIVED, archived);
+        bundle.putInt(NotesDb.Note.COLUMN_NAME_NOTIFIED, notified);
         super.onSaveInstanceState(bundle);
     }
 
@@ -186,12 +198,10 @@ public class NoteActivity extends AppCompatActivity {
     }
 
     public void delete(View v) {
-        if (MainActivity.archive)
-            dbHelper.deleteNoteFromArchive(id);
-        else dbHelper.deleteNote(id);
+        dbHelper.deleteNote(id);
         MainActivity.changed = true;
-        NotificationManager mNotifyMgr =
-                (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        // Gets an instance of the NotificationManager service
+        NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         mNotifyMgr.cancel(id);
         finish();
     }
@@ -209,9 +219,11 @@ public class NoteActivity extends AppCompatActivity {
                     id = pref.getInt(NotesDb.Note._ID, 1);
                     MainActivity.added = true;
                 }   else dbHelper.deleteNote(id);
+                //get date and time, specifically in 24-hr format suitable for sorting
                 time = sdf.format(c.getTime());
                 Log.d("TIME", time);
-                dbHelper.addNote(id, title, subtitle, content, time);
+                archived = 0;
+                dbHelper.addNote(id, title, subtitle, content, time, archived, notified);
                 editMode = false;
                 MainActivity.changed = true;
                 titleText.setEnabled(false);
@@ -233,15 +245,17 @@ public class NoteActivity extends AppCompatActivity {
                 fab.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_mode_edit_white_24dp));
                 onPrepareOptionsMenu(menu);
 
-                if (MainActivity.archive) {
-                    dbHelper.deleteNoteFromArchive(id);
-                    MainActivity.archive = false;
-                }
                 archive_hint.setVisibility(View.GONE);
                 toolbar.setVisibility(View.VISIBLE);
                 findViewById(R.id.note_update).setVisibility(View.VISIBLE);
                 timeText.setText(time);
                 editMode = false;
+
+                if (MainActivity.archive == 1) {
+                    MainActivity.archive = 0;
+                }
+
+                notif();
             }
         } else {
             titleText.setEnabled(true);
@@ -270,62 +284,80 @@ public class NoteActivity extends AppCompatActivity {
         startActivity(Intent.createChooser(share, getResources().getString(R.string.share_title)));
     }
 
-    public void notif(View v)   {
-        String info;
-        if (!subtitle.equals("")) info = subtitle;
-        else info = time;
-        NotificationCompat.Builder notif =
-                new NotificationCompat.Builder(this)
-                        .setSmallIcon(R.mipmap.ic_launcher)
-                        .setContentTitle(title)
-                        .setContentText(content)
-                        .setContentInfo(info)
-                        .setColor(Color.argb(255, 32, 128, 200));
-        notif.setStyle(new NotificationCompat.BigTextStyle().bigText(content).setSummaryText(time));
-        // Sets an ID for the notification
-        int mNotificationId = id;
-        Log.d("NOTIFICATION ID", String.valueOf(id));
-        Intent resultIntent = new Intent(this, NoteActivity.class);
-        resultIntent.putExtra(NotesDb.Note._ID, id);
-        resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_TITLE, title);
-        resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_SUBTITLE, subtitle);
-        resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_CONTENT, content);
-        resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_TIME, time);
+    public void notifBtn(View v) {
+        if (notified == 1) {
+            notified = 0;
+            dbHelper.addNote(id, title, subtitle, content, time, archived, notified);
+            MainActivity.changed = true;
+            notif();
+        } else {
+            notified = 1;
+            dbHelper.addNote(id, title, subtitle, content, time, archived, notified);
+            MainActivity.changed = true;
+            notif();
+        }
+    }
 
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-        // Adds the Intent to the top of the stack
-        stackBuilder.addNextIntent(resultIntent);
-        // Gets a PendingIntent containing the entire back stack
-        PendingIntent resultPendingIntent =
-                stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        notif.setContentIntent(resultPendingIntent);
-
+    public void notif() {
         // Gets an instance of the NotificationManager service
-        NotificationManager mNotifyMgr =
-                (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        // Builds the notification and issues it.
-        mNotifyMgr.notify(mNotificationId, notif.build());
+        NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        if (notified == 0) {
+            mNotifyMgr.cancel(id);
+            ((ImageButton) findViewById(R.id.notif_button)).setImageDrawable(getResources().getDrawable(R.drawable.ic_notifications_active_white_24dp));
+        } else {
+            ((ImageButton) findViewById(R.id.notif_button)).setImageDrawable(getResources().getDrawable(R.drawable.ic_notifications_off_white_24dp));
+            String info;
+            if (!subtitle.equals("")) info = subtitle;
+            else info = time;
+            NotificationCompat.Builder notif =
+                    new NotificationCompat.Builder(this)
+                            .setSmallIcon(R.mipmap.ic_launcher)
+                            .setContentTitle(title)
+                            .setContentText(content)
+                            .setContentInfo(info)
+                            .setColor(Color.argb(255, 32, 128, 200));
+            notif.setStyle(new NotificationCompat.BigTextStyle().bigText(content).setSummaryText(time));
+            // Sets an ID for the notification
+            Log.d("NOTIFICATION ID", String.valueOf(id));
+            Intent resultIntent = new Intent(this, NoteActivity.class);
+            resultIntent.putExtra(NotesDb.Note._ID, id);
+            resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_TITLE, title);
+            resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_SUBTITLE, subtitle);
+            resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_CONTENT, content);
+            resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_TIME, time);
+            resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_ARCHIVED, archived);
+            resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_NOTIFIED, notified);
+            resultIntent.setAction("ACTION_NOTE_" + id);
+            TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+            stackBuilder.addParentStack(NoteActivity.class);
+            // Adds the Intent to the top of the stack
+            stackBuilder.addNextIntent(resultIntent);
+            // Gets a PendingIntent containing the entire back stack
+            PendingIntent resultPendingIntent =
+                    stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+
+            notif.setContentIntent(resultPendingIntent);
+            notif.setOngoing(true);
+
+            // Builds the notification and issues it.
+            mNotifyMgr.notify(id, notif.build());
+        }
     }
 
     public void archive(View v) {
-        if(MainActivity.archive) {
+        if (archived == 1) {
             Toast.makeText(this, R.string.removed_archive, Toast.LENGTH_SHORT).show();
-            dbHelper.addNote(id, title, subtitle, content, time);
-            dbHelper.deleteNoteFromArchive(id);
+            archived = 0;
+            dbHelper.addNote(id, title, subtitle, content, time, archived, notified);
             MainActivity.changed = true;
-            NotificationManager mNotifyMgr =
-                    (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-            mNotifyMgr.cancel(id);
+            notif();
             finish();
         } else {
             Toast.makeText(this, R.string.added_archive, Toast.LENGTH_SHORT).show();
-            dbHelper.addNoteToArchive(id, title, subtitle, content, time);
-            dbHelper.deleteNote(id);
+            archived = 1;
+            dbHelper.addNote(id, title, subtitle, content, time, archived, notified);
             MainActivity.changed = true;
-            NotificationManager mNotifyMgr =
-                    (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-            mNotifyMgr.cancel(id);
+            notif();
             finish();
         }
     }

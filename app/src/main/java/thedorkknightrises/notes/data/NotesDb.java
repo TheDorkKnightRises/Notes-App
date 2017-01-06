@@ -17,14 +17,8 @@ public class NotesDb {
         public static final String COLUMN_NAME_SUBTITLE = "subtitle";
         public static final String COLUMN_NAME_CONTENT = "content";
         public static final String COLUMN_NAME_TIME = "time";
-    }
+        public static final String COLUMN_NAME_ARCHIVED = "archived";
+        public static final String COLUMN_NAME_NOTIFIED = "notified";
 
-    /* Inner class that defines the table contents */
-    public static abstract class Archive implements BaseColumns {
-        public static final String TABLE_NAME = "archive";
-        public static final String COLUMN_NAME_TITLE = "title";
-        public static final String COLUMN_NAME_SUBTITLE = "subtitle";
-        public static final String COLUMN_NAME_CONTENT = "content";
-        public static final String COLUMN_NAME_TIME = "time";
     }
 }

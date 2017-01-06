@@ -19,18 +19,11 @@ public class BackupDbHelper extends SQLiteOpenHelper {
                     NotesDb.Note.COLUMN_NAME_TITLE + TEXT_TYPE + COMMA_SEP +
                     NotesDb.Note.COLUMN_NAME_SUBTITLE + TEXT_TYPE + COMMA_SEP +
                     NotesDb.Note.COLUMN_NAME_CONTENT + TEXT_TYPE + COMMA_SEP +
-                    NotesDb.Note.COLUMN_NAME_TIME + TEXT_TYPE + " )";
+                    NotesDb.Note.COLUMN_NAME_TIME + TEXT_TYPE + " UNIQUE" + COMMA_SEP +
+                    NotesDb.Note.COLUMN_NAME_ARCHIVED + " INTEGER" + COMMA_SEP +
+                    NotesDb.Note.COLUMN_NAME_NOTIFIED + " INTEGER)";
     private static final String SQL_DELETE_ENTRIES =
             "DROP TABLE IF EXISTS " + NotesDb.Note.TABLE_NAME;
-    private static final String SQL_CREATE_ENTRIES_ARCHIVE =
-            "CREATE TABLE " + NotesDb.Archive.TABLE_NAME + " (" +
-                    NotesDb.Archive._ID + " INTEGER PRIMARY KEY" + COMMA_SEP +
-                    NotesDb.Archive.COLUMN_NAME_TITLE + TEXT_TYPE + COMMA_SEP +
-                    NotesDb.Archive.COLUMN_NAME_SUBTITLE + TEXT_TYPE + COMMA_SEP +
-                    NotesDb.Archive.COLUMN_NAME_CONTENT + TEXT_TYPE + COMMA_SEP +
-                    NotesDb.Archive.COLUMN_NAME_TIME + TEXT_TYPE + " )";
-    private static final String SQL_DELETE_ENTRIES_ARCHIVE =
-            "DROP TABLE IF EXISTS " + NotesDb.Archive.TABLE_NAME;
 
     public BackupDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -38,12 +31,10 @@ public class BackupDbHelper extends SQLiteOpenHelper {
 
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(SQL_CREATE_ENTRIES);
-        db.execSQL(SQL_CREATE_ENTRIES_ARCHIVE);
     }
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL(SQL_DELETE_ENTRIES);
-        db.execSQL(SQL_DELETE_ENTRIES_ARCHIVE);
         onCreate(db);
     }
 
@@ -59,21 +50,15 @@ public class BackupDbHelper extends SQLiteOpenHelper {
                 NotesDb.Note.COLUMN_NAME_TITLE,
                 NotesDb.Note.COLUMN_NAME_SUBTITLE,
                 NotesDb.Note.COLUMN_NAME_CONTENT,
-                NotesDb.Note.COLUMN_NAME_TIME
+                NotesDb.Note.COLUMN_NAME_TIME,
+                NotesDb.Note.COLUMN_NAME_ARCHIVED,
+                NotesDb.Note.COLUMN_NAME_NOTIFIED
         };
         Cursor cursor = db.query(NotesDb.Note.TABLE_NAME, projection, null, null, null, null, NotesDb.Note._ID + " DESC");
 
         if (cursor.moveToFirst()) {
             do {
-                notesDbHelper.addNote(cursor.getInt(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4));
-            } while (cursor.moveToNext());
-        }
-
-        cursor = db.query(NotesDb.Archive.TABLE_NAME, projection, null, null, null, null, NotesDb.Archive._ID + " DESC");
-
-        if (cursor.moveToFirst()) {
-            do {
-                notesDbHelper.addNoteToArchive(cursor.getInt(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4));
+                notesDbHelper.addNote(cursor.getInt(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getInt(5), cursor.getInt(6));
             } while (cursor.moveToNext());
         }
 

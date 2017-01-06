@@ -71,10 +71,12 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
                 inputManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
                 Intent i = new Intent(context, NoteActivity.class);
                 i.putExtra(NotesDb.Note._ID, note.id);
-                i.putExtra("title", note.title);
-                i.putExtra("subtitle", note.subtitle);
-                i.putExtra("content", note.content);
-                i.putExtra("time", note.time);
+                i.putExtra(NotesDb.Note.COLUMN_NAME_TITLE, note.title);
+                i.putExtra(NotesDb.Note.COLUMN_NAME_SUBTITLE, note.subtitle);
+                i.putExtra(NotesDb.Note.COLUMN_NAME_CONTENT, note.content);
+                i.putExtra(NotesDb.Note.COLUMN_NAME_TIME, note.time);
+                i.putExtra(NotesDb.Note.COLUMN_NAME_ARCHIVED, note.archived);
+                i.putExtra(NotesDb.Note.COLUMN_NAME_NOTIFIED, note.notified);
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     holder.card.setTransitionName("card");
@@ -95,7 +97,6 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
                         options = ActivityOptionsCompat.
                                 makeSceneTransitionAnimation(activity, p1, p2, p4, p5);
                     }
-
                     context.startActivity(i, options.toBundle());
                 }
                 else
