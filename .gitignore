@@ -6,4 +6,8 @@
 .DS_Store
 /build
 /captures
-keystore.jks
+.idea/dbnavigator.xml
+.idea/markdown-navigator/
+app/app-release.apk
+app/libs/
+projectFilesBackup/
