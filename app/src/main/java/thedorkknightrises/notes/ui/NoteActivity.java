@@ -59,6 +59,7 @@ public class NoteActivity extends AppCompatActivity {
     private String time;
     private int archived = 0;
     private int notified = 0;
+    private boolean backPressFlag = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -328,6 +329,7 @@ public class NoteActivity extends AppCompatActivity {
             resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_ARCHIVED, archived);
             resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_NOTIFIED, notified);
             resultIntent.setAction("ACTION_NOTE_" + id);
+
             TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
             stackBuilder.addParentStack(NoteActivity.class);
             // Adds the Intent to the top of the stack
@@ -337,7 +339,7 @@ public class NoteActivity extends AppCompatActivity {
                     stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
 
             notif.setContentIntent(resultPendingIntent);
-            notif.setOngoing(true);
+            //notif.setOngoing(true);
 
             // Builds the notification and issues it.
             mNotifyMgr.notify(id, notif.build());
@@ -360,5 +362,30 @@ public class NoteActivity extends AppCompatActivity {
             notif();
             finish();
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (editMode && !backPressFlag) {
+            Toast.makeText(getApplicationContext(), "Press back again to discard changes",
+                    Toast.LENGTH_SHORT).show();
+            backPressFlag = true;
+
+            // Thread to change backPressedFlag to false after 3000ms
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Thread.sleep(3000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    } finally {
+                        backPressFlag = false;
+                    }
+                }
+            }).start();
+            return;
+        }
+        super.onBackPressed();
     }
 }
