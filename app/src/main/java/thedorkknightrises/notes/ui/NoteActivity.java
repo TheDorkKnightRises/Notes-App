@@ -339,7 +339,7 @@ public class NoteActivity extends AppCompatActivity {
                     stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
 
             notif.setContentIntent(resultPendingIntent);
-            //notif.setOngoing(true);
+            notif.setOngoing(true);
 
             // Builds the notification and issues it.
             mNotifyMgr.notify(id, notif.build());
