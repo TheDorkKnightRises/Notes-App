@@ -23,9 +23,9 @@ import thedorkknightrises.notes.ui.NoteActivity;
 public class NotesAdapter extends RecyclerViewCursorAdapter<NotesAdapter.ViewHolder> {
 
     //public ArrayList<NoteObj> noteObjArrayList;
-    Cursor cursor;
-    Context context;
-    Activity activity;
+    private Cursor cursor;
+    private Context context;
+    private Activity activity;
 
     // Provide a suitable constructor (depends on the kind of dataset)
     public NotesAdapter(Context c, Activity a, Cursor cursor) {

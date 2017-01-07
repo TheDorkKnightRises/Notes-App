@@ -56,6 +56,31 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         pref = getSharedPreferences("Prefs", MODE_PRIVATE);
+
+        //  Declare a new thread to do a preference check
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                //  Initialize SharedPreferences
+                //  Create a new boolean and preference and set it to true
+                boolean isFirstStart = pref.getBoolean("firstStart", true);
+                //  If the activity has never started before...
+                if (isFirstStart) {
+                    //  Launch app intro
+                    Intent i = new Intent(MainActivity.this, IntroActivity.class);
+                    startActivity(i);
+                    //  Make a new preferences editor
+                    SharedPreferences.Editor e = pref.edit();
+                    //  Edit preference to make it false because we don't want this to run again
+                    e.putBoolean("firstStart", false);
+                    //  Apply changes
+                    e.apply();
+                }
+            }
+        });
+        // Start the thread
+        t.start();
+
         lightTheme = pref.getBoolean("lightTheme", false);
         if (lightTheme)
             setTheme(R.style.AppTheme_Light_NoActionBar);
@@ -105,7 +130,6 @@ public class MainActivity extends AppCompatActivity
         recyclerView.setLayoutManager(layoutManager);
         //mAdapter = new NotesAdapter(noteObjArrayList, this, MainActivity.this);
         //recyclerView.setAdapter(mAdapter);
-
 
     }
 

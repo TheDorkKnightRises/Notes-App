@@ -77,5 +77,10 @@ public class AboutActivity extends AppCompatActivity {
         }
     }
 
+    public void showIntro(View v) {
+        Intent i = new Intent(this, IntroActivity.class);
+        startActivity(i);
+    }
+
 
 }

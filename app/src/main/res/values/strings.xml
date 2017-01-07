@@ -80,6 +80,7 @@
 
     <string name="source">Source code</string>
     <string name="play_store">Rate the app</string>
+    <string name="see_intro">Launch Intro</string>
     <string name="license">Licenses</string>
     <string name="notices">3rd Party Libraries</string>
     <string name="loading">Loading…</string>
@@ -89,4 +90,11 @@
     <string name="open_app">Open app</string>
 
     <string name="icon">App icon</string>
+    <string name="welcome">Welcome to Notes</string>
+    <string name="intro1">Add a note by tapping the red Floating Action Button</string>
+    <string name="intro2">You can archive your notes…</string>
+    <string name="intro3">Share them…</string>
+    <string name="intro4">Or create a notification reminder</string>
+    <string name="intro5">Use the search function to quickly find a specific note</string>
+    <string name="intro6">You can see this intro again from the About screen</string>
 </resources>

@@ -33,6 +33,7 @@ import com.google.android.gms.drive.MetadataChangeSet;
 import com.google.android.gms.drive.query.Filters;
 import com.google.android.gms.drive.query.Query;
 import com.google.android.gms.drive.query.SearchableField;
+import com.google.firebase.crash.FirebaseCrash;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -84,6 +85,7 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
             try {
                 connectionResult.startResolutionForResult(this, REQUEST_CODE_RESOLUTION);
             } catch (IntentSender.SendIntentException e) {
+                FirebaseCrash.report(e);
                 Snackbar.make(findViewById(R.id.rootview), "Error connecting to Drive", Snackbar.LENGTH_SHORT).show();
             }
         } else {
@@ -241,6 +243,7 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
             try {
                 inputStream = new FileInputStream(file);
             } catch (FileNotFoundException e) {
+                FirebaseCrash.log("FileNotFoundException while performing Drive backup");
                 e.printStackTrace();
             }
 
@@ -253,6 +256,7 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
                     }
                 }
             } catch (IOException e) {
+                FirebaseCrash.log("Exception while performing Drive backup");
                 e.printStackTrace();
             }
 
@@ -306,10 +310,12 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
                     output.flush();
                     input.close();
                 } catch (Exception e) {
+                    FirebaseCrash.log("Exception while restoring Drive backup");
                     e.printStackTrace();
                     return false;
                 }
             } catch (FileNotFoundException e) {
+                FirebaseCrash.log("FileNotFoundException while restoring Drive backup");
                 e.printStackTrace();
                 return false;
             }
