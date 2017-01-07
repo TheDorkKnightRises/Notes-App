@@ -6,6 +6,8 @@
     <string name="website">Website</string>
     <string name="gplus">Google+</string>
     <string name="github">GitHub</string>
+    <string name="play_store_prompt">This app is not on the Play Store yet! :P</string>
+
     <string name="license_info">The source code for this app is available under the GNU GPL v3 License</string>
     <string name="provider_desc">Content Provider for Notes app</string>
     <string name="copyright_notice">Copyright Notice</string>
@@ -53,6 +55,7 @@
     <string name="search_archive">Search archived notes</string>
     <string name="search_no_results">No results found :(</string>
     <string name="search_no_results_archive">No results found in archive :(</string>
+    <string name="back_press">Press back again to discard changes</string>
 
     <string name="app_settings">App Settings</string>
     <string name="light_theme">Use light theme</string>
@@ -60,8 +63,10 @@
     <string name="restored">Restore complete</string>
     <string name="drive">Google Drive Backup</string>
     <string name="backup">Backup to Drive</string>
+    <string name="drive_error">Error connecting to Drive</string>
     <string name="backup_sub">Save your current notes to the cloud</string>
     <string name="error_backup">Failed to backup to Drive</string>
+    <string name="backup_success">Backup successful!</string>
     <string name="restore">Restore from Drive</string>
     <string name="restore_sub">Retrieve previously backup up notes from the cloud</string>
     <string name="restoring">Restoring…</string>

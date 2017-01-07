@@ -368,8 +368,7 @@ public class NoteActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         if (editMode && !backPressFlag) {
-            Toast.makeText(getApplicationContext(), "Press back again to discard changes",
-                    Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), getText(R.string.back_press), Toast.LENGTH_SHORT).show();
             backPressFlag = true;
 
             // Thread to change backPressedFlag to false after 3000ms

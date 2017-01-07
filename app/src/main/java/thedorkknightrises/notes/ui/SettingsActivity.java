@@ -86,7 +86,7 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
                 connectionResult.startResolutionForResult(this, REQUEST_CODE_RESOLUTION);
             } catch (IntentSender.SendIntentException e) {
                 FirebaseCrash.report(e);
-                Snackbar.make(findViewById(R.id.rootview), "Error connecting to Drive", Snackbar.LENGTH_SHORT).show();
+                Snackbar.make(findViewById(R.id.rootview), getText(R.string.drive_error), Snackbar.LENGTH_SHORT).show();
             }
         } else {
             GooglePlayServicesUtil.getErrorDialog(connectionResult.getErrorCode(), this, 0).show();
@@ -167,7 +167,7 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
             @Override
             public void onResult(@NonNull DriveApi.MetadataBufferResult result) {
                 if (!result.getStatus().isSuccess()) {
-                    Toast.makeText(SettingsActivity.this, "Could not retrieve backup", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SettingsActivity.this, getText(R.string.error_restore), Toast.LENGTH_SHORT).show();
                     progress.dismiss();
                     return;
                 }
@@ -275,7 +275,7 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
                                 Log.d("DRIVE_BACKUP", "Error while trying to create the file");
                                 return;
                             }
-                            Toast.makeText(context, "Backup successful!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, getText(R.string.backup_success), Toast.LENGTH_SHORT).show();
                         }
                     });
             return null;

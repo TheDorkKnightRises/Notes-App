@@ -55,7 +55,7 @@ public class AboutActivity extends AppCompatActivity {
         } else if (text.equals(getString(R.string.source))) {
             uri = "https://github.com/TheDorkKnightRises/Notes-App";
         } else {
-            Toast.makeText(getApplicationContext(), "This app is not on the Play Store yet :P", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), getText(R.string.play_store_prompt), Toast.LENGTH_SHORT).show();
             return;
         }
         Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
