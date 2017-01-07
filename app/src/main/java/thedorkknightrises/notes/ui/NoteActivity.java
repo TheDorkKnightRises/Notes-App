@@ -316,7 +316,7 @@ public class NoteActivity extends AppCompatActivity {
                             .setSmallIcon(R.mipmap.ic_launcher)
                             .setContentTitle(title)
                             .setContentText(content)
-                            .setContentInfo(info)
+                            .setSubText(info)
                             .setColor(Color.argb(255, 32, 128, 200));
             notif.setStyle(new NotificationCompat.BigTextStyle().bigText(content).setSummaryText(time));
             // Sets an ID for the notification
