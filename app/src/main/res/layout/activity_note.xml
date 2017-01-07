@@ -95,8 +95,10 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="start"
                             android:maxLines="2"
+                            android:paddingEnd="8dp"
                             android:paddingLeft="8dp"
                             android:paddingRight="8dp"
+                            android:paddingStart="8dp"
                             android:text="@string/updated"
                             android:visibility="gone" />
 
@@ -106,8 +108,7 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="end"
                             android:maxLines="2"
-                            android:transitionName="time"
-                            tools:text="@string/updated" />
+                            android:transitionName="time" />
 
                     </LinearLayout>
 

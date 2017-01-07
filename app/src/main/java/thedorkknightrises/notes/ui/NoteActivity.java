@@ -195,6 +195,7 @@ public class NoteActivity extends AppCompatActivity {
             editor.putInt(NotesDb.Note._ID, id + 1);
             editor.commit();
         }
+        backPressFlag = true;
         onBackPressed();
     }
 

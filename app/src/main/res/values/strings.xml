@@ -51,6 +51,8 @@
     <string name="search">Search</string>
     <string name="search_hint">Search your notes</string>
     <string name="search_archive">Search archived notes</string>
+    <string name="search_no_results">No results found :(</string>
+    <string name="search_no_results_archive">No results found in archive :(</string>
 
     <string name="app_settings">App Settings</string>
     <string name="light_theme">Use light theme</string>
@@ -85,4 +87,6 @@
     <string name="add_widget">Add widget</string>
     <string name="no_items">No items to show</string>
     <string name="open_app">Open app</string>
+
+    <string name="icon">App icon</string>
 </resources>

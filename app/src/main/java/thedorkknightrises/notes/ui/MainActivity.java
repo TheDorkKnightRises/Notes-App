@@ -1,10 +1,15 @@
 package thedorkknightrises.notes.ui;
 
+import android.app.LoaderManager;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
+import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.Loader;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -18,6 +23,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,16 +34,18 @@ import java.util.ArrayList;
 import thedorkknightrises.notes.NoteObj;
 import thedorkknightrises.notes.NotesAdapter;
 import thedorkknightrises.notes.R;
+import thedorkknightrises.notes.data.NotesDb;
 import thedorkknightrises.notes.data.NotesDbHelper;
+import thedorkknightrises.notes.data.NotesProvider;
 import thedorkknightrises.notes.widget.NotesWidget;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, LoaderManager.LoaderCallbacks<Cursor> {
     public static boolean added = false;
     static boolean changed = true;
     static boolean lightTheme;
     static int archive = 0;
-    public NotesAdapter notesAdapter;
+    public NotesAdapter mAdapter;
     protected NotesDbHelper dbHelper;
     ArrayList<NoteObj> noteObjArrayList;
     RecyclerView recyclerView;
@@ -55,6 +63,8 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        getLoaderManager().initLoader(0, null, this);
 
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -87,20 +97,15 @@ public class MainActivity extends AppCompatActivity
             fab.setVisibility(View.GONE);
         }
 
-        noteObjArrayList = dbHelper.getAllNotes(archive);
-
+        //noteObjArrayList = dbHelper.getAllNotes(archive);
+        noteObjArrayList = new ArrayList<>();
 
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-        notesAdapter = new NotesAdapter(noteObjArrayList, this, MainActivity.this);
-        recyclerView.setAdapter(notesAdapter);
+        //mAdapter = new NotesAdapter(noteObjArrayList, this, MainActivity.this);
+        //recyclerView.setAdapter(mAdapter);
 
-
-        if (noteObjArrayList.size() == 0)
-            blankText.setVisibility(View.VISIBLE);
-        else
-            blankText.setVisibility(View.GONE);
 
     }
 
@@ -108,14 +113,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onResume() {
         if (changed) {
-            noteObjArrayList = dbHelper.getAllNotes(archive);
-            notesAdapter = new NotesAdapter(noteObjArrayList, this, MainActivity.this);
-            recyclerView.setAdapter(notesAdapter);
-
-            if (noteObjArrayList.size() == 0)
-                blankText.setVisibility(View.VISIBLE);
-            else
-                blankText.setVisibility(View.GONE);
+            getLoaderManager().restartLoader(0, null, this);
             changed = false;
             added = false;
             updateWidgets();
@@ -202,27 +200,29 @@ public class MainActivity extends AppCompatActivity
             archive = 0;
             getSupportActionBar().setTitle(R.string.notes);
             blankText.setText(R.string.blank);
-            noteObjArrayList = dbHelper.getAllNotes(archive);
-            notesAdapter = new NotesAdapter(noteObjArrayList, this, MainActivity.this);
-            recyclerView.setAdapter(notesAdapter);
+            getLoaderManager().restartLoader(0, null, this);
+            //noteObjArrayList = dbHelper.getAllNotes(archive);
+            //mAdapter = new NotesAdapter(noteObjArrayList, this, MainActivity.this);
+            //recyclerView.setAdapter(mAdapter);
 
-            if (noteObjArrayList.size() == 0)
-                blankText.setVisibility(View.VISIBLE);
-            else
-                blankText.setVisibility(View.GONE);
+            //if (noteObjArrayList.size() == 0)
+            //    blankText.setVisibility(View.VISIBLE);
+            //else
+            //    blankText.setVisibility(View.GONE);
             fab.setVisibility(View.VISIBLE);
         } else if (id == R.id.nav_archive) {
             archive = 1;
             getSupportActionBar().setTitle(R.string.archive);
             blankText.setText(R.string.blank_archive);
-            noteObjArrayList = dbHelper.getAllNotes(archive);
-            notesAdapter = new NotesAdapter(noteObjArrayList, this, MainActivity.this);
-            recyclerView.setAdapter(notesAdapter);
+            getLoaderManager().restartLoader(0, null, this);
+            //noteObjArrayList = dbHelper.getAllNotes(archive);
+            //mAdapter = new NotesAdapter(noteObjArrayList, this, MainActivity.this);
+            //recyclerView.setAdapter(mAdapter);
 
-            if (noteObjArrayList.size() == 0)
-                blankText.setVisibility(View.VISIBLE);
-            else
-                blankText.setVisibility(View.GONE);
+            //if (noteObjArrayList.size() == 0)
+            //    blankText.setVisibility(View.VISIBLE);
+            //else
+            //    blankText.setVisibility(View.GONE);
             fab.setVisibility(View.GONE);
         } else if (id == R.id.nav_about) {
             Intent i = new Intent(this, AboutActivity.class);
@@ -247,4 +247,54 @@ public class MainActivity extends AppCompatActivity
         sendBroadcast(intent);
     }
 
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        // This is called when a new Loader needs to be created.
+        Uri.Builder builder = NotesProvider.BASE_URI.buildUpon().appendPath(NotesDb.Note.TABLE_NAME);
+        Uri baseUri = builder.build();
+
+        String[] projection = {
+                NotesDb.Note._ID,
+                NotesDb.Note.COLUMN_NAME_TITLE,
+                NotesDb.Note.COLUMN_NAME_SUBTITLE,
+                NotesDb.Note.COLUMN_NAME_CONTENT,
+                NotesDb.Note.COLUMN_NAME_TIME,
+                NotesDb.Note.COLUMN_NAME_ARCHIVED,
+                NotesDb.Note.COLUMN_NAME_NOTIFIED
+        };
+
+        // Now create and return a CursorLoader that will take care of
+        // creating a Cursor for the data being displayed.
+        return new CursorLoader(this, baseUri,
+                projection, NotesDb.Note.COLUMN_NAME_ARCHIVED + " LIKE " + archive, null,
+                NotesDb.Note.COLUMN_NAME_TIME + " DESC");
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        if (cursor == null) Log.d("onLoadFinished", "Cursor is null!");
+        else {
+            noteObjArrayList.clear();
+            if (cursor.moveToFirst()) {
+                do {
+                    NoteObj noteObj = new NoteObj(cursor.getInt(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getInt(5), cursor.getInt(6));
+                    if (noteObj.getArchived() == archive) noteObjArrayList.add(noteObj);
+                } while (cursor.moveToNext());
+            }
+
+            mAdapter = new NotesAdapter(this, this, cursor);
+            recyclerView.setAdapter(mAdapter);
+
+        }
+
+        if (noteObjArrayList.size() == 0)
+            blankText.setVisibility(View.VISIBLE);
+        else
+            blankText.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        mAdapter.swapCursor(null);
+    }
 }

@@ -35,10 +35,12 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="8dp"
+                        android:paddingEnd="8dp"
                         android:paddingLeft="8dp"
                         android:paddingRight="8dp"
+                        android:paddingStart="8dp"
                         android:paddingTop="8dp"
-                        android:text="App Settings"
+                        android:text="@string/app_settings"
                         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                         android:textColor="@color/colorAccent"
                         android:textSize="14sp" />
@@ -53,8 +55,10 @@
                         android:minHeight="80dp"
                         android:onClick="onCheckedChange"
                         android:paddingBottom="@dimen/activity_horizontal_margin"
+                        android:paddingEnd="8dp"
                         android:paddingLeft="8dp"
                         android:paddingRight="8dp"
+                        android:paddingStart="8dp"
                         android:paddingTop="@dimen/activity_horizontal_margin">
 
                         <LinearLayout
@@ -71,14 +75,14 @@
                                 android:layout_height="wrap_content"
                                 android:gravity="center_vertical"
                                 android:paddingTop="4dp"
-                                android:text="Use light theme"
+                                android:text="@string/light_theme"
                                 android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
                                 android:textSize="18sp" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Throughout the app" />
+                                android:text="@string/light_theme_sub" />
 
                         </LinearLayout>
 
@@ -111,8 +115,10 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="8dp"
+                        android:paddingEnd="8dp"
                         android:paddingLeft="8dp"
                         android:paddingRight="8dp"
+                        android:paddingStart="8dp"
                         android:paddingTop="8dp"
                         android:text="@string/drive"
                         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
@@ -124,13 +130,16 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="?android:attr/selectableItemBackground"
+                        android:baselineAligned="false"
                         android:clickable="true"
                         android:gravity="center_vertical"
                         android:minHeight="80dp"
                         android:onClick="driveBackup"
                         android:paddingBottom="@dimen/activity_horizontal_margin"
+                        android:paddingEnd="8dp"
                         android:paddingLeft="8dp"
                         android:paddingRight="8dp"
+                        android:paddingStart="8dp"
                         android:paddingTop="@dimen/activity_horizontal_margin">
 
                         <LinearLayout
@@ -165,13 +174,16 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="?android:attr/selectableItemBackground"
+                        android:baselineAligned="false"
                         android:clickable="true"
                         android:gravity="center_vertical"
                         android:minHeight="80dp"
                         android:onClick="driveRestore"
                         android:paddingBottom="@dimen/activity_horizontal_margin"
+                        android:paddingEnd="8dp"
                         android:paddingLeft="8dp"
                         android:paddingRight="8dp"
+                        android:paddingStart="8dp"
                         android:paddingTop="@dimen/activity_horizontal_margin">
 
                         <LinearLayout

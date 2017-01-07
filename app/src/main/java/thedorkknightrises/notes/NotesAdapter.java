@@ -3,6 +3,7 @@ package thedorkknightrises.notes;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Build;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.util.Pair;
@@ -13,23 +14,24 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-
 import thedorkknightrises.notes.data.NotesDb;
 import thedorkknightrises.notes.ui.NoteActivity;
 
 /**
  * Created by Samriddha Basu on 6/20/2016.
  */
-public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> {
+public class NotesAdapter extends RecyclerViewCursorAdapter<NotesAdapter.ViewHolder> {
 
-    public ArrayList<NoteObj> noteObjArrayList;
+    //public ArrayList<NoteObj> noteObjArrayList;
+    Cursor cursor;
     Context context;
     Activity activity;
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public NotesAdapter(ArrayList<NoteObj> arrayList, Context c, Activity a) {
-        noteObjArrayList = arrayList;
+    public NotesAdapter(Context c, Activity a, Cursor cursor) {
+        super(cursor);
+        //noteObjArrayList = arrayList;
+        this.cursor = cursor;
         context = c;
         activity = a;
     }
@@ -52,31 +54,35 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
         return vh;
     }
 
-    // Replace the contents of a view (invoked by the layout manager)
     @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
-        // - get element from your dataset at this position
-        // - replace the contents of the view with that element
-        final NoteObj note = noteObjArrayList.get(position);
-        holder.title.setText(note.title);
-        if (note.subtitle.equals("")) {
+    protected void onBindViewHolder(final ViewHolder holder, Cursor cursor) {
+        final int id = cursor.getInt(cursor.getColumnIndex(NotesDb.Note._ID));
+        final String title = cursor.getString(cursor.getColumnIndex(NotesDb.Note.COLUMN_NAME_TITLE));
+        final String subtitle = cursor.getString(cursor.getColumnIndex(NotesDb.Note.COLUMN_NAME_SUBTITLE));
+        final String content = cursor.getString(cursor.getColumnIndex(NotesDb.Note.COLUMN_NAME_CONTENT));
+        final String time = cursor.getString(cursor.getColumnIndex(NotesDb.Note.COLUMN_NAME_TIME));
+        final int archived = cursor.getInt(cursor.getColumnIndex(NotesDb.Note.COLUMN_NAME_ARCHIVED));
+        final int notified = cursor.getInt(cursor.getColumnIndex(NotesDb.Note.COLUMN_NAME_NOTIFIED));
+
+        holder.title.setText(title);
+        if (subtitle.equals("")) {
             holder.subtitle.setVisibility(View.GONE);
-        } else holder.subtitle.setText(note.subtitle);
-        holder.content.setText(note.content);
-        holder.date.setText(note.time);
+        } else holder.subtitle.setText(subtitle);
+        holder.content.setText(content);
+        holder.date.setText(time);
         View.OnClickListener onClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 InputMethodManager inputManager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
                 inputManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
                 Intent i = new Intent(context, NoteActivity.class);
-                i.putExtra(NotesDb.Note._ID, note.id);
-                i.putExtra(NotesDb.Note.COLUMN_NAME_TITLE, note.title);
-                i.putExtra(NotesDb.Note.COLUMN_NAME_SUBTITLE, note.subtitle);
-                i.putExtra(NotesDb.Note.COLUMN_NAME_CONTENT, note.content);
-                i.putExtra(NotesDb.Note.COLUMN_NAME_TIME, note.time);
-                i.putExtra(NotesDb.Note.COLUMN_NAME_ARCHIVED, note.archived);
-                i.putExtra(NotesDb.Note.COLUMN_NAME_NOTIFIED, note.notified);
+                i.putExtra(NotesDb.Note._ID, id);
+                i.putExtra(NotesDb.Note.COLUMN_NAME_TITLE, title);
+                i.putExtra(NotesDb.Note.COLUMN_NAME_SUBTITLE, subtitle);
+                i.putExtra(NotesDb.Note.COLUMN_NAME_CONTENT, content);
+                i.putExtra(NotesDb.Note.COLUMN_NAME_TIME, time);
+                i.putExtra(NotesDb.Note.COLUMN_NAME_ARCHIVED, archived);
+                i.putExtra(NotesDb.Note.COLUMN_NAME_NOTIFIED, notified);
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     holder.card.setTransitionName("card");
@@ -90,7 +96,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
                     Pair<View, String> p4 = Pair.create((View) holder.content, "content");
                     Pair<View, String> p5 = Pair.create((View) holder.date, "time");
                     ActivityOptionsCompat options;
-                    if (!note.subtitle.equals("")) {
+                    if (!subtitle.equals("")) {
                         options = ActivityOptionsCompat.
                                 makeSceneTransitionAnimation(activity, p1, p2, p3, p4, p5);
                     } else {
@@ -110,16 +116,16 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
     // Return the size of your data set (invoked by the layout manager)
     @Override
     public int getItemCount() {
-        if (noteObjArrayList == null) {
-            return 0;
-        } else return noteObjArrayList.size();
+        //if (noteObjArrayList == null) {
+        //    return 0;
+        //} else return noteObjArrayList.size();
+        return cursor.getCount();
     }
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
     // you provide access to all the views for a data item in a view holder
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        // each data item is just a string in this case
         public View mView;
         TextView title;
         TextView subtitle;

@@ -12,9 +12,9 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.text.TextUtils;
 
-import static android.app.SearchManager.SUGGEST_URI_PATH_QUERY;
-
 public class NotesProvider extends ContentProvider {
+    public static final String AUTHORITY = "thedorkknightrises.notes.data.NotesProvider";
+    public static final Uri BASE_URI = Uri.parse("content://" + AUTHORITY);
     // Creates a UriMatcher object.
     private static final UriMatcher sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
@@ -28,13 +28,13 @@ public class NotesProvider extends ContentProvider {
          * Sets the integer value for multiple rows in table to 1. Notice that no wildcard is used
          * in the path
          */
-        sUriMatcher.addURI("thedorkknightrises.notes.provider", NotesDb.Note.TABLE_NAME, 1);
+        sUriMatcher.addURI(AUTHORITY, NotesDb.Note.TABLE_NAME, 1);
         /*
          * Sets the code for a single row to 2. In this case, the "#" wildcard is
          * used
          */
-        sUriMatcher.addURI("thedorkknightrises.notes.provider", NotesDb.Note.TABLE_NAME + "/#", 2);
-        sUriMatcher.addURI("thedorkknightrises.notes.provider", SUGGEST_URI_PATH_QUERY + "/*", 5);
+        sUriMatcher.addURI(AUTHORITY, NotesDb.Note.TABLE_NAME + "/#", 2);
+        //sUriMatcher.addURI(AUTHORITY, SUGGEST_URI_PATH_QUERY + "/*", 5);
     }
 
     NotesDbHelper mHelper;
