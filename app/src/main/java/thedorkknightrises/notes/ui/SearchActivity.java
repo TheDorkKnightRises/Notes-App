@@ -33,6 +33,7 @@ import thedorkknightrises.notes.data.NotesProvider;
  */
 
 public class SearchActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>, SearchView.OnQueryTextListener {
+    boolean lightTheme;
     ArrayList<NoteObj> noteObjArrayList;
     RecyclerView recyclerView;
     TextView blankText;
@@ -41,6 +42,9 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        lightTheme = getSharedPreferences("Prefs", MODE_PRIVATE).getBoolean("lightTheme", false);
+        if (lightTheme)
+            setTheme(R.style.AppTheme_Light_NoActionBar);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
