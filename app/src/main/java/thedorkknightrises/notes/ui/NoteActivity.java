@@ -218,7 +218,7 @@ public class NoteActivity extends AppCompatActivity {
                 Log.d("TIME", time);
                 archived = 0;
                 dbHelper.deleteNote(oldTitle, oldSubtitle, oldContent, oldTime, oldArchived);
-                dbHelper.addNote(title, subtitle, content, time, archived, notified);
+                id = dbHelper.addNote(title, subtitle, content, time, archived, notified);
                 editMode = false;
                 MainActivity.changed = true;
                 titleText.setEnabled(false);

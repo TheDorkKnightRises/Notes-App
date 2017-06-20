@@ -48,7 +48,7 @@ public class NotesDbHelper extends SQLiteOpenHelper {
         onUpgrade(db, oldVersion, newVersion);
     }
 
-    public void addNote(String title, String subtitle, String content, String time, int archived, int notified) {
+    public int addNote(String title, String subtitle, String content, String time, int archived, int notified) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -59,9 +59,10 @@ public class NotesDbHelper extends SQLiteOpenHelper {
         values.put(NotesDb.Note.COLUMN_NAME_ARCHIVED, archived);
         values.put(NotesDb.Note.COLUMN_NAME_NOTIFIED, notified);
 
-        db.insertWithOnConflict(NotesDb.Note.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+        long id = db.insertWithOnConflict(NotesDb.Note.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
         Log.d("DB", "Added");
         db.close();
+        return (int) id;
     }
 
     public void deleteNote(String title, String subtitle, String content, String time, int archived) {
