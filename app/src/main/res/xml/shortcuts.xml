@@ -10,9 +10,18 @@
             android:action="android.intent.action.VIEW"
             android:targetClass="thedorkknightrises.notes.ui.NoteActivity"
             android:targetPackage="thedorkknightrises.notes" />
-        <!-- If your shortcut is associated with multiple intents, include them
-             here. The last intent in the list determines what the user sees when
-             they launch this shortcut. -->
+        <categories android:name="android.shortcut.notes" />
+    </shortcut>
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_search"
+        android:shortcutId="searchNotes"
+        android:shortcutLongLabel="@string/search_hint"
+        android:shortcutShortLabel="@string/search_hint">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetClass="thedorkknightrises.notes.ui.SearchActivity"
+            android:targetPackage="thedorkknightrises.notes" />
         <categories android:name="android.shortcut.notes" />
     </shortcut>
 </shortcuts>
