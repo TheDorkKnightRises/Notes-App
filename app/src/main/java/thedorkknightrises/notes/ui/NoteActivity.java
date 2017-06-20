@@ -53,11 +53,11 @@ public class NoteActivity extends AppCompatActivity {
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private Menu menu;
     private  int id = -1;
-    private String title;
-    private String subtitle;
-    private String content;
-    private String time;
-    private int archived = 0;
+    private String title, oldTitle;
+    private String subtitle, oldSubtitle;
+    private String content, oldContent;
+    private String time, oldTime;
+    private int archived = 0, oldArchived;
     private int notified = 0;
     private boolean backPressFlag = false;
 
@@ -190,17 +190,13 @@ public class NoteActivity extends AppCompatActivity {
     }
 
     public void close(View v) {
-        if (MainActivity.added) {
-            SharedPreferences.Editor editor = pref.edit();
-            editor.putInt(NotesDb.Note._ID, id + 1);
-            editor.commit();
-        }
+        if (subtitleText.getText().toString().isEmpty()) subtitleText.setVisibility(View.INVISIBLE);
         backPressFlag = true;
         onBackPressed();
     }
 
     public void delete(View v) {
-        dbHelper.deleteNote(id);
+        dbHelper.deleteNote(title, subtitle, content, time, archived);
         MainActivity.changed = true;
         // Gets an instance of the NotificationManager service
         NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
@@ -217,15 +213,12 @@ public class NoteActivity extends AppCompatActivity {
                 Snackbar.make(coordinatorLayout, R.string.incomplete, Snackbar.LENGTH_LONG).show();
             else {
                 Calendar c = Calendar.getInstance();
-                if (id == -1) {
-                    id = pref.getInt(NotesDb.Note._ID, 1);
-                    MainActivity.added = true;
-                }   else dbHelper.deleteNote(id);
                 //get date and time, specifically in 24-hr format suitable for sorting
                 time = sdf.format(c.getTime());
                 Log.d("TIME", time);
                 archived = 0;
-                dbHelper.addNote(id, title, subtitle, content, time, archived, notified);
+                dbHelper.deleteNote(oldTitle, oldSubtitle, oldContent, oldTime, oldArchived);
+                dbHelper.addNote(title, subtitle, content, time, archived, notified);
                 editMode = false;
                 MainActivity.changed = true;
                 titleText.setEnabled(false);
@@ -260,10 +253,10 @@ public class NoteActivity extends AppCompatActivity {
                 notif();
             }
         } else {
+            saveOldData();
             titleText.setEnabled(true);
             subtitleText.setEnabled(true);
             contentText.setEnabled(true);
-            contentText.requestFocus();
             contentText.setSelection(contentText.getText().length());
             subtitleText.setVisibility(View.VISIBLE);
             fab.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_done_white_24dp));
@@ -272,9 +265,18 @@ public class NoteActivity extends AppCompatActivity {
             findViewById(R.id.note_update).setVisibility(View.GONE);
             timeText.setText("");
             editMode = true;
+            contentText.requestFocusFromTouch();
         }
         onResume();
 
+    }
+
+    private void saveOldData() {
+        oldTitle = title;
+        oldSubtitle = subtitle;
+        oldContent = content;
+        oldTime = time;
+        oldArchived = archived;
     }
 
     public void share(View v)   {
@@ -287,14 +289,15 @@ public class NoteActivity extends AppCompatActivity {
     }
 
     public void notifBtn(View v) {
+        dbHelper.deleteNote(title, subtitle, content, time, archived);
         if (notified == 1) {
             notified = 0;
-            dbHelper.addNote(id, title, subtitle, content, time, archived, notified);
+            dbHelper.addNote(title, subtitle, content, time, archived, notified);
             MainActivity.changed = true;
             notif();
         } else {
             notified = 1;
-            dbHelper.addNote(id, title, subtitle, content, time, archived, notified);
+            dbHelper.addNote(title, subtitle, content, time, archived, notified);
             MainActivity.changed = true;
             notif();
         }
@@ -348,17 +351,18 @@ public class NoteActivity extends AppCompatActivity {
     }
 
     public void archive(View v) {
+        dbHelper.deleteNote(title, subtitle, content, time, archived);
         if (archived == 1) {
             Toast.makeText(this, R.string.removed_archive, Toast.LENGTH_SHORT).show();
             archived = 0;
-            dbHelper.addNote(id, title, subtitle, content, time, archived, notified);
+            dbHelper.addNote(title, subtitle, content, time, archived, notified);
             MainActivity.changed = true;
             notif();
             finish();
         } else {
             Toast.makeText(this, R.string.added_archive, Toast.LENGTH_SHORT).show();
             archived = 1;
-            dbHelper.addNote(id, title, subtitle, content, time, archived, notified);
+            dbHelper.addNote(title, subtitle, content, time, archived, notified);
             MainActivity.changed = true;
             notif();
             finish();

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_add"
+        android:shortcutId="addNote"
+        android:shortcutLongLabel="@string/create_note"
+        android:shortcutShortLabel="@string/create_note">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetClass="thedorkknightrises.notes.ui.NoteActivity"
+            android:targetPackage="thedorkknightrises.notes" />
+        <!-- If your shortcut is associated with multiple intents, include them
+             here. The last intent in the list determines what the user sees when
+             they launch this shortcut. -->
+        <categories android:name="android.shortcut.notes" />
+    </shortcut>
+</shortcuts>

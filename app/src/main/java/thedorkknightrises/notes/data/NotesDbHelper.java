@@ -48,11 +48,10 @@ public class NotesDbHelper extends SQLiteOpenHelper {
         onUpgrade(db, oldVersion, newVersion);
     }
 
-    public void addNote(int id, String title, String subtitle, String content, String time, int archived, int notified) {
+    public void addNote(String title, String subtitle, String content, String time, int archived, int notified) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(NotesDb.Note._ID, id);
         values.put(NotesDb.Note.COLUMN_NAME_TITLE, title);
         values.put(NotesDb.Note.COLUMN_NAME_SUBTITLE, subtitle);
         values.put(NotesDb.Note.COLUMN_NAME_CONTENT, content);
@@ -65,10 +64,15 @@ public class NotesDbHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    public void deleteNote(int id) {
+    public void deleteNote(String title, String subtitle, String content, String time, int archived) {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(NotesDb.Note.TABLE_NAME, NotesDb.Note._ID + " = ?",
-                new String[]{Long.toString(id)});
+        db.delete(NotesDb.Note.TABLE_NAME,
+                NotesDb.Note.COLUMN_NAME_TITLE + " = ? AND "
+                        + NotesDb.Note.COLUMN_NAME_SUBTITLE + " = ? AND "
+                        + NotesDb.Note.COLUMN_NAME_CONTENT + " = ? AND "
+                        + NotesDb.Note.COLUMN_NAME_TIME + " = ? AND "
+                        + NotesDb.Note.COLUMN_NAME_ARCHIVED + " = ? ",
+                new String[]{title, subtitle, content, time, Integer.toString(archived)});
         Log.d("DB", "Deleted");
         db.close();
     }
@@ -110,36 +114,5 @@ public class NotesDbHelper extends SQLiteOpenHelper {
         if (result == 1)
             Log.d("DB", "All notes deleted");
         return result;
-    }
-
-    public ArrayList<NoteObj> searchDB(String query, int archive) {
-        ArrayList<NoteObj> mList = new ArrayList<NoteObj>();
-        SQLiteDatabase db = this.getReadableDatabase();
-        String[] projection = {
-                NotesDb.Note._ID,
-                NotesDb.Note.COLUMN_NAME_TITLE,
-                NotesDb.Note.COLUMN_NAME_SUBTITLE,
-                NotesDb.Note.COLUMN_NAME_CONTENT,
-                NotesDb.Note.COLUMN_NAME_TIME,
-                NotesDb.Note.COLUMN_NAME_ARCHIVED,
-                NotesDb.Note.COLUMN_NAME_NOTIFIED
-        };
-        Cursor cursor = db.query(NotesDb.Note.TABLE_NAME, projection,
-                NotesDb.Note.COLUMN_NAME_ARCHIVED + " LIKE " + archive
-                        + " AND ( " + NotesDb.Note.COLUMN_NAME_TITLE + " LIKE " + "'%" + query
-                        + "%' OR " + NotesDb.Note.COLUMN_NAME_SUBTITLE + " LIKE " + "'%" + query
-                        + "%' OR " + NotesDb.Note.COLUMN_NAME_CONTENT + " LIKE " + "'%" + query + "%')",
-                null, null, null, null, null);
-
-        if (cursor.moveToFirst()) {
-            do {
-                NoteObj noteObj = new NoteObj(cursor.getInt(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getInt(5), cursor.getInt(6));
-                mList.add(noteObj);
-            } while (cursor.moveToNext());
-        }
-
-        cursor.close();
-        db.close();
-        return mList;
     }
 }

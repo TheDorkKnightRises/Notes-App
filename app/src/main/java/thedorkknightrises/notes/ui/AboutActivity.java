@@ -46,12 +46,10 @@ public class AboutActivity extends AppCompatActivity {
     public void onLinkClick(View v) {
         String text = (String) ((Button) v).getText();
         String uri;
-        if (text.equals(getString(R.string.gplus))) {
-            uri = "https://plus.google.com/u/0/+SamriddhaBasu";
-        } else if (text.equals(getString(R.string.github))) {
+        if (text.equals(getString(R.string.github))) {
             uri = "https://github.com/TheDorkKnightRises";
         } else if (text.equals(getString(R.string.website))) {
-            uri = "https://thedorkknightrises.github.io";
+            uri = "https://samriddhabasu.github.io";
         } else if (text.equals(getString(R.string.source))) {
             uri = "https://github.com/TheDorkKnightRises/Notes-App";
         } else {

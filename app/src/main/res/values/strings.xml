@@ -37,6 +37,7 @@
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="create_note">Create new note</string>
     <string name="delete">Delete</string>
     <string name="delete_all">Delete all</string>
     <string name="confirm_delete">Are you sure you want to delete all notes? This action cannot be undone!</string>
