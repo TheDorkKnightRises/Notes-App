@@ -31,6 +31,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import thedorkknightrises.notes.BootReceiver;
 import thedorkknightrises.notes.NoteObj;
 import thedorkknightrises.notes.NotesAdapter;
 import thedorkknightrises.notes.R;
@@ -76,6 +77,7 @@ public class MainActivity extends AppCompatActivity
                     //  Apply changes
                     e.apply();
                 }
+                new BootReceiver().onReceive(MainActivity.this, null);
             }
         });
         // Start the thread

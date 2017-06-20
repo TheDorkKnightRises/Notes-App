@@ -116,4 +116,31 @@ public class NotesDbHelper extends SQLiteOpenHelper {
             Log.d("DB", "All notes deleted");
         return result;
     }
+
+    public ArrayList<NoteObj> getNotifications() {
+        ArrayList<NoteObj> mList = new ArrayList<NoteObj>();
+        String[] projection = {
+                NotesDb.Note._ID,
+                NotesDb.Note.COLUMN_NAME_TITLE,
+                NotesDb.Note.COLUMN_NAME_SUBTITLE,
+                NotesDb.Note.COLUMN_NAME_CONTENT,
+                NotesDb.Note.COLUMN_NAME_TIME,
+                NotesDb.Note.COLUMN_NAME_ARCHIVED,
+                NotesDb.Note.COLUMN_NAME_NOTIFIED
+        };
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.query(NotesDb.Note.TABLE_NAME, projection, NotesDb.Note.COLUMN_NAME_NOTIFIED + " LIKE 1", null, null, null, NotesDb.Note.COLUMN_NAME_TIME + " ASC");
+
+        if (cursor.moveToFirst()) {
+            do {
+                NoteObj noteObj = new NoteObj(cursor.getInt(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getInt(5), cursor.getInt(6));
+                mList.add(noteObj);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        db.close();
+        return mList;
+    }
 }
