@@ -64,6 +64,7 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
             setTheme(R.style.AppTheme_Light);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(Drive.API)
@@ -72,12 +73,6 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .build();
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        mGoogleApiClient.connect();
     }
 
     @Override
@@ -109,14 +104,9 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
     protected void onResume() {
         super.onResume();
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
         theme_switch = (SwitchCompat) findViewById(R.id.theme_switch);
-
         pref = getSharedPreferences("Prefs", MODE_PRIVATE);
-
         theme_switch.setChecked(pref.getBoolean("lightTheme", false));
-
         theme_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -136,6 +126,7 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
     }
 
     public void driveBackup(View v) {
+        if (!mGoogleApiClient.isConnected()) mGoogleApiClient.connect();
         final File file = this.getDatabasePath(NotesDbHelper.DATABASE_NAME);
         final Context context = this;
 
@@ -156,6 +147,7 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
     }
 
     public void driveRestore(View v) {
+        if (!mGoogleApiClient.isConnected()) mGoogleApiClient.connect();
         final Context context = this;
         final ProgressDialog progress = new ProgressDialog(context);
         progress.setMessage(getString(R.string.restoring));
@@ -220,6 +212,12 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
     @Override
     public void onConnectionSuspended(int i) {
 
+    }
+
+    @Override
+    protected void onStop() {
+        if (mGoogleApiClient.isConnected()) mGoogleApiClient.disconnect();
+        super.onStop();
     }
 
     public class BackupFileTask extends AsyncTask<Void, Void, Void> {
