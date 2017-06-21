@@ -1,5 +1,6 @@
 package thedorkknightrises.notes.ui;
 
+import android.app.NotificationManager;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -329,6 +330,8 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
             if (result) {
                 MainActivity.changed = true;
                 Toast.makeText(context, getString(R.string.restored), Toast.LENGTH_SHORT).show();
+                NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                mNotifyMgr.cancelAll();
                 new BootReceiver().onReceive(context, null);
             } else
                 Toast.makeText(context, getString(R.string.error_restore), Toast.LENGTH_SHORT).show();
