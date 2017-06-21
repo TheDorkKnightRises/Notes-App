@@ -198,7 +198,6 @@ public class NoteActivity extends AppCompatActivity {
     public void delete(View v) {
         dbHelper.deleteNote(title, subtitle, content, time, archived);
         MainActivity.changed = true;
-        // Gets an instance of the NotificationManager service
         NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         mNotifyMgr.cancel(id);
         finish();
@@ -218,6 +217,7 @@ public class NoteActivity extends AppCompatActivity {
                 Log.d("TIME", time);
                 archived = 0;
                 dbHelper.deleteNote(oldTitle, oldSubtitle, oldContent, oldTime, oldArchived);
+                notif(0);
                 id = dbHelper.addNote(title, subtitle, content, time, archived, notified);
                 editMode = false;
                 MainActivity.changed = true;
@@ -250,7 +250,7 @@ public class NoteActivity extends AppCompatActivity {
                     MainActivity.archive = 0;
                 }
 
-                notif();
+                notif(notified);
             }
         } else {
             saveOldData();
@@ -292,18 +292,18 @@ public class NoteActivity extends AppCompatActivity {
         dbHelper.deleteNote(title, subtitle, content, time, archived);
         if (notified == 1) {
             notified = 0;
-            dbHelper.addNote(title, subtitle, content, time, archived, notified);
+            id = dbHelper.addNote(title, subtitle, content, time, archived, notified);
             MainActivity.changed = true;
-            notif();
+            notif(notified);
         } else {
             notified = 1;
-            dbHelper.addNote(title, subtitle, content, time, archived, notified);
+            id = dbHelper.addNote(title, subtitle, content, time, archived, notified);
             MainActivity.changed = true;
-            notif();
+            notif(notified);
         }
     }
 
-    public void notif() {
+    public void notif(int notified) {
         // Gets an instance of the NotificationManager service
         NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         if (notified == 0) {
@@ -356,16 +356,16 @@ public class NoteActivity extends AppCompatActivity {
         if (archived == 1) {
             Toast.makeText(this, R.string.removed_archive, Toast.LENGTH_SHORT).show();
             archived = 0;
-            dbHelper.addNote(title, subtitle, content, time, archived, notified);
+            id = dbHelper.addNote(title, subtitle, content, time, archived, notified);
             MainActivity.changed = true;
-            notif();
+            notif(notified);
             finish();
         } else {
             Toast.makeText(this, R.string.added_archive, Toast.LENGTH_SHORT).show();
             archived = 1;
-            dbHelper.addNote(title, subtitle, content, time, archived, notified);
+            id = dbHelper.addNote(title, subtitle, content, time, archived, notified);
             MainActivity.changed = true;
-            notif();
+            notif(notified);
             finish();
         }
     }
