@@ -1,6 +1,7 @@
 package thedorkknightrises.notes.ui;
 
 import android.app.LoaderManager;
+import android.app.NotificationManager;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.CursorLoader;
@@ -199,6 +200,9 @@ public class MainActivity extends AppCompatActivity
                             recyclerView.removeAllViewsInLayout();
                             blankText.setVisibility(View.VISIBLE);
                             changed = false;
+                            NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                            mNotifyMgr.cancelAll();
+                            new BootReceiver().onReceive(MainActivity.this, null);
                         }
                     })
                     .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {

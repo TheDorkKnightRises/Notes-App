@@ -42,6 +42,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import thedorkknightrises.notes.BootReceiver;
 import thedorkknightrises.notes.R;
 import thedorkknightrises.notes.data.BackupDbHelper;
 import thedorkknightrises.notes.data.NotesDbHelper;
@@ -328,6 +329,7 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
             if (result) {
                 MainActivity.changed = true;
                 Toast.makeText(context, getString(R.string.restored), Toast.LENGTH_SHORT).show();
+                new BootReceiver().onReceive(context, null);
             } else
                 Toast.makeText(context, getString(R.string.error_restore), Toast.LENGTH_SHORT).show();
             progress.dismiss();

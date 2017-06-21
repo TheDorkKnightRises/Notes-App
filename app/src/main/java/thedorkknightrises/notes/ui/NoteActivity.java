@@ -198,8 +198,7 @@ public class NoteActivity extends AppCompatActivity {
     public void delete(View v) {
         dbHelper.deleteNote(title, subtitle, content, time, archived);
         MainActivity.changed = true;
-        NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        mNotifyMgr.cancel(id);
+        notif(0);
         finish();
     }
 
@@ -290,6 +289,7 @@ public class NoteActivity extends AppCompatActivity {
 
     public void notifBtn(View v) {
         dbHelper.deleteNote(title, subtitle, content, time, archived);
+        notif(0);
         if (notified == 1) {
             notified = 0;
             id = dbHelper.addNote(title, subtitle, content, time, archived, notified);
@@ -353,6 +353,7 @@ public class NoteActivity extends AppCompatActivity {
 
     public void archive(View v) {
         dbHelper.deleteNote(title, subtitle, content, time, archived);
+        notif(0);
         if (archived == 1) {
             Toast.makeText(this, R.string.removed_archive, Toast.LENGTH_SHORT).show();
             archived = 0;
