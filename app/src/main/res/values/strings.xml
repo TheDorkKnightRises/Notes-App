@@ -72,6 +72,7 @@
     <string name="restore_sub">Retrieve previously backup up notes from the cloud</string>
     <string name="restoring">Restoring…</string>
     <string name="error_restore">Error retrieving backups from Drive</string>
+    <string name="no_backups">No backups found</string>
 
     <string name="yes">Yes</string>
     <string name="no">No</string>

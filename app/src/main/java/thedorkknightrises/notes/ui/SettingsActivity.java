@@ -189,6 +189,9 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
                                     new FetchFileTask(context, contents, file, progress).execute();
                                 }
                             });
+                } else {
+                    progress.dismiss();
+                    Toast.makeText(context, getString(R.string.no_backups), Toast.LENGTH_SHORT).show();
                 }
             }
         });
