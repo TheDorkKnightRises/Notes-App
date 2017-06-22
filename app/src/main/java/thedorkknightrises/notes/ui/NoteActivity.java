@@ -3,6 +3,7 @@ package thedorkknightrises.notes.ui;
 import android.annotation.TargetApi;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -22,6 +23,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -129,7 +131,7 @@ public class NoteActivity extends AppCompatActivity {
             }
 
             contentText.setText(content);
-            contentText.setEnabled(false);
+            edit(contentText, false);
             if (lightTheme)
                 contentText.setTextColor(getResources().getColor(R.color.black));
             else contentText.setTextColor(getResources().getColor(R.color.white));
@@ -203,6 +205,7 @@ public class NoteActivity extends AppCompatActivity {
     }
 
     public void onClick(View v) {
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         if (editMode) {
             title = titleText.getText().toString().trim();
             subtitle = subtitleText.getText().toString().trim();
@@ -230,8 +233,7 @@ public class NoteActivity extends AppCompatActivity {
                         subtitleText.setTextColor(getResources().getColor(R.color.dark_gray));
                     else subtitleText.setTextColor(getResources().getColor(R.color.light_gray));
                 } else subtitleText.setVisibility(View.GONE);
-                contentText.setEnabled(false);
-                Linkify.addLinks(contentText, Linkify.ALL);
+                edit(contentText, false);
                 if (lightTheme)
                     contentText.setTextColor(getResources().getColor(R.color.black));
                 else contentText.setTextColor(getResources().getColor(R.color.white));
@@ -250,12 +252,15 @@ public class NoteActivity extends AppCompatActivity {
                 }
 
                 notif(notified);
+
+                // Hide the keyboard
+                imm.hideSoftInputFromWindow(contentText.getWindowToken(), 0);
             }
         } else {
             saveOldData();
             titleText.setEnabled(true);
             subtitleText.setEnabled(true);
-            contentText.setEnabled(true);
+            edit(contentText, true);
             contentText.setSelection(contentText.getText().length());
             subtitleText.setVisibility(View.VISIBLE);
             fab.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_done_white_24dp));
@@ -265,9 +270,25 @@ public class NoteActivity extends AppCompatActivity {
             timeText.setText("");
             editMode = true;
             contentText.requestFocusFromTouch();
+            // Show the keyboard
+            imm.showSoftInput(contentText, InputMethodManager.SHOW_IMPLICIT);
         }
         onResume();
 
+    }
+
+    private void edit(EditText editText, boolean enabled) {
+        if (!enabled) {
+            Linkify.addLinks(editText, Linkify.ALL);
+        } else {
+            // Workaround to remove links when editing
+            editText.setText(editText.getText().toString());
+        }
+        editText.setFocusable(enabled);
+        editText.setFocusableInTouchMode(enabled);
+        editText.setClickable(enabled);
+        editText.setLongClickable(enabled);
+        editText.setLinksClickable(!enabled);
     }
 
     private void saveOldData() {
