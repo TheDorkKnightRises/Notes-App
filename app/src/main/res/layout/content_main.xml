@@ -26,6 +26,6 @@
         android:paddingBottom="64dp"
         android:text="@string/blank"
         android:textSize="16sp"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 
 </RelativeLayout>

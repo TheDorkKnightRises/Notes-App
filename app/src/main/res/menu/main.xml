@@ -8,6 +8,5 @@
         app:showAsAction="always" />
     <item
         android:id="@+id/delete_all"
-        android:title="@string/delete_all">
-    </item>
+        android:title="@string/delete_all"></item>
 </menu>

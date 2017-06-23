@@ -125,15 +125,11 @@ public class MainActivity extends AppCompatActivity
             fab.setVisibility(View.GONE);
         }
 
-        //noteObjArrayList = dbHelper.getAllNotes(archive);
         noteObjArrayList = new ArrayList<>();
 
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-        //mAdapter = new NotesAdapter(noteObjArrayList, this, MainActivity.this);
-        //recyclerView.setAdapter(mAdapter);
-
     }
 
 
@@ -157,7 +153,6 @@ public class MainActivity extends AppCompatActivity
             lightTheme = !lightTheme;
             recreate();
         }
-        super.onPostResume();
 
         super.onResume();
     }
@@ -231,28 +226,12 @@ public class MainActivity extends AppCompatActivity
             getSupportActionBar().setTitle(R.string.notes);
             blankText.setText(R.string.blank);
             getLoaderManager().restartLoader(0, null, this);
-            //noteObjArrayList = dbHelper.getAllNotes(archive);
-            //mAdapter = new NotesAdapter(noteObjArrayList, this, MainActivity.this);
-            //recyclerView.setAdapter(mAdapter);
-
-            //if (noteObjArrayList.size() == 0)
-            //    blankText.setVisibility(View.VISIBLE);
-            //else
-            //    blankText.setVisibility(View.GONE);
             fab.setVisibility(View.VISIBLE);
         } else if (id == R.id.nav_archive) {
             archive = 1;
             getSupportActionBar().setTitle(R.string.archive);
             blankText.setText(R.string.blank_archive);
             getLoaderManager().restartLoader(0, null, this);
-            //noteObjArrayList = dbHelper.getAllNotes(archive);
-            //mAdapter = new NotesAdapter(noteObjArrayList, this, MainActivity.this);
-            //recyclerView.setAdapter(mAdapter);
-
-            //if (noteObjArrayList.size() == 0)
-            //    blankText.setVisibility(View.VISIBLE);
-            //else
-            //    blankText.setVisibility(View.GONE);
             fab.setVisibility(View.GONE);
         } else if (id == R.id.nav_about) {
             Intent i = new Intent(this, AboutActivity.class);

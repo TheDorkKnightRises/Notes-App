@@ -15,8 +15,7 @@
         android:layout_height="0dp"
         android:background="@android:color/transparent"
         android:focusable="true"
-        android:focusableInTouchMode="true">
-    </LinearLayout>
+        android:focusableInTouchMode="true"></LinearLayout>
 
     <ScrollView
         android:layout_width="match_parent"
@@ -54,7 +53,7 @@
                         android:textAppearance="@style/TextAppearance.AppCompat"
                         android:textSize="20sp"
                         android:textStyle="bold"
-                        android:transitionName="title"/>
+                        android:transitionName="title" />
 
                     <EditText
                         android:id="@+id/subtitle"
@@ -66,7 +65,7 @@
                         android:inputType="text|textMultiLine|textCapSentences"
                         android:maxLength="40"
                         android:textSize="16sp"
-                        android:transitionName="subtitle"/>
+                        android:transitionName="subtitle" />
 
                     <EditText
                         android:id="@+id/content"
@@ -80,7 +79,7 @@
                         android:minHeight="96dp"
                         android:textAppearance="@style/TextAppearance.AppCompat"
                         android:textSize="18sp"
-                        android:transitionName="content"/>
+                        android:transitionName="content" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -120,10 +119,11 @@
                 android:layout_below="@id/note_card" />
 
             <LinearLayout
-                android:id="@+id/toolbar_note"
+                android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:elevation="6dp">
+                android:elevation="6dp"
+                android:visibility="invisible">
 
                 <ImageView
                     android:id="@+id/close"
@@ -156,10 +156,12 @@
     </ScrollView>
 
     <LinearLayout
+        android:id="@+id/bottom_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:visibility="invisible">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -182,7 +184,7 @@
         <LinearLayout
             android:id="@+id/archive_hint"
             android:layout_width="match_parent"
-            android:layout_height="48dp"
+            android:layout_height="@dimen/note_toolbar_height"
             android:layout_gravity="center"
             android:background="#363636"
             android:visibility="gone">
@@ -193,21 +195,22 @@
                 android:gravity="center"
                 android:paddingEnd="96dp"
                 android:paddingRight="96dp"
-                android:text="@string/archive_hint" />
+                android:text="@string/archive_hint"
+                android:textColor="@color/light_gray" />
 
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/toolbar"
+            android:id="@+id/toolbar_note"
             android:layout_width="match_parent"
-            android:layout_height="48dp"
+            android:layout_height="@dimen/note_toolbar_height"
             android:layout_gravity="bottom"
             android:background="#363636">
 
             <ImageButton
                 style="@style/Base.Widget.AppCompat.Button.Borderless"
                 android:layout_width="0dp"
-                android:layout_height="48dp"
+                android:layout_height="@dimen/note_toolbar_height"
                 android:layout_margin="0dp"
                 android:layout_weight="1"
                 android:contentDescription="@string/share"
@@ -219,7 +222,7 @@
                 android:id="@+id/notif_button"
                 style="@style/Base.Widget.AppCompat.Button.Borderless"
                 android:layout_width="0dp"
-                android:layout_height="48dp"
+                android:layout_height="@dimen/note_toolbar_height"
                 android:layout_margin="0dp"
                 android:layout_weight="1"
                 android:contentDescription="@string/notif"
@@ -231,7 +234,7 @@
                 android:id="@+id/archive_button"
                 style="@style/Base.Widget.AppCompat.Button.Borderless"
                 android:layout_width="0dp"
-                android:layout_height="48dp"
+                android:layout_height="@dimen/note_toolbar_height"
                 android:layout_margin="0dp"
                 android:layout_weight="1"
                 android:contentDescription="@string/archive"

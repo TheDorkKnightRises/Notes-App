@@ -39,7 +39,7 @@ public class NotesAdapter extends RecyclerViewCursorAdapter<NotesAdapter.ViewHol
     // Create new views (invoked by the layout manager)
     @Override
     public NotesAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
-                                                       int viewType) {
+                                                      int viewType) {
         // create a new view
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.note_layout, parent, false);
@@ -104,8 +104,7 @@ public class NotesAdapter extends RecyclerViewCursorAdapter<NotesAdapter.ViewHol
                                 makeSceneTransitionAnimation(activity, p1, p2, p4, p5);
                     }
                     context.startActivity(i, options.toBundle());
-                }
-                else
+                } else
                     context.startActivity(i);
             }
         };

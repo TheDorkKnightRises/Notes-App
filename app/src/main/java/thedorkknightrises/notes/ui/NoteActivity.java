@@ -1,5 +1,7 @@
 package thedorkknightrises.notes.ui;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -10,6 +12,7 @@ import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -21,8 +24,8 @@ import android.text.util.Linkify;
 import android.transition.Slide;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.Menu;
 import android.view.View;
+import android.view.ViewAnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -48,13 +51,14 @@ public class NoteActivity extends AppCompatActivity {
     protected EditText contentText;
     protected TextView timeText;
     FloatingActionButton fab;
-    View toolbar;
+    View toolbar_note, toolbar, bottom_bar;
     View archive_hint;
     SharedPreferences pref;
     boolean lightTheme;
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    private Menu menu;
-    private  int id = -1;
+    float radius;
+    private int cx, cy;
+    private int id = -1;
     private String title, oldTitle;
     private String subtitle, oldSubtitle;
     private String content, oldContent;
@@ -64,7 +68,7 @@ public class NoteActivity extends AppCompatActivity {
     private boolean backPressFlag = false;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         pref = getSharedPreferences("Prefs", MODE_PRIVATE);
         lightTheme = pref.getBoolean("lightTheme", false);
         if (lightTheme)
@@ -80,14 +84,15 @@ public class NoteActivity extends AppCompatActivity {
         contentText = (EditText) findViewById(R.id.content);
         timeText = (TextView) findViewById(R.id.note_date);
         fab = (FloatingActionButton) findViewById(R.id.fab_note);
+        toolbar_note = findViewById(R.id.toolbar_note);
         toolbar = findViewById(R.id.toolbar);
+        bottom_bar = findViewById(R.id.bottom_bar);
         archive_hint = findViewById(R.id.archive_hint);
 
         dbHelper = new NotesDbHelper(this);
 
         Bundle bundle = getIntent().getExtras();
-        if (bundle != null)
-        {
+        if (bundle != null) {
             editMode = false;
             id = bundle.getInt(NotesDb.Note._ID);
             title = bundle.getString(NotesDb.Note.COLUMN_NAME_TITLE);
@@ -96,8 +101,7 @@ public class NoteActivity extends AppCompatActivity {
             time = bundle.getString(NotesDb.Note.COLUMN_NAME_TIME);
             archived = bundle.getInt(NotesDb.Note.COLUMN_NAME_ARCHIVED);
             notified = bundle.getInt(NotesDb.Note.COLUMN_NAME_NOTIFIED);
-        }
-        else {
+        } else {
             editMode = true;
         }
 
@@ -110,10 +114,10 @@ public class NoteActivity extends AppCompatActivity {
             time = savedInstanceState.getString(NotesDb.Note.COLUMN_NAME_TIME);
             archived = savedInstanceState.getInt(NotesDb.Note.COLUMN_NAME_ARCHIVED);
             notified = savedInstanceState.getInt(NotesDb.Note.COLUMN_NAME_NOTIFIED);
+            bottom_bar.setVisibility(View.VISIBLE);
         }
 
         if (!editMode) {
-
             titleText.setText(title);
             titleText.setEnabled(false);
             if (lightTheme)
@@ -143,13 +147,20 @@ public class NoteActivity extends AppCompatActivity {
             if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
                 setupWindowAnimations();
             }
-            toolbar.setVisibility(View.GONE);
+            bottom_bar.setVisibility(View.GONE);
             timeText.setText("");
         }
 
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                toolbar.setVisibility(View.VISIBLE);
+                if (savedInstanceState == null && !editMode) revealToolbar();
+            }
+        }, 350);
+
         if (archived == 1) {
             ((ImageButton) findViewById(R.id.archive_button)).setImageDrawable(getResources().getDrawable(R.drawable.ic_unarchive_white_24dp));
-            archive_hint.setVisibility(View.VISIBLE);
         }
 
         if (notified == 1) {
@@ -167,7 +178,7 @@ public class NoteActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle bundle)   {
+    protected void onSaveInstanceState(Bundle bundle) {
         bundle.putBoolean("editMode", editMode);
         bundle.putInt(NotesDb.Note._ID, id);
         bundle.putString(NotesDb.Note.COLUMN_NAME_TITLE, title);
@@ -189,6 +200,44 @@ public class NoteActivity extends AppCompatActivity {
         getWindow().setEnterTransition(slide);
         getWindow().setExitTransition(slide);
         getWindow().setReenterTransition(slide);
+    }
+
+    private void revealToolbar() {
+        if (Build.VERSION.SDK_INT >= 21) {
+            cx = bottom_bar.getWidth() / 2;
+            cy = bottom_bar.getHeight() / 2;
+            radius = (float) Math.hypot(cx, cy);
+
+            // create the animator for this view (the start radius is zero)
+            Animator anim = ViewAnimationUtils.createCircularReveal(bottom_bar, cx, cy, 0, radius);
+
+            // make the view visible and start the animation
+            bottom_bar.setVisibility(View.VISIBLE);
+            anim.start();
+        } else bottom_bar.setVisibility(View.VISIBLE);
+    }
+
+    private void hideToolbar() {
+        if (Build.VERSION.SDK_INT >= 21) {
+            cx = bottom_bar.getWidth() / 2;
+            cy = bottom_bar.getHeight() / 2;
+            radius = (float) Math.hypot(cx, cy);
+
+            // create the animation (the final radius is zero)
+            Animator anim = ViewAnimationUtils.createCircularReveal(bottom_bar, cx, cy, radius, 0);
+
+            // make the view invisible when the animation is done
+            anim.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    super.onAnimationEnd(animation);
+                    bottom_bar.setVisibility(View.INVISIBLE);
+                }
+            });
+
+            // start the animation
+            anim.start();
+        } else bottom_bar.setVisibility(View.INVISIBLE);
     }
 
     public void close(View v) {
@@ -239,10 +288,9 @@ public class NoteActivity extends AppCompatActivity {
                 else contentText.setTextColor(getResources().getColor(R.color.white));
 
                 fab.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_mode_edit_white_24dp));
-                onPrepareOptionsMenu(menu);
 
                 archive_hint.setVisibility(View.GONE);
-                toolbar.setVisibility(View.VISIBLE);
+                toolbar_note.setVisibility(View.VISIBLE);
                 findViewById(R.id.note_update).setVisibility(View.VISIBLE);
                 timeText.setText(time);
                 editMode = false;
@@ -264,8 +312,10 @@ public class NoteActivity extends AppCompatActivity {
             contentText.setSelection(contentText.getText().length());
             subtitleText.setVisibility(View.VISIBLE);
             fab.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_done_white_24dp));
-            onPrepareOptionsMenu(menu);
-            toolbar.setVisibility(View.GONE);
+            toolbar_note.setVisibility(View.GONE);
+            if (archived == 1) {
+                archive_hint.setVisibility(View.VISIBLE);
+            }
             findViewById(R.id.note_update).setVisibility(View.GONE);
             timeText.setText("");
             editMode = true;
@@ -299,11 +349,12 @@ public class NoteActivity extends AppCompatActivity {
         oldArchived = archived;
     }
 
-    public void share(View v)   {
+    public void share(View v) {
         Intent share = new Intent(Intent.ACTION_SEND);
         if (subtitle.equals(""))
-            share.putExtra(Intent.EXTRA_TEXT, getResources().getString(R.string.title)+": "+title+"\n"+content);
-        else share.putExtra(Intent.EXTRA_TEXT, getResources().getString(R.string.title)+": "+title+"\n"+getResources().getString(R.string.description)+": "+subtitle+"\n\n"+content);
+            share.putExtra(Intent.EXTRA_TEXT, getResources().getString(R.string.title) + ": " + title + "\n" + content);
+        else
+            share.putExtra(Intent.EXTRA_TEXT, getResources().getString(R.string.title) + ": " + title + "\n" + getResources().getString(R.string.description) + ": " + subtitle + "\n\n" + content);
         share.setType("text/plain");
         startActivity(Intent.createChooser(share, getResources().getString(R.string.share_title)));
     }
@@ -413,6 +464,8 @@ public class NoteActivity extends AppCompatActivity {
             }).start();
             return;
         }
+        hideToolbar();
+        toolbar.setVisibility(View.INVISIBLE);
         super.onBackPressed();
     }
 }
