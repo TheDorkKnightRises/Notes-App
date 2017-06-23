@@ -160,6 +160,7 @@ public class NoteActivity extends AppCompatActivity {
         }, 350);
 
         if (archived == 1) {
+            archive_hint.setVisibility(View.VISIBLE);
             ((ImageButton) findViewById(R.id.archive_button)).setImageDrawable(getResources().getDrawable(R.drawable.ic_unarchive_white_24dp));
         }
 
@@ -290,7 +291,7 @@ public class NoteActivity extends AppCompatActivity {
                 fab.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_mode_edit_white_24dp));
 
                 archive_hint.setVisibility(View.GONE);
-                toolbar_note.setVisibility(View.VISIBLE);
+                revealToolbar();
                 findViewById(R.id.note_update).setVisibility(View.VISIBLE);
                 timeText.setText(time);
                 editMode = false;
@@ -312,7 +313,7 @@ public class NoteActivity extends AppCompatActivity {
             contentText.setSelection(contentText.getText().length());
             subtitleText.setVisibility(View.VISIBLE);
             fab.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_done_white_24dp));
-            toolbar_note.setVisibility(View.GONE);
+            hideToolbar();
             if (archived == 1) {
                 archive_hint.setVisibility(View.VISIBLE);
             }

@@ -47,7 +47,7 @@
     <string name="archive">Archive</string>
     <string name="added_archive">Added to archive</string>
     <string name="removed_archive">Removed from archive</string>
-    <string name="archive_hint">Saving your edit will unarchive this note</string>
+    <string name="archive_hint">Editing will unarchive this note</string>
     <string name="refresh">Refresh</string>
     <string name="edit">Edit</string>
     <string name="error">Error</string>
