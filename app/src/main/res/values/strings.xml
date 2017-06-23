@@ -66,6 +66,7 @@
     <string name="backup">Backup to Drive</string>
     <string name="drive_error">Error connecting to Drive</string>
     <string name="backup_sub">Save your current notes to the cloud</string>
+    <string name="backing_up">Backup initiated…</string>
     <string name="error_backup">Failed to backup to Drive</string>
     <string name="backup_success">Backup successful!</string>
     <string name="restore">Restore from Drive</string>

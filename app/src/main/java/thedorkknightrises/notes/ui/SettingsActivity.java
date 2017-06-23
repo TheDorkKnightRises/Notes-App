@@ -129,7 +129,7 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
         if (!mGoogleApiClient.isConnected()) mGoogleApiClient.connect();
         final File file = this.getDatabasePath(NotesDbHelper.DATABASE_NAME);
         final Context context = this;
-
+        Toast.makeText(context, getText(R.string.backing_up), Toast.LENGTH_SHORT).show();
         Drive.DriveApi.newDriveContents(mGoogleApiClient)
                 .setResultCallback(new ResultCallback<DriveApi.DriveContentsResult>() {
                     @Override

@@ -191,9 +191,7 @@ public class MainActivity extends AppCompatActivity
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             dbHelper.deleteAllNotes(archive);
-                            noteObjArrayList.clear();
-                            recyclerView.removeAllViewsInLayout();
-                            blankText.setVisibility(View.VISIBLE);
+                            getLoaderManager().restartLoader(0, null, MainActivity.this);
                             changed = false;
                             NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
                             mNotifyMgr.cancelAll();
