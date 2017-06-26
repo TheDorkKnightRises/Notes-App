@@ -45,7 +45,7 @@ public class AboutActivity extends AppCompatActivity {
     }
 
     public void onLinkClick(View v) {
-        String text = (String) ((Button) v).getText();
+        String text = ((Button) v).getText().toString();
         String uri;
         if (text.equals(getString(R.string.github))) {
             uri = "https://github.com/TheDorkKnightRises";
