@@ -1,6 +1,6 @@
 <resources xmlns:http="http://schemas.android.com/tools">
     <string name="app_name">Notes</string>
-    <string name="desc">A note-taking app for Android that is fully open-source</string>
+    <string name="desc">A simple Material Design notes app for Android</string>
     <string name="dev">Developer</string>
     <string name="dev_desc">Samriddha Basu</string>
     <string name="website">Website</string>
@@ -13,16 +13,12 @@
     <string name="copyright_notice">Copyright Notice</string>
     <string name="copyright" translatable="false">
     Copyright © 2016-2017  Samriddha Basu
-        \n\nThis program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-        \n\nThis program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-        \n\nYou should have received a copy of the GNU General Public License
-    along with this program.  If not, see http://www.gnu.org/licenses/</string>
+        \n\nThe source code for this app is available under the following terms:
+        \n\nYou may view, modify, use and distribute this code and any derived works, subject to the conditions
+\n- You must give appropriate credit, retain all copyright notices, provide a link to the original work and license (if possible), and indicate if changes were made
+\n- You may not use the material for commercial purposes without the explicit permission of the original author
+\n- The original author will not be held liable for any misuse, or direct or indirect harm caused to any person(s).
+        \n\nSee LICENSES.txt file for more info</string>
     <string name="license_icon">App icon is from Moonshine Icon Pack by Pedro Peguero Jr. available under Creative Commons Attribution 4.0 International (CC BY 4.0) license</string>
 
     <string name="blank">No notes saved\n Add a new note by tapping the floating button below</string>

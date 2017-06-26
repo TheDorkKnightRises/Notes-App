@@ -1,0 +1,9 @@
+The source code for this project is available under the following terms:
+
+You may view, modify, use and distribute this code and any derived works, subject to the conditions
+
+- You must give appropriate credit, retain all copyright notices, provide a link to the original work and license (if possible), and indicate if changes were made
+- You may not use the material for commercial purposes without the explicit permission of the original author
+- The original author will not be held liable for any misuse, or direct or indirect harm caused to any person(s).
+
+The terms of this license are enforcable under Article 11 of the WIPO Copyright Treaty and/or similar international copyright laws

@@ -1,0 +1,3 @@
+Contributor Agreement
+
+By contributing to the source code of this project, you agree to grant the developer the non-exclusive rights to view, modify and redistribute your code without any restrictions. This includes licensing rights and rights to release new versions of teh software containing your code to the public.

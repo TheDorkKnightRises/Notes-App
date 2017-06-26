@@ -16,14 +16,13 @@ This app uses the Google Drive API to backup and restore databases. The Drive AP
 
 NOTE: You will need to edit the signing configs in the app level build.gradle
 
+## Contributing
+Contributions are welcome via pull requests. By contributing, you agree to grant the developer the non-exclusive rights to view, modify and redistribute your code without any restrictions.
+
 ## Licence
      Copyright © 2016-2017  Samriddha Basu
-     This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-     This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-        See http://www.gnu.org/licenses/ for more info
+     You may view, modify, use and distribute this code and any derived works, subject to the conditions
+    - You must give appropriate credit, retain all copyright notices, provide a link to the original work and license (if possible), and indicate if changes were made
+    - You may not use the material for commercial purposes (without the explicit permission of the original author)
+    - The original author will not be held liable for any misuse, or direct or indirect harm caused to any person(s).
+	  See LICENSE.txt file for more info
