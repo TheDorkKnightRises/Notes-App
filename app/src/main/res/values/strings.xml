@@ -39,7 +39,6 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="create_note">Create new note</string>
     <string name="delete">Delete</string>
-    <string name="delete_all">Delete all</string>
     <string name="confirm_delete">Are you sure you want to delete all notes? This action cannot be undone!</string>
     <string name="discard">Close</string>
     <string name="note">Note</string>
@@ -62,14 +61,14 @@
     <string name="light_theme">Use light theme</string>
     <string name="light_theme_sub">Throughout the app</string>
     <string name="restored">Restore complete</string>
-    <string name="drive">Google Drive Backup</string>
-    <string name="backup">Backup to Drive</string>
+    <string name="backup_and_reset">Backup and reset</string>
+    <string name="backup">Backup to Google Drive</string>
     <string name="drive_error">Error connecting to Drive</string>
     <string name="backup_sub">Save your current notes to the cloud</string>
     <string name="backing_up">Backup initiated…</string>
     <string name="error_backup">Failed to backup to Drive</string>
     <string name="backup_success">Backup successful!</string>
-    <string name="restore">Restore from Drive</string>
+    <string name="restore">Restore from Google Drive</string>
     <string name="restore_sub">Retrieve previously backup up notes from the cloud</string>
     <string name="restoring">Restoring…</string>
     <string name="error_restore">Error retrieving backups from Drive</string>
@@ -92,7 +91,6 @@
     <string name="license">Licenses</string>
     <string name="notices">3rd Party Libraries</string>
     <string name="loading">Loading…</string>
-    <string name="appwidget_text">EXAMPLE</string>
     <string name="add_widget">Add widget</string>
     <string name="no_items">No items to show</string>
     <string name="open_app">Open app</string>
@@ -105,4 +103,12 @@
     <string name="intro4">Or create a notification reminder</string>
     <string name="intro5">Use the search function to quickly find a specific note</string>
     <string name="intro6">You can see this intro again from the About screen</string>
+    <string name="reset">Reset all notes</string>
+    <string name="reset_sub">Permanently delete all notes</string>
+    <string name="columns">Columns</string>
+    <string name="num_one">1</string>
+    <string name="num_two">2</string>
+    <string name="newer">Latest first</string>
+    <string name="older">Oldest first</string>
+    <string name="sorting">Sort by</string>
 </resources>

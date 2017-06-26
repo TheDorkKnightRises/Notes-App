@@ -1,11 +1,9 @@
 package thedorkknightrises.notes.ui;
 
 import android.app.LoaderManager;
-import android.app.NotificationManager;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.CursorLoader;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
@@ -19,10 +17,9 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -33,6 +30,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import thedorkknightrises.notes.BootReceiver;
+import thedorkknightrises.notes.Constants;
 import thedorkknightrises.notes.NoteObj;
 import thedorkknightrises.notes.NotesAdapter;
 import thedorkknightrises.notes.R;
@@ -40,6 +38,9 @@ import thedorkknightrises.notes.data.NotesDb;
 import thedorkknightrises.notes.data.NotesDbHelper;
 import thedorkknightrises.notes.data.NotesProvider;
 import thedorkknightrises.notes.widget.NotesWidget;
+
+import static thedorkknightrises.notes.Constants.NUM_COLUMNS;
+import static thedorkknightrises.notes.Constants.OLDEST_FIRST;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, LoaderManager.LoaderCallbacks<Cursor> {
@@ -51,13 +52,14 @@ public class MainActivity extends AppCompatActivity
     protected NotesDbHelper dbHelper;
     ArrayList<NoteObj> noteObjArrayList;
     RecyclerView recyclerView;
+    StaggeredGridLayoutManager layoutManager;
     TextView blankText;
     FloatingActionButton fab;
     SharedPreferences pref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        pref = getSharedPreferences("Prefs", MODE_PRIVATE);
+        pref = getSharedPreferences(Constants.PREFS, MODE_PRIVATE);
 
         //  Declare a new thread to do a preference check
         Thread t = new Thread(new Runnable() {
@@ -65,7 +67,7 @@ public class MainActivity extends AppCompatActivity
             public void run() {
                 //  Initialize SharedPreferences
                 //  Create a new boolean and preference and set it to true
-                boolean isFirstStart = pref.getBoolean("firstStart", true);
+                boolean isFirstStart = pref.getBoolean(Constants.FIRST_START, true);
                 //  If the activity has never started before...
                 if (isFirstStart) {
                     //  Launch app intro
@@ -74,7 +76,7 @@ public class MainActivity extends AppCompatActivity
                     //  Make a new preferences editor
                     SharedPreferences.Editor e = pref.edit();
                     //  Edit preference to make it false because we don't want this to run again
-                    e.putBoolean("firstStart", false);
+                    e.putBoolean(Constants.FIRST_START, false);
                     //  Apply changes
                     e.apply();
                 }
@@ -84,7 +86,7 @@ public class MainActivity extends AppCompatActivity
         // Start the thread
         t.start();
 
-        lightTheme = pref.getBoolean("lightTheme", false);
+        lightTheme = pref.getBoolean(Constants.LIGHT_THEME, false);
         if (lightTheme)
             setTheme(R.style.AppTheme_Light_NoActionBar);
         super.onCreate(savedInstanceState);
@@ -128,8 +130,6 @@ public class MainActivity extends AppCompatActivity
         noteObjArrayList = new ArrayList<>();
 
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(layoutManager);
     }
 
 
@@ -146,7 +146,7 @@ public class MainActivity extends AppCompatActivity
             getSupportActionBar().setTitle(R.string.archive);
         else getSupportActionBar().setTitle(R.string.notes);
 
-        if (lightTheme != pref.getBoolean("lightTheme", false)) {
+        if (lightTheme != pref.getBoolean(Constants.LIGHT_THEME, false)) {
             if (lightTheme)
                 setTheme(R.style.AppTheme_NoActionBar);
             else setTheme(R.style.AppTheme_Light_NoActionBar);
@@ -184,27 +184,18 @@ public class MainActivity extends AppCompatActivity
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.delete_all) {
-            AlertDialog.Builder dialog = new AlertDialog.Builder(this, R.style.AppTheme_PopupOverlay);
-            dialog.setMessage(R.string.confirm_delete)
-                    .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dbHelper.deleteAllNotes(archive);
-                            getLoaderManager().restartLoader(0, null, MainActivity.this);
-                            changed = false;
-                            NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-                            mNotifyMgr.cancelAll();
-                            new BootReceiver().onReceive(MainActivity.this, null);
-                        }
-                    })
-                    .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    })
-                    .show();
+        if (id == R.id.one_column) {
+            pref.edit().putInt(Constants.NUM_COLUMNS, 1).apply();
+            getLoaderManager().restartLoader(0, null, this);
+        } else if (id == R.id.two_column) {
+            pref.edit().putInt(Constants.NUM_COLUMNS, 2).apply();
+            getLoaderManager().restartLoader(0, null, this);
+        } else if (id == R.id.newer) {
+            pref.edit().putBoolean(Constants.OLDEST_FIRST, false).apply();
+            getLoaderManager().restartLoader(0, null, this);
+        } else if (id == R.id.older) {
+            pref.edit().putBoolean(Constants.OLDEST_FIRST, true).apply();
+            getLoaderManager().restartLoader(0, null, this);
         } else if (id == R.id.search) {
             startActivity(new Intent(this, SearchActivity.class));
         }
@@ -270,11 +261,17 @@ public class MainActivity extends AppCompatActivity
                 NotesDb.Note.COLUMN_NAME_NOTIFIED
         };
 
+        String sort;
+        if (pref.getBoolean(OLDEST_FIRST, false))
+            sort = " ASC";
+        else
+            sort = " DESC";
+
         // Now create and return a CursorLoader that will take care of
         // creating a Cursor for the data being displayed.
         return new CursorLoader(this, baseUri,
                 projection, NotesDb.Note.COLUMN_NAME_ARCHIVED + " LIKE " + archive, null,
-                NotesDb.Note.COLUMN_NAME_TIME + " DESC");
+                NotesDb.Note.COLUMN_NAME_TIME + sort);
     }
 
     @Override
@@ -290,6 +287,9 @@ public class MainActivity extends AppCompatActivity
             }
 
             mAdapter = new NotesAdapter(this, this, cursor);
+            layoutManager = new StaggeredGridLayoutManager(pref.getInt(NUM_COLUMNS, 1), StaggeredGridLayoutManager.VERTICAL);
+            layoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
+            recyclerView.setLayoutManager(layoutManager);
             recyclerView.setAdapter(mAdapter);
 
         }

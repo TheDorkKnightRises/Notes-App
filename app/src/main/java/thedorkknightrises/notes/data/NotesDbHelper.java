@@ -105,11 +105,11 @@ public class NotesDbHelper extends SQLiteOpenHelper {
         return mList;
     }
 
-    public int deleteAllNotes(int archive) {
+    public int deleteAllNotes() {
 
         SQLiteDatabase db = this.getWritableDatabase();
 
-        int result = db.delete(NotesDb.Note.TABLE_NAME, NotesDb.Note.COLUMN_NAME_ARCHIVED + " LIKE " + archive, null);
+        int result = db.delete(NotesDb.Note.TABLE_NAME, null, null);
 
         db.close();
         if (result == 1)

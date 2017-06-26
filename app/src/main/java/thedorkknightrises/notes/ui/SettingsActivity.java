@@ -3,6 +3,7 @@ package thedorkknightrises.notes.ui;
 import android.app.NotificationManager;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
@@ -11,6 +12,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
 import android.util.Log;
@@ -44,6 +46,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import thedorkknightrises.notes.BootReceiver;
+import thedorkknightrises.notes.Constants;
 import thedorkknightrises.notes.R;
 import thedorkknightrises.notes.data.BackupDbHelper;
 import thedorkknightrises.notes.data.NotesDbHelper;
@@ -59,8 +62,8 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        pref = getSharedPreferences("Prefs", MODE_PRIVATE);
-        if (pref.getBoolean("lightTheme", false))
+        pref = getSharedPreferences(Constants.PREFS, MODE_PRIVATE);
+        if (pref.getBoolean(Constants.LIGHT_THEME, false))
             setTheme(R.style.AppTheme_Light);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
@@ -105,8 +108,8 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
         super.onResume();
 
         theme_switch = (SwitchCompat) findViewById(R.id.theme_switch);
-        pref = getSharedPreferences("Prefs", MODE_PRIVATE);
-        theme_switch.setChecked(pref.getBoolean("lightTheme", false));
+        pref = getSharedPreferences(Constants.PREFS, MODE_PRIVATE);
+        theme_switch.setChecked(pref.getBoolean(Constants.LIGHT_THEME, false));
         theme_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -117,9 +120,9 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
 
     public void onCheckedChange(View v) {
         if (v.equals(theme_switch) || v.equals(findViewById(R.id.theme_switch_row))) {
-            Boolean b = pref.getBoolean("lightTheme", false);
+            Boolean b = pref.getBoolean(Constants.LIGHT_THEME, false);
             SharedPreferences.Editor e = pref.edit();
-            e.putBoolean("lightTheme", !b);
+            e.putBoolean(Constants.LIGHT_THEME, !b);
             e.apply();
             recreate();
         }
@@ -218,6 +221,29 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
     protected void onStop() {
         if (mGoogleApiClient.isConnected()) mGoogleApiClient.disconnect();
         super.onStop();
+    }
+
+    public void resetNotes(View view) {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this, R.style.AppTheme_PopupOverlay);
+        dialog.setMessage(R.string.confirm_delete)
+                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        NotesDbHelper dbHelper = new NotesDbHelper(SettingsActivity.this);
+                        dbHelper.deleteAllNotes();
+                        MainActivity.changed = true;
+                        NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                        mNotifyMgr.cancelAll();
+                        new BootReceiver().onReceive(SettingsActivity.this, null);
+                    }
+                })
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .show();
     }
 
     public class BackupFileTask extends AsyncTask<Void, Void, Void> {

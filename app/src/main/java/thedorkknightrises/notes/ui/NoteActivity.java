@@ -353,9 +353,9 @@ public class NoteActivity extends AppCompatActivity {
     public void share(View v) {
         Intent share = new Intent(Intent.ACTION_SEND);
         if (subtitle.equals(""))
-            share.putExtra(Intent.EXTRA_TEXT, getResources().getString(R.string.title) + ": " + title + "\n" + content);
+            share.putExtra(Intent.EXTRA_TEXT, title + "\n\n" + content);
         else
-            share.putExtra(Intent.EXTRA_TEXT, getResources().getString(R.string.title) + ": " + title + "\n" + getResources().getString(R.string.description) + ": " + subtitle + "\n\n" + content);
+            share.putExtra(Intent.EXTRA_TEXT, title + "\n(" + subtitle + ")\n\n" + content);
         share.setType("text/plain");
         startActivity(Intent.createChooser(share, getResources().getString(R.string.share_title)));
     }

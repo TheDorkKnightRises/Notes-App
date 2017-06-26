@@ -22,6 +22,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import thedorkknightrises.notes.Constants;
 import thedorkknightrises.notes.NoteObj;
 import thedorkknightrises.notes.NotesAdapter;
 import thedorkknightrises.notes.R;
@@ -42,7 +43,7 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        lightTheme = getSharedPreferences("Prefs", MODE_PRIVATE).getBoolean("lightTheme", false);
+        lightTheme = getSharedPreferences(Constants.PREFS, MODE_PRIVATE).getBoolean(Constants.LIGHT_THEME, false);
         if (lightTheme)
             setTheme(R.style.AppTheme_Light_NoActionBar);
         super.onCreate(savedInstanceState);

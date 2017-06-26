@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.mikepenz.aboutlibraries.LibsBuilder;
 
+import thedorkknightrises.notes.Constants;
 import thedorkknightrises.notes.R;
 
 /**
@@ -23,8 +24,8 @@ public class AboutActivity extends AppCompatActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        pref = getSharedPreferences("Prefs", MODE_PRIVATE);
-        if (pref.getBoolean("lightTheme", false))
+        pref = getSharedPreferences(Constants.PREFS, MODE_PRIVATE);
+        if (pref.getBoolean(Constants.LIGHT_THEME, false))
             setTheme(R.style.AppTheme_Light);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);

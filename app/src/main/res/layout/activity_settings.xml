@@ -120,7 +120,7 @@
                         android:paddingRight="8dp"
                         android:paddingStart="8dp"
                         android:paddingTop="8dp"
-                        android:text="@string/drive"
+                        android:text="@string/backup_and_reset"
                         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                         android:textColor="@color/colorAccent"
                         android:textSize="14sp" />
@@ -208,6 +208,50 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/restore_sub" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/reset_notes_row"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:baselineAligned="false"
+                        android:clickable="true"
+                        android:gravity="center_vertical"
+                        android:minHeight="80dp"
+                        android:onClick="resetNotes"
+                        android:paddingBottom="@dimen/activity_horizontal_margin"
+                        android:paddingEnd="8dp"
+                        android:paddingLeft="8dp"
+                        android:paddingRight="8dp"
+                        android:paddingStart="8dp"
+                        android:paddingTop="@dimen/activity_horizontal_margin">
+
+                        <LinearLayout
+                            android:id="@+id/reset_notes"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="8dp"
+                            android:layout_marginStart="8dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:gravity="center_vertical"
+                                android:paddingTop="4dp"
+                                android:text="@string/reset"
+                                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                                android:textSize="18sp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/reset_sub" />
 
                         </LinearLayout>
 

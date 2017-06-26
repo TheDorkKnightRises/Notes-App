@@ -7,6 +7,27 @@
         android:title="@string/search"
         app:showAsAction="always" />
     <item
-        android:id="@+id/delete_all"
-        android:title="@string/delete_all"></item>
+        android:id="@+id/columns"
+        android:title="@string/columns">
+        <menu>
+            <item
+                android:id="@+id/one_column"
+                android:title="@string/num_one" />
+            <item
+                android:id="@+id/two_column"
+                android:title="@string/num_two" />
+        </menu>
+    </item>
+    <item
+        android:id="@+id/sort_mode"
+        android:title="@string/sorting">
+        <menu>
+            <item
+                android:id="@+id/newer"
+                android:title="@string/newer" />
+            <item
+                android:id="@+id/older"
+                android:title="@string/older" />
+        </menu>
+    </item>
 </menu>
