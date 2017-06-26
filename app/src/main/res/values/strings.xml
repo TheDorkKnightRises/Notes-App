@@ -8,7 +8,7 @@
     <string name="github">GitHub</string>
     <string name="play_store_prompt">This app is not on the Play Store yet! :P</string>
 
-    <string name="license_info">The source code for this app is available under the GNU GPL v3 License</string>
+    <string name="license_info">Copyright notice for the app and attributions for 3rd party libraries used</string>
     <string name="provider_desc">Content Provider for Notes app</string>
     <string name="copyright_notice">Copyright Notice</string>
     <string name="copyright" translatable="false">
@@ -84,7 +84,7 @@
     <string name="source">Source code</string>
     <string name="play_store">Rate the app</string>
     <string name="see_intro">Launch Intro</string>
-    <string name="license">Licenses</string>
+    <string name="attributions">Attributions</string>
     <string name="notices">3rd Party Libraries</string>
     <string name="loading">Loading…</string>
     <string name="add_widget">Add widget</string>
