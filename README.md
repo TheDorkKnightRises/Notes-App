@@ -1,5 +1,5 @@
 # Notes-App
-A simple note-taking app for Android that is fully open-source
+A simple Material Design note-taking experience for Android
 
 ## Features
 - Write notes having a title, subtitle and some content
