@@ -3,12 +3,14 @@ A simple Material Design note-taking experience for Android
 
 ## Features
 - Write notes having a title, subtitle and some content
-- Share note
-- Create a notification from note
+- Share notes
+- Create notifications from notes
 - Archive notes
 - Backup notes to Google Drive
+- Homescreen widget
+- Notification shortcut for creating new note
 - App Shortcuts (on Android 7.1+)
-- Optional Light Theme
+- Optional light theme
 
 ## Instructions for building
 This app uses the Google Drive API to backup and restore databases. The Drive API requires you to authorize your app with OAuth 2.0

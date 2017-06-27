@@ -102,7 +102,7 @@
     <string name="intro5">Use the search function to quickly find a specific note</string>
     <string name="intro6">You can see this intro again from the About screen</string>
     <string name="reset">Reset all notes</string>
-    <string name="reset_sub">Permanently delete all notes</string>
+    <string name="reset_sub">Permanently delete all notes from local storage</string>
     <string name="columns">Layout</string>
     <string name="num_one">Single-column</string>
     <string name="num_two">Dual-column</string>
