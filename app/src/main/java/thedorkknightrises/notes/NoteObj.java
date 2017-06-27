@@ -11,18 +11,29 @@ public class NoteObj implements Serializable {
     public String subtitle;
     public String content;
     public String time;
+    public String created_at;
     public int archived;
     public int notified;
+    public String color;
+    public int encrypted;
+    public int pinned;
+    public int tag;
+    public String reminder;
 
-    public NoteObj(int id, String title, String subtitle, String content, String time, int archived, int notified) {
+    public NoteObj(int id, String title, String subtitle, String content, String time, String created_at, int archived, int notified, String color, int encrypted, int pinned, int tag, String reminder) {
         this.id = id;
         this.title = title;
         this.subtitle = subtitle;
         this.content = content;
         this.time = time;
+        this.created_at = created_at;
         this.archived = archived;
         this.notified = notified;
-
+        this.color = color;
+        this.encrypted = encrypted;
+        this.pinned = pinned;
+        this.tag = tag;
+        this.reminder = reminder;
     }
 
     public int getArchived() {
@@ -81,4 +92,51 @@ public class NoteObj implements Serializable {
         this.time = time;
     }
 
+    public String getCreated_at() {
+        return created_at;
+    }
+
+    public void setCreated_at(String created_at) {
+        this.created_at = created_at;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+    public int getEncrypted() {
+        return encrypted;
+    }
+
+    public void setEncrypted(int encrypted) {
+        this.encrypted = encrypted;
+    }
+
+    public int getPinned() {
+        return pinned;
+    }
+
+    public void setPinned(int pinned) {
+        this.pinned = pinned;
+    }
+
+    public int getTag() {
+        return tag;
+    }
+
+    public void setTag(int tag) {
+        this.tag = tag;
+    }
+
+    public String getReminder() {
+        return reminder;
+    }
+
+    public void setReminder(String reminder) {
+        this.reminder = reminder;
+    }
 }

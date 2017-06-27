@@ -1,17 +1,21 @@
 package thedorkknightrises.notes.ui;
 
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
@@ -57,8 +61,10 @@ import thedorkknightrises.notes.data.NotesDbHelper;
 public class SettingsActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     private static final int REQUEST_CODE_RESOLUTION = 3;
     GoogleApiClient mGoogleApiClient;
+    NotificationManager mNotifyMgr;
     private SharedPreferences pref;
-    private SwitchCompat theme_switch;
+    private SwitchCompat theme_switch, notif_switch;
+    private int type = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +74,8 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        pref = getSharedPreferences(Constants.PREFS, MODE_PRIVATE);
+        mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(Drive.API)
@@ -76,6 +84,35 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .build();
+
+        theme_switch = (SwitchCompat) findViewById(R.id.theme_switch);
+        theme_switch.setChecked(pref.getBoolean(Constants.LIGHT_THEME, false));
+        theme_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                Boolean b = pref.getBoolean(Constants.LIGHT_THEME, false);
+                SharedPreferences.Editor e = pref.edit();
+                e.putBoolean(Constants.LIGHT_THEME, !b);
+                e.apply();
+                recreate();
+            }
+        });
+
+        notif_switch = (SwitchCompat) findViewById(R.id.quicknotify_switch);
+        notif_switch.setChecked(pref.getBoolean(Constants.QUICK_NOTIFY, false));
+        notif_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                Boolean b = pref.getBoolean(Constants.QUICK_NOTIFY, false);
+                SharedPreferences.Editor e = pref.edit();
+                e.putBoolean(Constants.QUICK_NOTIFY, !b);
+                e.apply();
+                if (b)
+                    mNotifyMgr.cancel(0);
+                else
+                    createQuickNotification();
+            }
+        });
     }
 
     @Override
@@ -103,33 +140,46 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
         }
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        theme_switch = (SwitchCompat) findViewById(R.id.theme_switch);
-        pref = getSharedPreferences(Constants.PREFS, MODE_PRIVATE);
-        theme_switch.setChecked(pref.getBoolean(Constants.LIGHT_THEME, false));
-        theme_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                onCheckedChange(theme_switch);
-            }
-        });
-    }
-
     public void onCheckedChange(View v) {
-        if (v.equals(theme_switch) || v.equals(findViewById(R.id.theme_switch_row))) {
-            Boolean b = pref.getBoolean(Constants.LIGHT_THEME, false);
-            SharedPreferences.Editor e = pref.edit();
-            e.putBoolean(Constants.LIGHT_THEME, !b);
-            e.apply();
-            recreate();
+        if (v.equals(findViewById(R.id.theme_switch_row))) {
+            theme_switch.toggle();
+        } else if (v.equals(findViewById(R.id.notification_switch_row))) {
+            notif_switch.toggle();
         }
     }
 
+    private void createQuickNotification() {
+        NotificationCompat.Builder notif =
+                new NotificationCompat.Builder(this)
+                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setContentText(getString(R.string.tap_create_note))
+                        .setShowWhen(false)
+                        .setPriority(NotificationCompat.PRIORITY_MIN)
+                        .setColor(Color.argb(255, 32, 128, 200));
+        Intent resultIntent = new Intent(this, NoteActivity.class);
+        resultIntent.setAction("ACTION_NOTE_" + 0);
+
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        stackBuilder.addParentStack(NoteActivity.class);
+        // Adds the Intent to the top of the stack
+        stackBuilder.addNextIntent(resultIntent);
+        // Gets a PendingIntent containing the entire back stack
+        PendingIntent resultPendingIntent =
+                stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        notif.setContentIntent(resultPendingIntent);
+        notif.setOngoing(true);
+
+        // Builds the notification and issues it.
+        mNotifyMgr.notify(0, notif.build());
+    }
+
     public void driveBackup(View v) {
-        if (!mGoogleApiClient.isConnected()) mGoogleApiClient.connect();
+        if (!mGoogleApiClient.isConnected()) {
+            type = 1;
+            mGoogleApiClient.connect();
+            return;
+        }
         final File file = this.getDatabasePath(NotesDbHelper.DATABASE_NAME);
         final Context context = this;
         Toast.makeText(context, getText(R.string.backing_up), Toast.LENGTH_SHORT).show();
@@ -150,7 +200,11 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
     }
 
     public void driveRestore(View v) {
-        if (!mGoogleApiClient.isConnected()) mGoogleApiClient.connect();
+        if (!mGoogleApiClient.isConnected()) {
+            type = 2;
+            mGoogleApiClient.connect();
+            return;
+        }
         final Context context = this;
         final ProgressDialog progress = new ProgressDialog(context);
         progress.setMessage(getString(R.string.restoring));
@@ -209,7 +263,15 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-
+        switch (type) {
+            case 1:
+                driveBackup(null);
+                break;
+            case 2:
+                driveRestore(null);
+                break;
+        }
+        type = 0;
     }
 
     @Override
@@ -231,6 +293,29 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
                     public void onClick(DialogInterface dialog, int which) {
                         NotesDbHelper dbHelper = new NotesDbHelper(SettingsActivity.this);
                         dbHelper.deleteAllNotes();
+                        MainActivity.changed = true;
+                        NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                        mNotifyMgr.cancelAll();
+                        new BootReceiver().onReceive(SettingsActivity.this, null);
+                    }
+                })
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .show();
+    }
+
+    public void clearAllNotifications(View view) {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this, R.style.AppTheme_PopupOverlay);
+        dialog.setMessage(R.string.confirm_clear_notifications)
+                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        NotesDbHelper dbHelper = new NotesDbHelper(SettingsActivity.this);
+                        dbHelper.clearAllNotifications();
                         MainActivity.changed = true;
                         NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
                         mNotifyMgr.cancelAll();

@@ -34,8 +34,10 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="create_note">Create new note</string>
+    <string name="tap_create_note">Tap to create a new note</string>
     <string name="delete">Delete</string>
     <string name="confirm_delete">Are you sure you want to delete all notes? This action cannot be undone!</string>
+    <string name="confirm_clear_notifications">Are you sure you want to clear all notifications?</string>
     <string name="discard">Close</string>
     <string name="note">Note</string>
     <string name="notes">Notes</string>
@@ -101,10 +103,14 @@
     <string name="intro6">You can see this intro again from the About screen</string>
     <string name="reset">Reset all notes</string>
     <string name="reset_sub">Permanently delete all notes</string>
-    <string name="columns">Columns</string>
-    <string name="num_one">1</string>
-    <string name="num_two">2</string>
+    <string name="columns">Layout</string>
+    <string name="num_one">Single-column</string>
+    <string name="num_two">Dual-column</string>
     <string name="newer">Latest first</string>
     <string name="older">Oldest first</string>
     <string name="sorting">Sort by</string>
+    <string name="clear_notifications">Clear notifications</string>
+    <string name="clear_notifications_sub">Remove all notifications for notes</string>
+    <string name="quick_notify">Enable notification shortcut</string>
+    <string name="quick_notify_sub">Show a notification to quickly create notes</string>
 </resources>

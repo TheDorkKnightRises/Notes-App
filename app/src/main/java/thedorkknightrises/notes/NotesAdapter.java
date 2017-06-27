@@ -61,8 +61,14 @@ public class NotesAdapter extends RecyclerViewCursorAdapter<NotesAdapter.ViewHol
         final String subtitle = cursor.getString(cursor.getColumnIndex(NotesDb.Note.COLUMN_NAME_SUBTITLE));
         final String content = cursor.getString(cursor.getColumnIndex(NotesDb.Note.COLUMN_NAME_CONTENT));
         final String time = cursor.getString(cursor.getColumnIndex(NotesDb.Note.COLUMN_NAME_TIME));
+        final String created_at = cursor.getString(cursor.getColumnIndex(NotesDb.Note.COLUMN_NAME_CREATED_AT));
         final int archived = cursor.getInt(cursor.getColumnIndex(NotesDb.Note.COLUMN_NAME_ARCHIVED));
         final int notified = cursor.getInt(cursor.getColumnIndex(NotesDb.Note.COLUMN_NAME_NOTIFIED));
+        final String color = cursor.getString(cursor.getColumnIndex(NotesDb.Note.COLUMN_NAME_COLOR));
+        final int encrypted = cursor.getInt(cursor.getColumnIndex(NotesDb.Note.COLUMN_NAME_ENCRYPTED));
+        final int pinned = cursor.getInt(cursor.getColumnIndex(NotesDb.Note.COLUMN_NAME_PINNED));
+        final int tag = cursor.getInt(cursor.getColumnIndex(NotesDb.Note.COLUMN_NAME_TAG));
+        final String reminder = cursor.getString(cursor.getColumnIndex(NotesDb.Note.COLUMN_NAME_REMINDER));
 
         holder.title.setText(title);
         if (subtitle.equals("")) {
@@ -81,8 +87,14 @@ public class NotesAdapter extends RecyclerViewCursorAdapter<NotesAdapter.ViewHol
                 i.putExtra(NotesDb.Note.COLUMN_NAME_SUBTITLE, subtitle);
                 i.putExtra(NotesDb.Note.COLUMN_NAME_CONTENT, content);
                 i.putExtra(NotesDb.Note.COLUMN_NAME_TIME, time);
-                i.putExtra(NotesDb.Note.COLUMN_NAME_ARCHIVED, archived);
+                i.putExtra(NotesDb.Note.COLUMN_NAME_CREATED_AT, created_at);
                 i.putExtra(NotesDb.Note.COLUMN_NAME_NOTIFIED, notified);
+                i.putExtra(NotesDb.Note.COLUMN_NAME_ARCHIVED, archived);
+                i.putExtra(NotesDb.Note.COLUMN_NAME_COLOR, color);
+                i.putExtra(NotesDb.Note.COLUMN_NAME_ENCRYPTED, encrypted);
+                i.putExtra(NotesDb.Note.COLUMN_NAME_PINNED, pinned);
+                i.putExtra(NotesDb.Note.COLUMN_NAME_TAG, tag);
+                i.putExtra(NotesDb.Note.COLUMN_NAME_REMINDER, reminder);
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     holder.card.setTransitionName("card");

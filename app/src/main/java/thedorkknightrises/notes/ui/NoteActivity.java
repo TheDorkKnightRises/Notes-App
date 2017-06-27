@@ -35,6 +35,7 @@ import android.widget.Toast;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+import thedorkknightrises.notes.Constants;
 import thedorkknightrises.notes.R;
 import thedorkknightrises.notes.data.NotesDb;
 import thedorkknightrises.notes.data.NotesDbHelper;
@@ -58,19 +59,14 @@ public class NoteActivity extends AppCompatActivity {
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     float radius;
     private int cx, cy;
-    private int id = -1;
-    private String title, oldTitle;
-    private String subtitle, oldSubtitle;
-    private String content, oldContent;
-    private String time, oldTime;
-    private int archived = 0, oldArchived;
-    private int notified = 0;
+    private int id = -1, archived = 0, notified = 0, encrypted = 0, pinned = 0, tag = 0;
+    private String title, subtitle, content, time, created_at, color = Constants.COLOR_NONE, reminder = Constants.REMINDER_NONE;
     private boolean backPressFlag = false;
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
-        pref = getSharedPreferences("Prefs", MODE_PRIVATE);
-        lightTheme = pref.getBoolean("lightTheme", false);
+        pref = getSharedPreferences(Constants.PREFS, MODE_PRIVATE);
+        lightTheme = pref.getBoolean(Constants.LIGHT_THEME, false);
         if (lightTheme)
             setTheme(R.style.NoteLight);
 
@@ -99,8 +95,14 @@ public class NoteActivity extends AppCompatActivity {
             subtitle = bundle.getString(NotesDb.Note.COLUMN_NAME_SUBTITLE);
             content = bundle.getString(NotesDb.Note.COLUMN_NAME_CONTENT);
             time = bundle.getString(NotesDb.Note.COLUMN_NAME_TIME);
+            created_at = bundle.getString(NotesDb.Note.COLUMN_NAME_CREATED_AT);
             archived = bundle.getInt(NotesDb.Note.COLUMN_NAME_ARCHIVED);
             notified = bundle.getInt(NotesDb.Note.COLUMN_NAME_NOTIFIED);
+            color = bundle.getString(NotesDb.Note.COLUMN_NAME_COLOR);
+            encrypted = bundle.getInt(NotesDb.Note.COLUMN_NAME_ENCRYPTED);
+            pinned = bundle.getInt(NotesDb.Note.COLUMN_NAME_PINNED);
+            tag = bundle.getInt(NotesDb.Note.COLUMN_NAME_TAG);
+            reminder = bundle.getString(NotesDb.Note.COLUMN_NAME_REMINDER);
         } else {
             editMode = true;
         }
@@ -112,9 +114,21 @@ public class NoteActivity extends AppCompatActivity {
             subtitle = savedInstanceState.getString(NotesDb.Note.COLUMN_NAME_SUBTITLE);
             content = savedInstanceState.getString(NotesDb.Note.COLUMN_NAME_CONTENT);
             time = savedInstanceState.getString(NotesDb.Note.COLUMN_NAME_TIME);
+            created_at = savedInstanceState.getString(NotesDb.Note.COLUMN_NAME_CREATED_AT);
             archived = savedInstanceState.getInt(NotesDb.Note.COLUMN_NAME_ARCHIVED);
             notified = savedInstanceState.getInt(NotesDb.Note.COLUMN_NAME_NOTIFIED);
+            color = savedInstanceState.getString(NotesDb.Note.COLUMN_NAME_COLOR);
+            encrypted = savedInstanceState.getInt(NotesDb.Note.COLUMN_NAME_ENCRYPTED);
+            pinned = savedInstanceState.getInt(NotesDb.Note.COLUMN_NAME_PINNED);
+            tag = savedInstanceState.getInt(NotesDb.Note.COLUMN_NAME_TAG);
+            reminder = savedInstanceState.getString(NotesDb.Note.COLUMN_NAME_REMINDER);
             bottom_bar.setVisibility(View.VISIBLE);
+        }
+
+        if (bundle == null && savedInstanceState == null) {
+            Calendar c = Calendar.getInstance();
+            //get date and time, specifically in 24-hr format suitable for sorting
+            created_at = sdf.format(c.getTime());
         }
 
         if (!editMode) {
@@ -167,6 +181,8 @@ public class NoteActivity extends AppCompatActivity {
         if (notified == 1) {
             ((ImageButton) findViewById(R.id.notif_button)).setImageDrawable(getResources().getDrawable(R.drawable.ic_notifications_off_white_24dp));
         }
+
+        Log.e("Note:", "id: " + id + " created_at: " + created_at);
     }
 
     @Override
@@ -186,8 +202,15 @@ public class NoteActivity extends AppCompatActivity {
         bundle.putString(NotesDb.Note.COLUMN_NAME_SUBTITLE, subtitle);
         bundle.putString(NotesDb.Note.COLUMN_NAME_CONTENT, content);
         bundle.putString(NotesDb.Note.COLUMN_NAME_CONTENT, time);
+        bundle.putString(NotesDb.Note.COLUMN_NAME_CREATED_AT, created_at);
         bundle.putInt(NotesDb.Note.COLUMN_NAME_ARCHIVED, archived);
         bundle.putInt(NotesDb.Note.COLUMN_NAME_NOTIFIED, notified);
+        bundle.putString(NotesDb.Note.COLUMN_NAME_COLOR, color);
+        bundle.putInt(NotesDb.Note.COLUMN_NAME_ARCHIVED, archived);
+        bundle.putInt(NotesDb.Note.COLUMN_NAME_ENCRYPTED, encrypted);
+        bundle.putInt(NotesDb.Note.COLUMN_NAME_PINNED, pinned);
+        bundle.putString(NotesDb.Note.COLUMN_NAME_REMINDER, reminder);
+
         super.onSaveInstanceState(bundle);
     }
 
@@ -248,7 +271,7 @@ public class NoteActivity extends AppCompatActivity {
     }
 
     public void delete(View v) {
-        dbHelper.deleteNote(title, subtitle, content, time, archived);
+        dbHelper.deleteNote(created_at);
         MainActivity.changed = true;
         notif(0);
         finish();
@@ -268,9 +291,8 @@ public class NoteActivity extends AppCompatActivity {
                 time = sdf.format(c.getTime());
                 Log.d("TIME", time);
                 archived = 0;
-                dbHelper.deleteNote(oldTitle, oldSubtitle, oldContent, oldTime, oldArchived);
                 notif(0);
-                id = dbHelper.addNote(title, subtitle, content, time, archived, notified);
+                id = dbHelper.addOrUpdateNote(id, title, subtitle, content, time, created_at, archived, notified, color, encrypted, pinned, tag, reminder);
                 editMode = false;
                 MainActivity.changed = true;
                 titleText.setEnabled(false);
@@ -306,7 +328,6 @@ public class NoteActivity extends AppCompatActivity {
                 imm.hideSoftInputFromWindow(contentText.getWindowToken(), 0);
             }
         } else {
-            saveOldData();
             titleText.setEnabled(true);
             subtitleText.setEnabled(true);
             edit(contentText, true);
@@ -342,14 +363,6 @@ public class NoteActivity extends AppCompatActivity {
         editText.setLinksClickable(!enabled);
     }
 
-    private void saveOldData() {
-        oldTitle = title;
-        oldSubtitle = subtitle;
-        oldContent = content;
-        oldTime = time;
-        oldArchived = archived;
-    }
-
     public void share(View v) {
         Intent share = new Intent(Intent.ACTION_SEND);
         if (subtitle.equals(""))
@@ -361,16 +374,15 @@ public class NoteActivity extends AppCompatActivity {
     }
 
     public void notifBtn(View v) {
-        dbHelper.deleteNote(title, subtitle, content, time, archived);
         notif(0);
         if (notified == 1) {
             notified = 0;
-            id = dbHelper.addNote(title, subtitle, content, time, archived, notified);
+            id = dbHelper.addOrUpdateNote(id, title, subtitle, content, time, created_at, archived, notified, color, encrypted, pinned, tag, reminder);
             MainActivity.changed = true;
             notif(notified);
         } else {
             notified = 1;
-            id = dbHelper.addNote(title, subtitle, content, time, archived, notified);
+            id = dbHelper.addOrUpdateNote(id, title, subtitle, content, time, created_at, archived, notified, color, encrypted, pinned, tag, reminder);
             MainActivity.changed = true;
             notif(notified);
         }
@@ -404,8 +416,14 @@ public class NoteActivity extends AppCompatActivity {
             resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_SUBTITLE, subtitle);
             resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_CONTENT, content);
             resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_TIME, time);
+            resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_CREATED_AT, created_at);
             resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_ARCHIVED, archived);
             resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_NOTIFIED, notified);
+            resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_COLOR, color);
+            resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_ENCRYPTED, encrypted);
+            resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_PINNED, pinned);
+            resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_TAG, tag);
+            resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_REMINDER, reminder);
             resultIntent.setAction("ACTION_NOTE_" + id);
 
             TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
@@ -419,25 +437,25 @@ public class NoteActivity extends AppCompatActivity {
             notif.setContentIntent(resultPendingIntent);
             notif.setOngoing(true);
 
+            Log.e("Note:", "id: " + id + " created_at: " + created_at);
             // Builds the notification and issues it.
             mNotifyMgr.notify(id, notif.build());
         }
     }
 
     public void archive(View v) {
-        dbHelper.deleteNote(title, subtitle, content, time, archived);
         notif(0);
         if (archived == 1) {
             Toast.makeText(this, R.string.removed_archive, Toast.LENGTH_SHORT).show();
             archived = 0;
-            id = dbHelper.addNote(title, subtitle, content, time, archived, notified);
+            id = dbHelper.addOrUpdateNote(id, title, subtitle, content, time, created_at, archived, notified, color, encrypted, pinned, tag, reminder);
             MainActivity.changed = true;
             notif(notified);
             finish();
         } else {
             Toast.makeText(this, R.string.added_archive, Toast.LENGTH_SHORT).show();
             archived = 1;
-            id = dbHelper.addNote(title, subtitle, content, time, archived, notified);
+            id = dbHelper.addOrUpdateNote(id, title, subtitle, content, time, created_at, archived, notified, color, encrypted, pinned, tag, reminder);
             MainActivity.changed = true;
             notif(notified);
             finish();

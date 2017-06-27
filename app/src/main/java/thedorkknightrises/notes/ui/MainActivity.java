@@ -257,8 +257,14 @@ public class MainActivity extends AppCompatActivity
                 NotesDb.Note.COLUMN_NAME_SUBTITLE,
                 NotesDb.Note.COLUMN_NAME_CONTENT,
                 NotesDb.Note.COLUMN_NAME_TIME,
+                NotesDb.Note.COLUMN_NAME_CREATED_AT,
                 NotesDb.Note.COLUMN_NAME_ARCHIVED,
-                NotesDb.Note.COLUMN_NAME_NOTIFIED
+                NotesDb.Note.COLUMN_NAME_NOTIFIED,
+                NotesDb.Note.COLUMN_NAME_COLOR,
+                NotesDb.Note.COLUMN_NAME_ENCRYPTED,
+                NotesDb.Note.COLUMN_NAME_PINNED,
+                NotesDb.Note.COLUMN_NAME_TAG,
+                NotesDb.Note.COLUMN_NAME_REMINDER
         };
 
         String sort;
@@ -281,7 +287,19 @@ public class MainActivity extends AppCompatActivity
             noteObjArrayList.clear();
             if (cursor.moveToFirst()) {
                 do {
-                    NoteObj noteObj = new NoteObj(cursor.getInt(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getInt(5), cursor.getInt(6));
+                    NoteObj noteObj = new NoteObj(cursor.getInt(0),
+                            cursor.getString(1),
+                            cursor.getString(2),
+                            cursor.getString(3),
+                            cursor.getString(4),
+                            cursor.getString(5),
+                            cursor.getInt(6),
+                            cursor.getInt(7),
+                            cursor.getString(8),
+                            cursor.getInt(9),
+                            cursor.getInt(10),
+                            cursor.getInt(11),
+                            cursor.getString(12));
                     if (noteObj.getArchived() == archive) noteObjArrayList.add(noteObj);
                 } while (cursor.moveToNext());
             }
