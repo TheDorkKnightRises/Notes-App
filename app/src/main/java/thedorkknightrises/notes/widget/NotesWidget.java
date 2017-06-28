@@ -11,8 +11,8 @@ import android.widget.RemoteViews;
 
 import thedorkknightrises.notes.R;
 import thedorkknightrises.notes.data.NotesDb;
-import thedorkknightrises.notes.ui.MainActivity;
-import thedorkknightrises.notes.ui.NoteActivity;
+import thedorkknightrises.notes.ui.activities.MainActivity;
+import thedorkknightrises.notes.ui.activities.NoteActivity;
 
 /**
  * Implementation of App Widget functionality.

@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".ui.NoteActivity">
+    tools:context=".ui.activities.NoteActivity">
 
     <!-- Stop auto focusing the EditText -->
     <LinearLayout
@@ -61,7 +61,7 @@
                         android:background="@android:color/transparent"
                         android:gravity="start"
                         android:hint="@string/subtitle"
-                        android:inputType="text|textMultiLine|textCapSentences"
+                        android:inputType="text|textCapSentences"
                         android:maxLength="40"
                         android:textSize="16sp"
                         android:transitionName="subtitle" />

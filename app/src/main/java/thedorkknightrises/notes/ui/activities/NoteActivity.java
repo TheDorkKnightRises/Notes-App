@@ -1,4 +1,4 @@
-package thedorkknightrises.notes.ui;
+package thedorkknightrises.notes.ui.activities;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;

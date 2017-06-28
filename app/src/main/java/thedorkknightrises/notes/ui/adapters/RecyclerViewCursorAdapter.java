@@ -1,4 +1,4 @@
-package thedorkknightrises.notes;
+package thedorkknightrises.notes.ui.adapters;
 
 /**
  * Created by Samriddha Basu on 1/7/2017.

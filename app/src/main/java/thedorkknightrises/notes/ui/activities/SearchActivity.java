@@ -1,4 +1,4 @@
-package thedorkknightrises.notes.ui;
+package thedorkknightrises.notes.ui.activities;
 
 import android.app.LoaderManager;
 import android.app.SearchManager;
@@ -24,10 +24,10 @@ import java.util.ArrayList;
 
 import thedorkknightrises.notes.Constants;
 import thedorkknightrises.notes.NoteObj;
-import thedorkknightrises.notes.NotesAdapter;
 import thedorkknightrises.notes.R;
 import thedorkknightrises.notes.data.NotesDb;
 import thedorkknightrises.notes.data.NotesProvider;
+import thedorkknightrises.notes.ui.adapters.NotesAdapter;
 
 /**
  * Created by Samriddha Basu on 1/6/2017.

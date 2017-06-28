@@ -14,7 +14,7 @@ import java.util.ArrayList;
 
 import thedorkknightrises.notes.data.NotesDb;
 import thedorkknightrises.notes.data.NotesDbHelper;
-import thedorkknightrises.notes.ui.NoteActivity;
+import thedorkknightrises.notes.ui.activities.NoteActivity;
 
 import static android.content.Context.MODE_PRIVATE;
 import static android.content.Context.NOTIFICATION_SERVICE;

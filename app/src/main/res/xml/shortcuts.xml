@@ -8,7 +8,7 @@
         android:shortcutShortLabel="@string/create_note">
         <intent
             android:action="android.intent.action.VIEW"
-            android:targetClass="thedorkknightrises.notes.ui.NoteActivity"
+            android:targetClass="thedorkknightrises.notes.ui.activities.NoteActivity"
             android:targetPackage="thedorkknightrises.notes" />
         <categories android:name="android.shortcut.notes" />
     </shortcut>
@@ -20,7 +20,7 @@
         android:shortcutShortLabel="@string/search_hint">
         <intent
             android:action="android.intent.action.VIEW"
-            android:targetClass="thedorkknightrises.notes.ui.SearchActivity"
+            android:targetClass="thedorkknightrises.notes.ui.activities.SearchActivity"
             android:targetPackage="thedorkknightrises.notes" />
         <categories android:name="android.shortcut.notes" />
     </shortcut>

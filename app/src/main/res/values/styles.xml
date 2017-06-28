@@ -40,4 +40,12 @@
         <item name="android:windowIsFloating">true</item>
     </style>
 
+    <style name="ButtonTextView">
+        <item name="android:textColor">@color/colorAccent</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:padding">16dp</item>
+        <item name="android:clickable">true</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+    </style>
+
 </resources>

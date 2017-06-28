@@ -1,4 +1,4 @@
-package thedorkknightrises.notes;
+package thedorkknightrises.notes.ui.adapters;
 
 import android.app.Activity;
 import android.content.Context;
@@ -14,8 +14,9 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
+import thedorkknightrises.notes.R;
 import thedorkknightrises.notes.data.NotesDb;
-import thedorkknightrises.notes.ui.NoteActivity;
+import thedorkknightrises.notes.ui.activities.NoteActivity;
 
 /**
  * Created by Samriddha Basu on 6/20/2016.

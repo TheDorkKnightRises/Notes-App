@@ -1,4 +1,4 @@
-package thedorkknightrises.notes.ui;
+package thedorkknightrises.notes.ui.activities;
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -55,6 +55,7 @@ import thedorkknightrises.notes.Constants;
 import thedorkknightrises.notes.R;
 import thedorkknightrises.notes.data.BackupDbHelper;
 import thedorkknightrises.notes.data.NotesDbHelper;
+import thedorkknightrises.notes.util.NetworkUtil;
 
 /**
  * Created by Samriddha Basu on 6/22/2016.
@@ -63,8 +64,9 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
     private static final int REQUEST_CODE_RESOLUTION = 3;
     GoogleApiClient mGoogleApiClient;
     NotificationManager mNotifyMgr;
+    ProgressDialog progress;
     private SharedPreferences pref;
-    private SwitchCompat theme_switch, notif_switch;
+    private SwitchCompat theme_switch, notif_switch, ad_switch;
     private int type = 0;
 
     @Override
@@ -88,14 +90,15 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
                 .addOnConnectionFailedListener(this)
                 .build();
 
+        progress = new ProgressDialog(this);
+
         theme_switch = (SwitchCompat) findViewById(R.id.theme_switch);
         theme_switch.setChecked(pref.getBoolean(Constants.LIGHT_THEME, false));
         theme_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Boolean b = pref.getBoolean(Constants.LIGHT_THEME, false);
                 SharedPreferences.Editor e = pref.edit();
-                e.putBoolean(Constants.LIGHT_THEME, !b);
+                e.putBoolean(Constants.LIGHT_THEME, isChecked);
                 e.apply();
                 recreate();
             }
@@ -106,14 +109,24 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
         notif_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Boolean b = pref.getBoolean(Constants.QUICK_NOTIFY, false);
                 SharedPreferences.Editor e = pref.edit();
-                e.putBoolean(Constants.QUICK_NOTIFY, !b);
+                e.putBoolean(Constants.QUICK_NOTIFY, isChecked);
                 e.apply();
-                if (b)
+                if (!isChecked)
                     mNotifyMgr.cancel(0);
                 else
                     createQuickNotification();
+            }
+        });
+
+        ad_switch = (SwitchCompat) findViewById(R.id.ads_switch);
+        ad_switch.setChecked(pref.getBoolean(Constants.ADS_ENABLED, false));
+        ad_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                SharedPreferences.Editor e = pref.edit();
+                e.putBoolean(Constants.ADS_ENABLED, isChecked);
+                e.apply();
             }
         });
     }
@@ -148,6 +161,8 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
             theme_switch.toggle();
         } else if (v.equals(findViewById(R.id.notification_switch_row))) {
             notif_switch.toggle();
+        } else if (v.equals(findViewById(R.id.ads_switch_row))) {
+            ad_switch.toggle();
         }
     }
 
@@ -178,14 +193,19 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
     }
 
     public void driveBackup(View v) {
-        if (!mGoogleApiClient.isConnected()) {
-            type = 1;
-            mGoogleApiClient.connect();
+        if (!NetworkUtil.isNetworkConnected(this)) {
+            Toast.makeText(this, R.string.no_connection, Toast.LENGTH_SHORT).show();
             return;
         }
+        progress.setMessage(getString(R.string.connecting));
+        progress.setCancelable(false);
+        progress.show();
+        if (!mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.connect();
+        }
+        progress.setMessage(getString(R.string.backing_up));
         final File file = this.getDatabasePath(NotesDbHelper.DATABASE_NAME);
         final Context context = this;
-        Toast.makeText(context, getText(R.string.backing_up), Toast.LENGTH_SHORT).show();
         Drive.DriveApi.newDriveContents(mGoogleApiClient)
                 .setResultCallback(new ResultCallback<DriveApi.DriveContentsResult>() {
                     @Override
@@ -203,16 +223,18 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
     }
 
     public void driveRestore(View v) {
-        if (!mGoogleApiClient.isConnected()) {
-            type = 2;
-            mGoogleApiClient.connect();
+        if (!NetworkUtil.isNetworkConnected(this)) {
+            Toast.makeText(this, R.string.no_connection, Toast.LENGTH_SHORT).show();
             return;
         }
         final Context context = this;
-        final ProgressDialog progress = new ProgressDialog(context);
-        progress.setMessage(getString(R.string.restoring));
+        progress.setMessage(getString(R.string.connecting));
         progress.setCancelable(false);
         progress.show();
+        if (!mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.connect();
+        }
+        progress.setMessage(getString(R.string.restoring));
         Query query = new Query.Builder().addFilter(Filters.and(
                 Filters.eq(SearchableField.TITLE, NotesDbHelper.DATABASE_NAME)))
                 .build();
@@ -222,10 +244,12 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
                 if (!result.getStatus().isSuccess()) {
                     Toast.makeText(SettingsActivity.this, getText(R.string.error_restore), Toast.LENGTH_SHORT).show();
                     progress.dismiss();
+                    result.release();
                     return;
                 }
-                if (result.getMetadataBuffer().iterator().hasNext()) {
-                    DriveFile file = result.getMetadataBuffer().iterator().next().getDriveId().asDriveFile();
+                Log.e("Drive results: ", String.valueOf(result.getMetadataBuffer().getCount()));
+                if (result.getMetadataBuffer().getCount() != 0) {
+                    DriveFile file = result.getMetadataBuffer().get(0).getDriveId().asDriveFile();
                     file.open(mGoogleApiClient, DriveFile.MODE_READ_ONLY, null)
                             .setResultCallback(new ResultCallback<DriveApi.DriveContentsResult>() {
                                 @Override
@@ -247,6 +271,7 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
                     progress.dismiss();
                     Toast.makeText(context, getString(R.string.no_backups), Toast.LENGTH_SHORT).show();
                 }
+                result.release();
             }
         });
 
@@ -266,15 +291,6 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        switch (type) {
-            case 1:
-                driveBackup(null);
-                break;
-            case 2:
-                driveRestore(null);
-                break;
-        }
-        type = 0;
     }
 
     @Override
@@ -387,6 +403,7 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
                                 return;
                             }
                             Toast.makeText(context, getText(R.string.backup_success), Toast.LENGTH_SHORT).show();
+                            progress.dismiss();
                         }
                     });
             return null;

@@ -3,10 +3,13 @@
     <string name="desc">A simple Material Design note-taking experience for Android</string>
     <string name="dev">Developer</string>
     <string name="dev_desc">Samriddha Basu</string>
+    <string name="dev_play_store">Play Store</string>
     <string name="website">Website</string>
     <string name="gplus">Google+</string>
     <string name="github">GitHub</string>
-    <string name="play_store_prompt">This app is not on the Play Store yet! :P</string>
+    <string name="package_name">Package name:\u0020</string>
+    <string name="version_name">Version:\u0020</string>
+    <string name="version_code">Version code:\u0020</string>
 
     <string name="license_info">Copyright notice for the app and attributions for 3rd party libraries used</string>
     <string name="provider_desc">Content Provider for Notes app</string>
@@ -63,11 +66,11 @@
     <string name="backup">Backup to Google Drive</string>
     <string name="drive_error">Error connecting to Drive</string>
     <string name="backup_sub">Save your current notes to the cloud</string>
-    <string name="backing_up">Backup initiated…</string>
+    <string name="backing_up">Backing up…</string>
     <string name="error_backup">Failed to backup to Drive</string>
     <string name="backup_success">Backup successful!</string>
     <string name="restore">Restore from Google Drive</string>
-    <string name="restore_sub">Retrieve previously backup up notes from the cloud</string>
+    <string name="restore_sub">Retrieve previously your backup from the cloud</string>
     <string name="restoring">Restoring…</string>
     <string name="error_restore">Error retrieving backups from Drive</string>
     <string name="no_backups">No backups found</string>
@@ -86,8 +89,8 @@
     <string name="source">Source code</string>
     <string name="play_store">Rate the app</string>
     <string name="see_intro">Launch Intro</string>
-    <string name="attributions">Attributions</string>
-    <string name="notices">3rd Party Libraries</string>
+    <string name="Notices">Notices</string>
+    <string name="third_party_libs">3rd Party Libraries</string>
     <string name="loading">Loading…</string>
     <string name="add_widget">Add widget</string>
     <string name="no_items">No items to show</string>
@@ -113,4 +116,9 @@
     <string name="clear_notifications_sub">Remove all notifications for notes</string>
     <string name="quick_notify">Enable notification shortcut</string>
     <string name="quick_notify_sub">Show a notification to quickly create notes</string>
+    <string name="test_banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="ads_enabled">Enable ads</string>
+    <string name="ads_enabled_sub">Show ads to support development</string>
+    <string name="no_connection">No network connection</string>
+    <string name="connecting">Connecting…</string>
 </resources>

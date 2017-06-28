@@ -1,4 +1,4 @@
-package thedorkknightrises.notes.ui;
+package thedorkknightrises.notes.ui.activities;
 
 import android.app.LoaderManager;
 import android.appwidget.AppWidgetManager;
@@ -27,18 +27,24 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.NativeExpressAdView;
 
 import java.util.ArrayList;
 
 import thedorkknightrises.notes.BootReceiver;
 import thedorkknightrises.notes.Constants;
 import thedorkknightrises.notes.NoteObj;
-import thedorkknightrises.notes.NotesAdapter;
 import thedorkknightrises.notes.R;
 import thedorkknightrises.notes.data.NotesDb;
 import thedorkknightrises.notes.data.NotesDbHelper;
 import thedorkknightrises.notes.data.NotesProvider;
+import thedorkknightrises.notes.ui.adapters.NotesAdapter;
 import thedorkknightrises.notes.widget.NotesWidget;
 
 import static thedorkknightrises.notes.Constants.NUM_COLUMNS;
@@ -58,6 +64,7 @@ public class MainActivity extends AppCompatActivity
     TextView blankText;
     FloatingActionButton fab;
     SharedPreferences pref;
+    NativeExpressAdView adView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -132,6 +139,18 @@ public class MainActivity extends AppCompatActivity
         noteObjArrayList = new ArrayList<>();
 
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+
+        MobileAds.initialize(this, getString(R.string.admob_app_id));
+        adView = new NativeExpressAdView(this);
+        if (lightTheme)
+            adView.setAdUnitId(getString(R.string.small_banner_ad_unit_id_light));
+        else
+            adView.setAdUnitId(getString(R.string.small_banner_ad_unit_id));
+        adView.setAdSize(new AdSize(AdSize.FULL_WIDTH, 100));
+        ((LinearLayout) findViewById(R.id.linearLayout)).addView(adView, 0);
+
+        AdRequest request = new AdRequest.Builder().build();
+        adView.loadAd(request);
     }
 
 
@@ -154,6 +173,12 @@ public class MainActivity extends AppCompatActivity
             else setTheme(R.style.AppTheme_Light_NoActionBar);
             lightTheme = !lightTheme;
             recreate();
+        }
+
+        if (!pref.getBoolean(Constants.ADS_ENABLED, false)) {
+            adView.setVisibility(View.GONE);
+        } else {
+            adView.setVisibility(View.VISIBLE);
         }
 
         super.onResume();

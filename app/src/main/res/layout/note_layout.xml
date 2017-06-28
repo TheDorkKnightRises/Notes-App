@@ -50,7 +50,7 @@
                 android:layout_marginTop="8dp"
                 android:autoLink="all"
                 android:ellipsize="end"
-                android:maxLines="3"
+                android:maxLines="5"
                 android:textAppearance="@style/TextAppearance.AppCompat"
                 android:textSize="18sp"
                 tools:text="Lorem ipsum dolor" />

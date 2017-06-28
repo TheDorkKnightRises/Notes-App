@@ -1,4 +1,4 @@
-package thedorkknightrises.notes.ui;
+package thedorkknightrises.notes.ui.activities;
 
 import android.os.Bundle;
 
@@ -47,7 +47,7 @@ public class IntroActivity extends com.heinrichreimersoftware.materialintro.app.
 
         addSlide(new SimpleSlide.Builder()
                 .description(R.string.intro3)
-                .image(R.drawable.ic_menu_share)
+                .image(R.drawable.ic_share_white_24dp)
                 .background(R.color.colorPrimary)
                 .backgroundDark(R.color.colorPrimaryDark)
                 .build());

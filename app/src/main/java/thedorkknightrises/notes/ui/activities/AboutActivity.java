@@ -1,4 +1,4 @@
-package thedorkknightrises.notes.ui;
+package thedorkknightrises.notes.ui.activities;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -9,11 +9,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import com.mikepenz.aboutlibraries.LibsBuilder;
 
+import thedorkknightrises.notes.BuildConfig;
 import thedorkknightrises.notes.Constants;
 import thedorkknightrises.notes.R;
 
@@ -29,10 +29,25 @@ public class AboutActivity extends AppCompatActivity {
         if (pref.getBoolean(Constants.LIGHT_THEME, false))
             setTheme(R.style.AppTheme_Light_NoActionBar);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_about);
+        setContentView(R.layout.activity_about_new);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        TextView versionButton = ((TextView) findViewById(R.id.versionText));
+        versionButton.setText(getString(R.string.version_name) + BuildConfig.VERSION_NAME);
+        versionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder alert = new AlertDialog.Builder(AboutActivity.this);
+                alert.setTitle(getString(R.string.app_name))
+                        .setMessage(getString(R.string.package_name) + BuildConfig.APPLICATION_ID + "\n"
+                                + getString(R.string.version_name) + BuildConfig.VERSION_NAME + "\n"
+                                + getString(R.string.version_code) + BuildConfig.VERSION_CODE)
+                        .show();
+            }
+        });
+
     }
 
     @Override
@@ -47,17 +62,18 @@ public class AboutActivity extends AppCompatActivity {
     }
 
     public void onLinkClick(View v) {
-        String text = ((Button) v).getText().toString();
-        String uri;
+        String text = ((TextView) v).getText().toString();
+        String uri = "";
         if (text.equals(getString(R.string.github))) {
             uri = "https://github.com/TheDorkKnightRises";
         } else if (text.equals(getString(R.string.website))) {
             uri = "https://samriddhabasu.github.io";
+        } else if (text.equals(getString(R.string.play_store))) {
+            uri = "https://play.google.com/store/apps/details?id=thedorkknightrises.notes";
         } else if (text.equals(getString(R.string.source))) {
             uri = "https://github.com/TheDorkKnightRises/Notes-App";
-        } else {
-            Toast.makeText(getApplicationContext(), getText(R.string.play_store_prompt), Toast.LENGTH_SHORT).show();
-            return;
+        } else if (text.equals(getString(R.string.dev_play_store))) {
+            uri = "https://play.google.com/store/apps/dev?id=7533730446729607250";
         }
         Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
         startActivity(i);
@@ -66,9 +82,17 @@ public class AboutActivity extends AppCompatActivity {
     public void onNoticeClick(View v) {
         switch (v.getId()) {
             case R.id.legal:
-                new LibsBuilder()
-                        //start the activity
-                        .start(this);
+                LibsBuilder libsBuilder =
+                        new LibsBuilder()
+                                .withAboutIconShown(true)
+                                .withAboutDescription(getString(R.string.license_icon));
+
+                if (pref.getBoolean(Constants.LIGHT_THEME, false)) {
+                    libsBuilder.withActivityTheme(R.style.AboutLibrariesTheme_Light)
+                            .start(this);
+                } else {
+                    libsBuilder.start(this);
+                }
                 break;
             case R.id.copyright:
                 AlertDialog.Builder alert = new AlertDialog.Builder(this);
