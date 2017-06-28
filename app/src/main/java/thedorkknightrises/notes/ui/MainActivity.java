@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -173,6 +175,12 @@ public class MainActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
+
+        if (lightTheme) {
+            Drawable drawable = menu.getItem(0).getIcon();
+            drawable.mutate();
+            drawable.setColorFilter(getResources().getColor(R.color.black), PorterDuff.Mode.SRC_IN);
+        }
 
         return true;
     }

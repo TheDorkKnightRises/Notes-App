@@ -10,4 +10,7 @@
     <color name="red">#ef3555</color>
     <color name="yellow">#a78b51</color>
     <color name="green">#4c9e82</color>
+    <color name="background_dark">#303030</color>
+    <color name="statusbar_dark">#282828</color>
+    <color name="background_light">#fafafa</color>
 </resources>

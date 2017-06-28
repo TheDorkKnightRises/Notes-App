@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -26,11 +27,12 @@ public class AboutActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         pref = getSharedPreferences(Constants.PREFS, MODE_PRIVATE);
         if (pref.getBoolean(Constants.LIGHT_THEME, false))
-            setTheme(R.style.AppTheme_Light);
+            setTheme(R.style.AppTheme_Light_NoActionBar);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
     }
 
     @Override

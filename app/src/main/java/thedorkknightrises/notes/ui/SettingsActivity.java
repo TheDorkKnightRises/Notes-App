@@ -19,6 +19,7 @@ import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -70,9 +71,11 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
     protected void onCreate(Bundle savedInstanceState) {
         pref = getSharedPreferences(Constants.PREFS, MODE_PRIVATE);
         if (pref.getBoolean(Constants.LIGHT_THEME, false))
-            setTheme(R.style.AppTheme_Light);
+            setTheme(R.style.AppTheme_Light_NoActionBar);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         pref = getSharedPreferences(Constants.PREFS, MODE_PRIVATE);
         mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
