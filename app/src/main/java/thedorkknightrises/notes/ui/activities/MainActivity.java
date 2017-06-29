@@ -45,6 +45,7 @@ import thedorkknightrises.notes.data.NotesDb;
 import thedorkknightrises.notes.data.NotesDbHelper;
 import thedorkknightrises.notes.data.NotesProvider;
 import thedorkknightrises.notes.ui.adapters.NotesAdapter;
+import thedorkknightrises.notes.util.NetworkUtil;
 import thedorkknightrises.notes.widget.NotesWidget;
 
 import static thedorkknightrises.notes.Constants.NUM_COLUMNS;
@@ -179,6 +180,10 @@ public class MainActivity extends AppCompatActivity
             adView.setVisibility(View.GONE);
         } else {
             adView.setVisibility(View.VISIBLE);
+        }
+
+        if (!NetworkUtil.isNetworkConnected(this)) {
+            adView.setVisibility(View.GONE);
         }
 
         super.onResume();
