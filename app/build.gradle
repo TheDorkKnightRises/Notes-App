@@ -15,8 +15,8 @@ android {
         applicationId "thedorkknightrises.notes"
         minSdkVersion 15
         targetSdkVersion 25
-        versionCode 38
-        versionName "2.6.1"
+        versionCode 40
+        versionName "2.7"
     }
     buildTypes {
         release {
@@ -26,6 +26,7 @@ android {
         }
         debug {
             signingConfig signingConfigs.config
+            applicationIdSuffix ".debug"
         }
     }
 }

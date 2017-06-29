@@ -62,7 +62,7 @@
 
         <provider
             android:name=".data.NotesProvider"
-            android:authorities="thedorkknightrises.notes.data.NotesProvider"
+            android:authorities="${applicationId}.data.NotesProvider"
             android:enabled="true"
             android:exported="false"
             android:label="@string/provider_desc" />

@@ -120,7 +120,7 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
         });
 
         ad_switch = (SwitchCompat) findViewById(R.id.ads_switch);
-        ad_switch.setChecked(pref.getBoolean(Constants.ADS_ENABLED, false));
+        ad_switch.setChecked(pref.getBoolean(Constants.ADS_ENABLED, true));
         ad_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {

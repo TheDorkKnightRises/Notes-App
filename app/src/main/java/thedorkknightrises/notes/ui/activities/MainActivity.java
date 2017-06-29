@@ -27,9 +27,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.MobileAds;
@@ -66,6 +67,7 @@ public class MainActivity extends AppCompatActivity
     FloatingActionButton fab;
     SharedPreferences pref;
     NativeExpressAdView adView;
+    RelativeLayout adContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -141,6 +143,8 @@ public class MainActivity extends AppCompatActivity
 
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
 
+        adContainer = ((RelativeLayout) findViewById(R.id.ad_container));
+
         MobileAds.initialize(this, getString(R.string.admob_app_id));
         adView = new NativeExpressAdView(this);
         if (lightTheme)
@@ -148,10 +152,24 @@ public class MainActivity extends AppCompatActivity
         else
             adView.setAdUnitId(getString(R.string.small_banner_ad_unit_id));
         adView.setAdSize(new AdSize(AdSize.FULL_WIDTH, 100));
-        ((LinearLayout) findViewById(R.id.linearLayout)).addView(adView, 0);
+        adContainer.addView(adView);
+        adView.setTag(false);
+        adView.setAdListener(new AdListener() {
 
-        AdRequest request = new AdRequest.Builder().build();
-        adView.loadAd(request);
+            @Override
+            public void onAdLoaded() {
+                adView.setTag(true);
+                super.onAdLoaded();
+            }
+
+            @Override
+            public void onAdFailedToLoad(int i) {
+                adView.setTag(false);
+                adContainer.setVisibility(View.GONE);
+                super.onAdFailedToLoad(i);
+            }
+        });
+
     }
 
 
@@ -176,14 +194,14 @@ public class MainActivity extends AppCompatActivity
             recreate();
         }
 
-        if (!pref.getBoolean(Constants.ADS_ENABLED, false)) {
-            adView.setVisibility(View.GONE);
+        if (!pref.getBoolean(Constants.ADS_ENABLED, true) || !NetworkUtil.isNetworkConnected(this)) {
+            adContainer.setVisibility(View.GONE);
         } else {
-            adView.setVisibility(View.VISIBLE);
-        }
-
-        if (!NetworkUtil.isNetworkConnected(this)) {
-            adView.setVisibility(View.GONE);
+            adContainer.setVisibility(View.VISIBLE);
+            if (adView.getTag() != null && !(boolean) adView.getTag()) {
+                AdRequest request = new AdRequest.Builder().build();
+                adView.loadAd(request);
+            }
         }
 
         super.onResume();

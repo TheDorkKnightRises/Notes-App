@@ -20,6 +20,7 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.text.util.Linkify;
 import android.transition.Slide;
 import android.util.Log;
@@ -132,13 +133,16 @@ public class NoteActivity extends AppCompatActivity {
         }
 
         if (!editMode) {
-            titleText.setText(title);
-            titleText.setEnabled(false);
-            if (lightTheme)
-                titleText.setTextColor(getResources().getColor(R.color.black));
-            else titleText.setTextColor(getResources().getColor(R.color.white));
-
-            if (subtitle.equals(""))
+            if (TextUtils.isEmpty(title))
+                titleText.setVisibility(View.GONE);
+            else {
+                titleText.setText(title);
+                titleText.setEnabled(false);
+                if (lightTheme)
+                    titleText.setTextColor(getResources().getColor(R.color.black));
+                else titleText.setTextColor(getResources().getColor(R.color.white));
+            }
+            if (TextUtils.isEmpty(subtitle))
                 subtitleText.setVisibility(View.GONE);
             else {
                 subtitleText.setText(subtitle);
@@ -265,6 +269,7 @@ public class NoteActivity extends AppCompatActivity {
     }
 
     public void close(View v) {
+        if (titleText.getText().toString().isEmpty()) titleText.setVisibility(View.INVISIBLE);
         if (subtitleText.getText().toString().isEmpty()) subtitleText.setVisibility(View.INVISIBLE);
         backPressFlag = true;
         onBackPressed();
@@ -283,9 +288,10 @@ public class NoteActivity extends AppCompatActivity {
             title = titleText.getText().toString().trim();
             subtitle = subtitleText.getText().toString().trim();
             content = contentText.getText().toString().trim();
-            if (title.equals("") || content.equals(""))
+            if (content.equals("")) {
+                contentText.requestFocus();
                 Snackbar.make(coordinatorLayout, R.string.incomplete, Snackbar.LENGTH_LONG).show();
-            else {
+            } else {
                 Calendar c = Calendar.getInstance();
                 //get date and time, specifically in 24-hr format suitable for sorting
                 time = sdf.format(c.getTime());
@@ -295,10 +301,12 @@ public class NoteActivity extends AppCompatActivity {
                 id = dbHelper.addOrUpdateNote(id, title, subtitle, content, time, created_at, archived, notified, color, encrypted, pinned, tag, reminder);
                 editMode = false;
                 MainActivity.changed = true;
-                titleText.setEnabled(false);
-                if (lightTheme)
-                    titleText.setTextColor(getResources().getColor(R.color.black));
-                else titleText.setTextColor(getResources().getColor(R.color.white));
+                if (!title.equals("")) {
+                    titleText.setEnabled(false);
+                    if (lightTheme)
+                        titleText.setTextColor(getResources().getColor(R.color.black));
+                    else titleText.setTextColor(getResources().getColor(R.color.white));
+                } else titleText.setVisibility(View.GONE);
                 if (!subtitle.equals("")) {
                     subtitleText.setEnabled(false);
                     if (lightTheme)
@@ -332,6 +340,7 @@ public class NoteActivity extends AppCompatActivity {
             subtitleText.setEnabled(true);
             edit(contentText, true);
             contentText.setSelection(contentText.getText().length());
+            titleText.setVisibility(View.VISIBLE);
             subtitleText.setVisibility(View.VISIBLE);
             fab.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_done_white_24dp));
             hideToolbar();

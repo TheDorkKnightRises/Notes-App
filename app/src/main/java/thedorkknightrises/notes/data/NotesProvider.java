@@ -12,8 +12,10 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.text.TextUtils;
 
+import thedorkknightrises.notes.BuildConfig;
+
 public class NotesProvider extends ContentProvider {
-    public static final String AUTHORITY = "thedorkknightrises.notes.data.NotesProvider";
+    public static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".data.NotesProvider";
     public static final Uri BASE_URI = Uri.parse("content://" + AUTHORITY);
     // Creates a UriMatcher object.
     private static final UriMatcher sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);

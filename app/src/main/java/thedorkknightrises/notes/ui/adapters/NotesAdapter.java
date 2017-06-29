@@ -8,6 +8,7 @@ import android.os.Build;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.util.Pair;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -71,8 +72,10 @@ public class NotesAdapter extends RecyclerViewCursorAdapter<NotesAdapter.ViewHol
         final int tag = cursor.getInt(cursor.getColumnIndex(NotesDb.Note.COLUMN_NAME_TAG));
         final String reminder = cursor.getString(cursor.getColumnIndex(NotesDb.Note.COLUMN_NAME_REMINDER));
 
-        holder.title.setText(title);
-        if (subtitle.equals("")) {
+        if (TextUtils.isEmpty(title)) {
+            holder.title.setVisibility(View.GONE);
+        } else holder.title.setText(title);
+        if (TextUtils.isEmpty(subtitle)) {
             holder.subtitle.setVisibility(View.GONE);
         } else holder.subtitle.setText(subtitle);
         holder.content.setText(content);
@@ -109,12 +112,18 @@ public class NotesAdapter extends RecyclerViewCursorAdapter<NotesAdapter.ViewHol
                     Pair<View, String> p4 = Pair.create((View) holder.content, "content");
                     Pair<View, String> p5 = Pair.create((View) holder.date, "time");
                     ActivityOptionsCompat options;
-                    if (!subtitle.equals("")) {
+                    if (!TextUtils.isEmpty(subtitle)) {
+                        if (!TextUtils.isEmpty(title))
                         options = ActivityOptionsCompat.
                                 makeSceneTransitionAnimation(activity, p1, p2, p3, p4, p5);
+                        else options = ActivityOptionsCompat.
+                                makeSceneTransitionAnimation(activity, p1, p3, p4, p5);
                     } else {
-                        options = ActivityOptionsCompat.
-                                makeSceneTransitionAnimation(activity, p1, p2, p4, p5);
+                        if (!TextUtils.isEmpty(title))
+                            options = ActivityOptionsCompat.
+                                    makeSceneTransitionAnimation(activity, p1, p2, p4, p5);
+                        else options = ActivityOptionsCompat.
+                                makeSceneTransitionAnimation(activity, p1, p4, p5);
                     }
                     context.startActivity(i, options.toBundle());
                 } else
