@@ -83,7 +83,7 @@
     <string name="share">Share</string>
     <string name="notif">Create notification</string>
     <string name="notif_confirm">Create a notification?</string>
-    <string name="share_title">Share via</string>
+    <string name="share_via">Share via</string>
 
     <string name="action_about">About</string>
     <string name="action_settings">Settings</string>

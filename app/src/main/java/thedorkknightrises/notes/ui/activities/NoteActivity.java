@@ -21,6 +21,8 @@ import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.text.method.ArrowKeyMovementMethod;
+import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
 import android.transition.Slide;
 import android.util.Log;
@@ -190,7 +192,7 @@ public class NoteActivity extends AppCompatActivity {
 
         Log.e("Note:", "id: " + id + " created_at: " + created_at);
         Intent intent = getIntent();
-        if (NoteIntents.ACTION_CREATE_NOTE.equals(intent.getAction())) {
+        if (NoteIntents.ACTION_CREATE_NOTE.equals(intent.getAction()) || Intent.ACTION_SEND.equals(intent.getAction())) {
             if (intent.hasExtra(Intent.EXTRA_TEXT)) {
                 content = getIntent().getExtras().getString(Intent.EXTRA_TEXT);
                 if (!TextUtils.isEmpty(content)) contentText.setText(content);
@@ -382,9 +384,10 @@ public class NoteActivity extends AppCompatActivity {
     private void edit(EditText editText, boolean enabled) {
         if (!enabled) {
             Linkify.addLinks(editText, Linkify.ALL);
+            editText.setMovementMethod(LinkMovementMethod.getInstance());
         } else {
-            // Workaround to remove links when editing
             editText.setText(editText.getText().toString());
+            editText.setMovementMethod(ArrowKeyMovementMethod.getInstance());
         }
         editText.setFocusable(enabled);
         editText.setFocusableInTouchMode(enabled);
@@ -395,12 +398,13 @@ public class NoteActivity extends AppCompatActivity {
 
     public void share(View v) {
         Intent share = new Intent(Intent.ACTION_SEND);
-        if (subtitle.equals(""))
-            share.putExtra(Intent.EXTRA_TEXT, title + "\n\n" + content);
-        else
-            share.putExtra(Intent.EXTRA_TEXT, title + "\n(" + subtitle + ")\n\n" + content);
+        share.putExtra(Intent.EXTRA_TEXT, content);
         share.setType("text/plain");
-        startActivity(Intent.createChooser(share, getResources().getString(R.string.share_title)));
+        if (share.resolveActivity(getPackageManager()) != null) {
+            startActivity(Intent.createChooser(share, getResources().getString(R.string.share_via)));
+        } else {
+            Toast.makeText(this, R.string.no_share_app_found, Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void notifBtn(View v) {
@@ -432,28 +436,36 @@ public class NoteActivity extends AppCompatActivity {
             NotificationCompat.Builder notif =
                     new NotificationCompat.Builder(this)
                             .setSmallIcon(R.mipmap.ic_launcher)
-                            .setContentTitle(title)
                             .setContentText(content)
                             .setSubText(info)
                             .setShowWhen(false)
                             .setColor(Color.argb(255, 32, 128, 200));
+
+            if (!TextUtils.isEmpty(title)) {
+                notif.setContentTitle(title);
+            } else {
+                notif.setContentTitle(getString(R.string.note));
+            }
+
             notif.setStyle(new NotificationCompat.BigTextStyle().bigText(content).setSummaryText(time));
             // Sets an ID for the notification
             Log.d("NOTIFICATION ID", String.valueOf(id));
             Intent resultIntent = new Intent(this, NoteActivity.class);
-            resultIntent.putExtra(NotesDb.Note._ID, id);
-            resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_TITLE, title);
-            resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_SUBTITLE, subtitle);
-            resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_CONTENT, content);
-            resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_TIME, time);
-            resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_CREATED_AT, created_at);
-            resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_ARCHIVED, archived);
-            resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_NOTIFIED, notified);
-            resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_COLOR, color);
-            resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_ENCRYPTED, encrypted);
-            resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_PINNED, pinned);
-            resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_TAG, tag);
-            resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_REMINDER, reminder);
+            Bundle bundle = new Bundle();
+            bundle.putInt(NotesDb.Note._ID, id);
+            bundle.putString(NotesDb.Note.COLUMN_NAME_TITLE, title);
+            bundle.putString(NotesDb.Note.COLUMN_NAME_SUBTITLE, subtitle);
+            bundle.putString(NotesDb.Note.COLUMN_NAME_CONTENT, content);
+            bundle.putString(NotesDb.Note.COLUMN_NAME_TIME, time);
+            bundle.putString(NotesDb.Note.COLUMN_NAME_CREATED_AT, created_at);
+            bundle.putInt(NotesDb.Note.COLUMN_NAME_NOTIFIED, notified);
+            bundle.putInt(NotesDb.Note.COLUMN_NAME_ARCHIVED, archived);
+            bundle.putString(NotesDb.Note.COLUMN_NAME_COLOR, color);
+            bundle.putInt(NotesDb.Note.COLUMN_NAME_ENCRYPTED, encrypted);
+            bundle.putInt(NotesDb.Note.COLUMN_NAME_PINNED, pinned);
+            bundle.putInt(NotesDb.Note.COLUMN_NAME_TAG, tag);
+            bundle.putString(NotesDb.Note.COLUMN_NAME_REMINDER, reminder);
+            resultIntent.putExtra(Constants.NOTE_DETAILS_BUNDLE, bundle);
             resultIntent.setAction("ACTION_NOTE_" + id);
 
             TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);

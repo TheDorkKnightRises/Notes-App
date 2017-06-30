@@ -118,7 +118,7 @@ public class AboutActivity extends AppCompatActivity {
         share.putExtra(Intent.EXTRA_TEXT, getString(R.string.check_out) + " \"" + getString(R.string.app_name) + "\" " + getString(R.string.on_play_store) + ":\n" + getString(R.string.link_play_store_app));
         share.setType("text/plain");
         if (share.resolveActivity(getPackageManager()) != null) {
-            startActivity(Intent.createChooser(share, getResources().getString(R.string.share_title)));
+            startActivity(Intent.createChooser(share, getResources().getString(R.string.share_via)));
         } else {
             Toast.makeText(this, R.string.no_share_app_found, Toast.LENGTH_SHORT).show();
         }

@@ -6,8 +6,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
+import android.text.TextUtils;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -44,28 +46,36 @@ public class BootReceiver extends BroadcastReceiver {
             NotificationCompat.Builder notif =
                     new NotificationCompat.Builder(context)
                             .setSmallIcon(R.mipmap.ic_launcher)
-                            .setContentTitle(title)
                             .setContentText(content)
                             .setSubText(info)
                             .setShowWhen(false)
                             .setColor(Color.argb(255, 32, 128, 200));
+
+            if (!TextUtils.isEmpty(title)) {
+                notif.setContentTitle(title);
+            } else {
+                notif.setContentTitle(context.getString(R.string.note));
+            }
+
             notif.setStyle(new NotificationCompat.BigTextStyle().bigText(content).setSummaryText(time));
             // Sets an ID for the notification
             Log.d("NOTIFICATION ID", String.valueOf(id));
             Intent resultIntent = new Intent(context, NoteActivity.class);
-            resultIntent.putExtra(NotesDb.Note._ID, id);
-            resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_TITLE, title);
-            resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_SUBTITLE, subtitle);
-            resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_CONTENT, content);
-            resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_TIME, time);
-            resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_CREATED_AT, note.getCreated_at());
-            resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_ARCHIVED, archived);
-            resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_NOTIFIED, notified);
-            resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_COLOR, note.getColor());
-            resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_ENCRYPTED, note.getEncrypted());
-            resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_PINNED, note.getPinned());
-            resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_TAG, note.getTag());
-            resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_REMINDER, note.getReminder());
+            Bundle bundle = new Bundle();
+            bundle.putInt(NotesDb.Note._ID, id);
+            bundle.putString(NotesDb.Note.COLUMN_NAME_TITLE, title);
+            bundle.putString(NotesDb.Note.COLUMN_NAME_SUBTITLE, subtitle);
+            bundle.putString(NotesDb.Note.COLUMN_NAME_CONTENT, content);
+            bundle.putString(NotesDb.Note.COLUMN_NAME_TIME, time);
+            bundle.putString(NotesDb.Note.COLUMN_NAME_CREATED_AT, note.getCreated_at());
+            bundle.putInt(NotesDb.Note.COLUMN_NAME_NOTIFIED, notified);
+            bundle.putInt(NotesDb.Note.COLUMN_NAME_ARCHIVED, archived);
+            bundle.putString(NotesDb.Note.COLUMN_NAME_COLOR, note.getColor());
+            bundle.putInt(NotesDb.Note.COLUMN_NAME_ENCRYPTED, note.getEncrypted());
+            bundle.putInt(NotesDb.Note.COLUMN_NAME_PINNED, note.getPinned());
+            bundle.putInt(NotesDb.Note.COLUMN_NAME_TAG, note.getTag());
+            bundle.putString(NotesDb.Note.COLUMN_NAME_REMINDER, note.getReminder());
+            resultIntent.putExtra(Constants.NOTE_DETAILS_BUNDLE, bundle);
             resultIntent.setAction("ACTION_NOTE_" + id);
 
             TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
