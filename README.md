@@ -10,6 +10,7 @@ A simple Material Design note-taking experience for Android
 - Homescreen widget
 - Notification shortcut for creating new note
 - App Shortcuts (on Android 7.1+)
+- Create notes using "OK Google" voice actions
 - Optional light theme
 
 ## Instructions for building
