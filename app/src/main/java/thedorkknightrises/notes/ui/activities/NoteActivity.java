@@ -33,6 +33,8 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.actions.NoteIntents;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
@@ -88,7 +90,7 @@ public class NoteActivity extends AppCompatActivity {
 
         dbHelper = new NotesDbHelper(this);
 
-        Bundle bundle = getIntent().getExtras();
+        Bundle bundle = getIntent().getBundleExtra(Constants.NOTE_DETAILS_BUNDLE);
         if (bundle != null) {
             editMode = false;
             id = bundle.getInt(NotesDb.Note._ID);
@@ -187,6 +189,25 @@ public class NoteActivity extends AppCompatActivity {
         }
 
         Log.e("Note:", "id: " + id + " created_at: " + created_at);
+        Intent intent = getIntent();
+        if (NoteIntents.ACTION_CREATE_NOTE.equals(intent.getAction())) {
+            if (intent.hasExtra(Intent.EXTRA_TEXT)) {
+                content = getIntent().getExtras().getString(Intent.EXTRA_TEXT);
+                if (!TextUtils.isEmpty(content)) contentText.setText(content);
+            }
+            if (intent.hasExtra(Intent.EXTRA_SUBJECT)) {
+                title = getIntent().getExtras().getString(Intent.EXTRA_SUBJECT);
+                if (!TextUtils.isEmpty(title)) titleText.setText(title);
+            }
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    toolbar.setVisibility(View.VISIBLE);
+                    if (savedInstanceState == null && !editMode) revealToolbar();
+                    onClick(fab);
+                }
+            }, 350);
+        }
     }
 
     @Override
