@@ -6,6 +6,7 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="fab_margin">24dp</dimen>
+    <dimen name="mini_fab_margin">20dp</dimen>
     <dimen name="note_toolbar_height">56dp</dimen>
 
     <!--

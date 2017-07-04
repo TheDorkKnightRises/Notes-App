@@ -9,6 +9,7 @@ import android.widget.RemoteViewsService;
 
 import java.util.ArrayList;
 
+import thedorkknightrises.notes.Constants;
 import thedorkknightrises.notes.NoteObj;
 import thedorkknightrises.notes.R;
 import thedorkknightrises.notes.data.NotesDb;
@@ -59,25 +60,34 @@ public class NotesWidgetService extends RemoteViewsService {
         @Override
         public RemoteViews getViewAt(int position) {
             RemoteViews remoteViews = new RemoteViews(this.context.getPackageName(), R.layout.note_layout_widget);
-            NoteObj noteObj = notes.get(position);
-            if (noteObj != null) {
-                remoteViews.setTextViewText(R.id.note_title, noteObj.getTitle());
-                if ("".equals(noteObj.getSubtitle()))
+            NoteObj note = notes.get(position);
+            if (note != null) {
+                if ("".equals(note.getTitle()))
+                    remoteViews.setViewVisibility(R.id.note_title, View.GONE);
+                else remoteViews.setTextViewText(R.id.note_title, note.getTitle());
+                if ("".equals(note.getSubtitle()))
                     remoteViews.setViewVisibility(R.id.note_subtitle, View.GONE);
-                else remoteViews.setTextViewText(R.id.note_subtitle, noteObj.getSubtitle());
-                remoteViews.setTextViewText(R.id.note_content, noteObj.getContent());
-                remoteViews.setTextViewText(R.id.note_date, noteObj.getTime());
+                else remoteViews.setTextViewText(R.id.note_subtitle, note.getSubtitle());
+                remoteViews.setTextViewText(R.id.note_content, note.getContent());
+                remoteViews.setTextViewText(R.id.note_date, note.getTime());
 
-                Bundle extras = new Bundle();
-                extras.putInt(NotesDb.Note._ID, noteObj.getId());
-                extras.putString(NotesDb.Note.COLUMN_NAME_TITLE, noteObj.getTitle());
-                extras.putString(NotesDb.Note.COLUMN_NAME_SUBTITLE, noteObj.getSubtitle());
-                extras.putString(NotesDb.Note.COLUMN_NAME_CONTENT, noteObj.getContent());
-                extras.putString(NotesDb.Note.COLUMN_NAME_TIME, noteObj.getTime());
-                extras.putInt(NotesDb.Note.COLUMN_NAME_ARCHIVED, noteObj.getArchived());
-                extras.putInt(NotesDb.Note.COLUMN_NAME_NOTIFIED, noteObj.getNotified());
+                Bundle bundle = new Bundle();
+                bundle.putInt(NotesDb.Note._ID, note.getId());
+                bundle.putString(NotesDb.Note.COLUMN_NAME_TITLE, note.getTitle());
+                bundle.putString(NotesDb.Note.COLUMN_NAME_SUBTITLE, note.getSubtitle());
+                bundle.putString(NotesDb.Note.COLUMN_NAME_CONTENT, note.getContent());
+                bundle.putString(NotesDb.Note.COLUMN_NAME_TIME, note.getTime());
+                bundle.putString(NotesDb.Note.COLUMN_NAME_CREATED_AT, note.getCreated_at());
+                bundle.putInt(NotesDb.Note.COLUMN_NAME_NOTIFIED, note.getNotified());
+                bundle.putInt(NotesDb.Note.COLUMN_NAME_ARCHIVED, note.getArchived());
+                bundle.putString(NotesDb.Note.COLUMN_NAME_COLOR, note.getColor());
+                bundle.putInt(NotesDb.Note.COLUMN_NAME_ENCRYPTED, note.getEncrypted());
+                bundle.putInt(NotesDb.Note.COLUMN_NAME_PINNED, note.getPinned());
+                bundle.putInt(NotesDb.Note.COLUMN_NAME_TAG, note.getTag());
+                bundle.putString(NotesDb.Note.COLUMN_NAME_REMINDER, note.getReminder());
+                bundle.putInt(NotesDb.Note.COLUMN_NAME_CHECKLIST, note.getChecklist());
                 Intent fillInIntent = new Intent();
-                fillInIntent.putExtras(extras);
+                fillInIntent.putExtra(Constants.NOTE_DETAILS_BUNDLE, bundle);
                 // Make it possible to distinguish the individual on-click
                 // action of a given item
                 remoteViews.setOnClickFillInIntent(R.id.note_card_widget, fillInIntent);

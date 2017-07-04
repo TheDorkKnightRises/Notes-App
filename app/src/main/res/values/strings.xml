@@ -39,7 +39,9 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="create_note">Create new note</string>
-    <string name="tap_create_note">Tap to create a new note</string>
+    <string name="new_note">New note</string>
+    <string name="new_checklist">New checklist</string>
+    <string name="tap_create_note">Tap to create a new note in NotePal</string>
     <string name="delete">Delete</string>
     <string name="confirm_delete">Are you sure you want to delete all notes? This action cannot be undone!</string>
     <string name="confirm_clear_notifications">Are you sure you want to clear all notifications?</string>
@@ -134,4 +136,18 @@
     <string name="ads_enabled_sub">Show ads to support development</string>
     <string name="no_connection">No network connection</string>
     <string name="connecting">Connecting…</string>
+    <string name="reminders">Reminders</string>
+    <string name="show_notification">Show as notification</string>
+    <string name="set_reminder">Set reminder</string>
+    <string name="invalid_time">Cannot set reminder in the past!</string>
+    <string name="missed_reminder">Missed reminder</string>
+    <string name="reminder_sound">Enable alert sound</string>
+    <string name="reminder_sound_sub">Disable this to show silent reminders</string>
+    <string name="clear_reminders">Clear all reminders</string>
+    <string name="clear_reminders_sub">Turn off all reminders that have been set</string>
+    <string name="reminder_vibrate">Enable vibrations</string>
+    <string name="reminder_vibrate_sub">Device will vibrate when a reminder is shown</string>
+    <string name="reminder_led">Enable notification LED</string>
+    <string name="reminder_led_sub">Pulse the LED if the device has one</string>
+    <string name="confirm_clear_reminders">Are you sure you want to clear all reminders?</string>
 </resources>

@@ -66,7 +66,7 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
     NotificationManager mNotifyMgr;
     ProgressDialog progress;
     private SharedPreferences pref;
-    private SwitchCompat theme_switch, notif_switch, ad_switch;
+    private SwitchCompat theme_switch, notif_switch, ad_switch, reminder_sound_switch, reminder_vibrate_switch, reminder_led_switch;
     private int type = 0;
 
     @Override
@@ -129,6 +129,39 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
                 e.apply();
             }
         });
+
+        reminder_vibrate_switch = (SwitchCompat) findViewById(R.id.reminder_vibrate_switch);
+        reminder_vibrate_switch.setChecked(pref.getBoolean(Constants.REMINDER_VIBRATE, true));
+        reminder_vibrate_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                SharedPreferences.Editor e = pref.edit();
+                e.putBoolean(Constants.REMINDER_VIBRATE, isChecked);
+                e.apply();
+            }
+        });
+
+        reminder_sound_switch = (SwitchCompat) findViewById(R.id.reminder_sound_switch);
+        reminder_sound_switch.setChecked(pref.getBoolean(Constants.REMINDER_SOUND, true));
+        reminder_sound_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                SharedPreferences.Editor e = pref.edit();
+                e.putBoolean(Constants.REMINDER_SOUND, isChecked);
+                e.apply();
+            }
+        });
+
+        reminder_led_switch = (SwitchCompat) findViewById(R.id.reminder_led_switch);
+        reminder_led_switch.setChecked(pref.getBoolean(Constants.REMINDER_LED, true));
+        reminder_led_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                SharedPreferences.Editor e = pref.edit();
+                e.putBoolean(Constants.REMINDER_LED, isChecked);
+                e.apply();
+            }
+        });
     }
 
     @Override
@@ -163,6 +196,12 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
             notif_switch.toggle();
         } else if (v.equals(findViewById(R.id.ads_switch_row))) {
             ad_switch.toggle();
+        } else if (v.equals(findViewById(R.id.reminder_sound_switch_row))) {
+            reminder_sound_switch.toggle();
+        } else if (v.equals(findViewById(R.id.reminder_vibrate_switch_row))) {
+            reminder_vibrate_switch.toggle();
+        } else if (v.equals(findViewById(R.id.reminder_led_switch_row))) {
+            reminder_led_switch.toggle();
         }
     }
 
@@ -170,8 +209,10 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
         NotificationCompat.Builder notif =
                 new NotificationCompat.Builder(this)
                         .setSmallIcon(R.mipmap.ic_launcher)
+                        .setContentTitle(getString(R.string.new_note))
                         .setContentText(getString(R.string.tap_create_note))
                         .setShowWhen(false)
+                        .setGroup(Constants.QUICK_NOTIFY)
                         .setPriority(NotificationCompat.PRIORITY_MIN)
                         .setColor(Color.argb(255, 32, 128, 200));
         Intent resultIntent = new Intent(this, NoteActivity.class);
@@ -312,7 +353,6 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
                     public void onClick(DialogInterface dialog, int which) {
                         NotesDbHelper dbHelper = new NotesDbHelper(SettingsActivity.this);
                         dbHelper.deleteAllNotes();
-                        MainActivity.changed = true;
                         NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
                         mNotifyMgr.cancelAll();
                         new BootReceiver().onReceive(SettingsActivity.this, null);
@@ -335,9 +375,28 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
                     public void onClick(DialogInterface dialog, int which) {
                         NotesDbHelper dbHelper = new NotesDbHelper(SettingsActivity.this);
                         dbHelper.clearAllNotifications();
-                        MainActivity.changed = true;
                         NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
                         mNotifyMgr.cancelAll();
+                        new BootReceiver().onReceive(SettingsActivity.this, null);
+                    }
+                })
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .show();
+    }
+
+    public void clearAllReminders(View view) {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this, R.style.AppTheme_PopupOverlay);
+        dialog.setMessage(R.string.confirm_clear_reminders)
+                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        NotesDbHelper dbHelper = new NotesDbHelper(SettingsActivity.this);
+                        dbHelper.clearAllReminders();
                         new BootReceiver().onReceive(SettingsActivity.this, null);
                     }
                 })
@@ -457,7 +516,6 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
         protected void onPostExecute(Boolean result) {
             file.delete();
             if (result) {
-                MainActivity.changed = true;
                 Toast.makeText(context, getString(R.string.restored), Toast.LENGTH_SHORT).show();
                 NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
                 mNotifyMgr.cancelAll();

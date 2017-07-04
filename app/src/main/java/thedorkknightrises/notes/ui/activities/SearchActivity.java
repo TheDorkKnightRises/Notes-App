@@ -173,7 +173,8 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
                             cursor.getInt(9),
                             cursor.getInt(10),
                             cursor.getInt(11),
-                            cursor.getString(12));
+                            cursor.getString(12),
+                            cursor.getInt(13));
                     if (noteObj.getArchived() == MainActivity.archive)
                         noteObjArrayList.add(noteObj);
                 } while (cursor.moveToNext());

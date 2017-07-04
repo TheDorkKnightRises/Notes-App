@@ -1,5 +1,6 @@
 package thedorkknightrises.notes.ui.activities;
 
+import android.animation.ObjectAnimator;
 import android.app.LoaderManager;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
@@ -13,6 +14,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityOptionsCompat;
@@ -54,8 +56,6 @@ import static thedorkknightrises.notes.Constants.OLDEST_FIRST;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, LoaderManager.LoaderCallbacks<Cursor> {
-    public static boolean added = false;
-    static boolean changed = true;
     static boolean lightTheme;
     static int archive = 0;
     public NotesAdapter mAdapter;
@@ -68,6 +68,9 @@ public class MainActivity extends AppCompatActivity
     SharedPreferences pref;
     NativeExpressAdView adView;
     RelativeLayout adContainer;
+    View addNoteView, addListView;
+    View.OnClickListener fabClickListener, addNoteListener, addListListener;
+    boolean fabOpen = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,16 +112,62 @@ public class MainActivity extends AppCompatActivity
         getLoaderManager().initLoader(0, null, this);
 
         fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        addNoteView = findViewById(R.id.note_fab);
+        addListView = findViewById(R.id.list_fab);
+
+        //TODO: Remove this listener when checklists are implemented
+        fabClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(getBaseContext(), NoteActivity.class);
+                Intent i = new Intent(MainActivity.this, NoteActivity.class);
+                i.putExtra(NotesDb.Note.COLUMN_NAME_CHECKLIST, false);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this);
                     startActivity(i, options.toBundle());
                 } else startActivity(i);
             }
-        });
+        };
+
+        /*fabClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (fabOpen) {
+                    closeFabMenu();
+                } else {
+                    showFabMenu();
+                }
+            }
+        };
+
+        addNoteListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                closeFabMenu();
+                Intent i = new Intent(MainActivity.this, NoteActivity.class);
+                i.putExtra(NotesDb.Note.COLUMN_NAME_CHECKLIST, false);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this);
+                    startActivity(i, options.toBundle());
+                } else startActivity(i);
+
+            }
+        };
+
+        addListListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                closeFabMenu();
+                Intent i = new Intent(MainActivity.this, NoteActivity.class);
+                i.putExtra(NotesDb.Note.COLUMN_NAME_CHECKLIST, true);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this);
+                    startActivity(i, options.toBundle());
+                } else startActivity(i);
+
+            }
+        };*/
+
+        fab.setOnClickListener(fabClickListener);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -172,15 +221,53 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    public float convertDpToPixel(float dp) {
+        return dp * getResources().getDisplayMetrics().density;
+    }
+
+    private void showFabMenu() {
+        fab.setOnClickListener(null);
+        fab.animate().rotationBy(45f).setDuration(300).start();
+        fabOpen = true;
+        addNoteView.setVisibility(View.VISIBLE);
+        addNoteView.setAlpha(0f);
+        addNoteView.animate().translationYBy(convertDpToPixel(-52)).alpha(1f).setDuration(300).start();
+        addListView.setVisibility(View.VISIBLE);
+        addListView.setAlpha(0f);
+        addListView.animate().translationYBy(convertDpToPixel(-100)).alpha(1f).setDuration(300).start();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                fab.setOnClickListener(fabClickListener);
+                addNoteView.setOnClickListener(addNoteListener);
+                addListView.setOnClickListener(addListListener);
+            }
+        }, 300);
+    }
+
+    private void closeFabMenu() {
+        fab.setOnClickListener(null);
+        ObjectAnimator.ofFloat(fab, "rotation", 45f, 0f).start();
+        fabOpen = false;
+        addNoteView.animate().translationYBy(convertDpToPixel(52)).alpha(0f).setDuration(300).start();
+        addListView.animate().translationYBy(convertDpToPixel(100)).alpha(0f).setDuration(300).start();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                addNoteView.setVisibility(View.GONE);
+                addListView.setVisibility(View.GONE);
+                addNoteView.setOnClickListener(null);
+                addListView.setOnClickListener(null);
+                fab.setOnClickListener(fabClickListener);
+            }
+        }, 300);
+    }
+
 
     @Override
     public void onResume() {
-        if (changed) {
-            getLoaderManager().restartLoader(0, null, this);
-            changed = false;
-            added = false;
-            updateWidgets();
-        }
+        getLoaderManager().restartLoader(0, null, this);
+        updateWidgets();
 
         if (archive == 1)
             getSupportActionBar().setTitle(R.string.archive);
@@ -320,7 +407,8 @@ public class MainActivity extends AppCompatActivity
                 NotesDb.Note.COLUMN_NAME_ENCRYPTED,
                 NotesDb.Note.COLUMN_NAME_PINNED,
                 NotesDb.Note.COLUMN_NAME_TAG,
-                NotesDb.Note.COLUMN_NAME_REMINDER
+                NotesDb.Note.COLUMN_NAME_REMINDER,
+                NotesDb.Note.COLUMN_NAME_CHECKLIST
         };
 
         String sort;
@@ -355,7 +443,8 @@ public class MainActivity extends AppCompatActivity
                             cursor.getInt(9),
                             cursor.getInt(10),
                             cursor.getInt(11),
-                            cursor.getString(12));
+                            cursor.getString(12),
+                            cursor.getInt(13));
                     if (noteObj.getArchived() == archive) noteObjArrayList.add(noteObj);
                 } while (cursor.moveToNext());
             }

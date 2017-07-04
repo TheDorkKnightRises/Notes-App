@@ -15,4 +15,8 @@ public final class Constants {
     public static final String QUICK_NOTIFY = "quick_notify";
     public static final String ADS_ENABLED = "ads_enabled";
     public static final String NOTE_DETAILS_BUNDLE = "note_details_bundle";
+    public static final String REMINDER_ONGOING = "reminder_ongoing";
+    public static final String REMINDER_SOUND = "reminder_sound";
+    public static final String REMINDER_VIBRATE = "reminder_vibrate";
+    public static final String REMINDER_LED = "reminder_led";
 }

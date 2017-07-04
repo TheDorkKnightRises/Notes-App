@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <Switch
+        android:id="@+id/notification_switch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:padding="@dimen/mini_fab_margin"
+        android:text="@string/show_notification"
+        android:textSize="16sp" />
+
+    <Switch
+        android:id="@+id/reminder_switch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:padding="@dimen/mini_fab_margin"
+        android:text="@string/set_reminder"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/reminder_time"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="@dimen/mini_fab_margin"
+        android:visibility="gone" />
+
+</LinearLayout>

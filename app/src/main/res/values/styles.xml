@@ -48,4 +48,18 @@
         <item name="android:background">?attr/selectableItemBackground</item>
     </style>
 
+    <style name="BottomSheet.Dark" parent="Theme.Design.BottomSheetDialog">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/background_dark</item>
+        <item name="colorPrimaryDark">@color/statusbar_dark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="BottomSheet.Light" parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="colorPrimary">@color/background_light</item>
+        <item name="colorPrimaryDark">@color/dark_gray</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textColorPrimary">@color/black</item>
+    </style>
+
 </resources>

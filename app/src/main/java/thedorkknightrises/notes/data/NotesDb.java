@@ -25,6 +25,6 @@ public class NotesDb {
         public static final String COLUMN_NAME_PINNED = "pinned";
         public static final String COLUMN_NAME_TAG = "tag";
         public static final String COLUMN_NAME_REMINDER = "reminder";
-
+        public static final String COLUMN_NAME_CHECKLIST = "checklist";
     }
 }

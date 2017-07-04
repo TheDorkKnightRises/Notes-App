@@ -9,8 +9,8 @@ import android.net.Uri;
 import android.util.Log;
 import android.widget.RemoteViews;
 
+import thedorkknightrises.notes.Constants;
 import thedorkknightrises.notes.R;
-import thedorkknightrises.notes.data.NotesDb;
 import thedorkknightrises.notes.ui.activities.MainActivity;
 import thedorkknightrises.notes.ui.activities.NoteActivity;
 
@@ -18,21 +18,16 @@ import thedorkknightrises.notes.ui.activities.NoteActivity;
  * Implementation of App Widget functionality.
  */
 public class NotesWidget extends AppWidgetProvider {
-    public static final String EXTRA = "thedorkknightrises.notes.EXTRA";
     private static final String TAP_ACTION = "thedorkknightrises.notes.TAP_ACTION";
 
     // Called when the BroadcastReceiver receives an Intent broadcast.
-    // Checks to see whether the intent's action is TAP_ACTION. If it is, the app widget
-    // displays a Toast message for the current item.
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.d("WIDGET", "onReceive");
         if (intent.getAction().equals(TAP_ACTION)) {
-            int id = intent.getExtras().getInt(NotesDb.Note._ID, -1);
-            if (id != -1) {
+            if (intent.hasExtra(Constants.NOTE_DETAILS_BUNDLE)) {
                 Intent i = new Intent(context, NoteActivity.class);
                 i.putExtras(intent.getExtras());
-                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(i);
             }
         }

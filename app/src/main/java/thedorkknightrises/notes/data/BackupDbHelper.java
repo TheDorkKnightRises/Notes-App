@@ -4,12 +4,13 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 /**
  * Created by Samriddha Basu on 6/20/2016.
  */
 public class BackupDbHelper extends SQLiteOpenHelper {
-    public static final int DATABASE_VERSION = 4;
+    public static final int DATABASE_VERSION = 5;
     public static final String DATABASE_NAME = "Backup.db";
     private static final String TEXT_TYPE = " TEXT";
     private static final String COMMA_SEP = ",";
@@ -27,7 +28,8 @@ public class BackupDbHelper extends SQLiteOpenHelper {
                     NotesDb.Note.COLUMN_NAME_ENCRYPTED + " INTEGER" + COMMA_SEP +
                     NotesDb.Note.COLUMN_NAME_PINNED + " INTEGER" + COMMA_SEP +
                     NotesDb.Note.COLUMN_NAME_TAG + " INTEGER" + COMMA_SEP +
-                    NotesDb.Note.COLUMN_NAME_REMINDER + TEXT_TYPE + " ) ";
+                    NotesDb.Note.COLUMN_NAME_REMINDER + TEXT_TYPE + COMMA_SEP +
+                    NotesDb.Note.COLUMN_NAME_CHECKLIST + " INTEGER" + " ) ";
     private static final String SQL_DELETE_ENTRIES =
             "DROP TABLE IF EXISTS " + NotesDb.Note.TABLE_NAME;
 
@@ -40,8 +42,14 @@ public class BackupDbHelper extends SQLiteOpenHelper {
     }
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL(SQL_DELETE_ENTRIES);
-        onCreate(db);
+        if (oldVersion == 4 && newVersion == 5) {
+            db.execSQL("ALTER TABLE " + NotesDb.Note.TABLE_NAME + " ADD COLUMN " + NotesDb.Note.COLUMN_NAME_CHECKLIST + " INTEGER DEFAULT 0;" +
+                    "UPDATE TABLE " + NotesDb.Note.TABLE_NAME + " SET " + NotesDb.Note.COLUMN_NAME_CHECKLIST + " = 0");
+            Log.d(getClass().getName(), "Database updated successfully to version 5 (added checklist column)");
+        } else {
+            db.execSQL(SQL_DELETE_ENTRIES);
+            onCreate(db);
+        }
     }
 
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
@@ -64,7 +72,8 @@ public class BackupDbHelper extends SQLiteOpenHelper {
                 NotesDb.Note.COLUMN_NAME_ENCRYPTED,
                 NotesDb.Note.COLUMN_NAME_PINNED,
                 NotesDb.Note.COLUMN_NAME_TAG,
-                NotesDb.Note.COLUMN_NAME_REMINDER
+                NotesDb.Note.COLUMN_NAME_REMINDER,
+                NotesDb.Note.COLUMN_NAME_CHECKLIST
         };
         Cursor cursor = db.query(NotesDb.Note.TABLE_NAME, projection, null, null, null, null, NotesDb.Note._ID);
 
@@ -82,7 +91,8 @@ public class BackupDbHelper extends SQLiteOpenHelper {
                         cursor.getInt(9),
                         cursor.getInt(10),
                         cursor.getInt(11),
-                        cursor.getString(12));
+                        cursor.getString(12),
+                        cursor.getInt(13));
             } while (cursor.moveToNext());
         }
 

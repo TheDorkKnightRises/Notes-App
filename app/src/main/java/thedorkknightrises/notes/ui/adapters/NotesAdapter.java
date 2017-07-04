@@ -73,6 +73,7 @@ public class NotesAdapter extends RecyclerViewCursorAdapter<NotesAdapter.ViewHol
         final int pinned = cursor.getInt(cursor.getColumnIndex(NotesDb.Note.COLUMN_NAME_PINNED));
         final int tag = cursor.getInt(cursor.getColumnIndex(NotesDb.Note.COLUMN_NAME_TAG));
         final String reminder = cursor.getString(cursor.getColumnIndex(NotesDb.Note.COLUMN_NAME_REMINDER));
+        final int checklist = cursor.getInt(cursor.getColumnIndex(NotesDb.Note.COLUMN_NAME_CHECKLIST));
 
         if (TextUtils.isEmpty(title)) {
             holder.title.setVisibility(View.GONE);
@@ -102,6 +103,7 @@ public class NotesAdapter extends RecyclerViewCursorAdapter<NotesAdapter.ViewHol
                 bundle.putInt(NotesDb.Note.COLUMN_NAME_PINNED, pinned);
                 bundle.putInt(NotesDb.Note.COLUMN_NAME_TAG, tag);
                 bundle.putString(NotesDb.Note.COLUMN_NAME_REMINDER, reminder);
+                bundle.putInt(NotesDb.Note.COLUMN_NAME_CHECKLIST, checklist);
                 i.putExtra(Constants.NOTE_DETAILS_BUNDLE, bundle);
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
