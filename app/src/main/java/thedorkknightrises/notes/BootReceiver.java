@@ -7,6 +7,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
@@ -44,7 +45,6 @@ public class BootReceiver extends BroadcastReceiver {
             String time = note.getTime();
             // Sets an ID for the notification
             Log.d("ID", String.valueOf(id));
-            Intent resultIntent = new Intent(context, NoteActivity.class);
             Bundle bundle = new Bundle();
             bundle.putInt(NotesDb.Note._ID, id);
             bundle.putString(NotesDb.Note.COLUMN_NAME_TITLE, title);
@@ -62,6 +62,7 @@ public class BootReceiver extends BroadcastReceiver {
             bundle.putInt(NotesDb.Note.COLUMN_NAME_CHECKLIST, note.getChecklist());
 
             if (!note.getReminder().equals(Constants.REMINDER_NONE)) {
+                Intent resultIntent = new Intent(context, AlarmReceiver.class);
                 bundle.putString(NotesDb.Note.COLUMN_NAME_REMINDER, Constants.REMINDER_NONE);
                 resultIntent.putExtra(Constants.NOTE_DETAILS_BUNDLE, bundle);
 
@@ -108,7 +109,14 @@ public class BootReceiver extends BroadcastReceiver {
                         Log.e(getClass().getName(), "Settings alarm at " + note.getReminder() + " for note id " + id);
                         PendingIntent alarmIntent = PendingIntent.getBroadcast(context, id, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
                         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-                        alarmManager.set(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), alarmIntent);
+
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), alarmIntent);
+                        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                            alarmManager.setExact(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), alarmIntent);
+                        } else {
+                            alarmManager.set(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), alarmIntent);
+                        }
                     }
                 } catch (ParseException e) {
                     e.printStackTrace();
@@ -137,6 +145,7 @@ public class BootReceiver extends BroadcastReceiver {
 
                 notif.setStyle(new NotificationCompat.BigTextStyle().bigText(content).setSummaryText(time));
 
+                Intent resultIntent = new Intent(context, NoteActivity.class);
                 bundle.putString(NotesDb.Note.COLUMN_NAME_REMINDER, note.getReminder());
                 resultIntent.putExtra(Constants.NOTE_DETAILS_BUNDLE, bundle);
                 resultIntent.setAction("ACTION_NOTE_" + id);

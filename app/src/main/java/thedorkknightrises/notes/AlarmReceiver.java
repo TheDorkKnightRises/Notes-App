@@ -105,6 +105,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                     notif.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
                 if (pref.getBoolean(Constants.REMINDER_VIBRATE, true))
                     notif.setVibrate(new long[]{1000, 1000, 1000, 1000, 1000, 1000});
+                else notif.setVibrate(new long[]{0, 0});
                 if (pref.getBoolean(Constants.REMINDER_LED, true))
                     notif.setLights(Color.argb(255, 32, 128, 200), 1000, 1000);
 
