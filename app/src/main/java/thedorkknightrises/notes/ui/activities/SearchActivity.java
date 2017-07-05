@@ -139,7 +139,8 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
                 NotesDb.Note.COLUMN_NAME_ENCRYPTED,
                 NotesDb.Note.COLUMN_NAME_PINNED,
                 NotesDb.Note.COLUMN_NAME_TAG,
-                NotesDb.Note.COLUMN_NAME_REMINDER
+                NotesDb.Note.COLUMN_NAME_REMINDER,
+                NotesDb.Note.COLUMN_NAME_CHECKLIST
         };
 
         String selection = NotesDb.Note.COLUMN_NAME_ARCHIVED + " LIKE " + MainActivity.archive
