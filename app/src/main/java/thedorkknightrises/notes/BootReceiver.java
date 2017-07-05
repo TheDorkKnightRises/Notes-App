@@ -22,6 +22,7 @@ import java.util.Calendar;
 import thedorkknightrises.notes.data.NotesDb;
 import thedorkknightrises.notes.data.NotesDbHelper;
 import thedorkknightrises.notes.ui.activities.NoteActivity;
+import thedorkknightrises.notes.ui.activities.SettingsActivity;
 
 import static android.content.Context.MODE_PRIVATE;
 import static android.content.Context.NOTIFICATION_SERVICE;
@@ -96,7 +97,7 @@ public class BootReceiver extends BroadcastReceiver {
                         stackBuilder.addNextIntent(resultIntent);
                         // Gets a PendingIntent containing the entire back stack
                         PendingIntent resultPendingIntent =
-                                stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+                                stackBuilder.getPendingIntent(id, PendingIntent.FLAG_UPDATE_CURRENT);
 
                         notif.setAutoCancel(true);
                         notif.setContentIntent(resultPendingIntent);
@@ -156,7 +157,10 @@ public class BootReceiver extends BroadcastReceiver {
                 stackBuilder.addNextIntent(resultIntent);
                 // Gets a PendingIntent containing the entire back stack
                 PendingIntent resultPendingIntent =
-                        stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+                        stackBuilder.getPendingIntent(id, PendingIntent.FLAG_UPDATE_CURRENT);
+
+                // TODO: Add actions to open and dismiss
+                // notif.addAction(R.drawable.common_full_open_on_phone, getString(R.string.open_app), resultPendingIntent);
 
                 notif.setContentIntent(resultPendingIntent);
                 notif.setOngoing(true);
@@ -186,6 +190,20 @@ public class BootReceiver extends BroadcastReceiver {
             // Gets a PendingIntent containing the entire back stack
             PendingIntent resultPendingIntent =
                     stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+
+            notif.addAction(R.drawable.ic_note_white_24dp, context.getString(R.string.new_note), resultPendingIntent);
+            // TODO: Uncomment once checklists are implemented
+            // resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_CHECKLIST, true);
+            // resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+            // notif.addAction(R.drawable.ic_list_white_24dp, context.getString(R.string.new_checklist), resultPendingIntent);
+
+            Intent settingsIntent = new Intent(context, SettingsActivity.class);
+            TaskStackBuilder newStackBuilder = TaskStackBuilder.create(context);
+            newStackBuilder.addParentStack(NoteActivity.class);
+            newStackBuilder.addNextIntent(settingsIntent);
+            resultPendingIntent =
+                    newStackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+            notif.addAction(R.drawable.ic_settings_white_24dp, context.getString(R.string.action_settings), resultPendingIntent);
 
             notif.setContentIntent(resultPendingIntent);
             notif.setOngoing(true);

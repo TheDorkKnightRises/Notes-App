@@ -226,6 +226,20 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
         PendingIntent resultPendingIntent =
                 stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
 
+        notif.addAction(R.drawable.ic_note_white_24dp, getString(R.string.new_note), resultPendingIntent);
+        // TODO: Uncomment once checklists are implemented
+        // resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_CHECKLIST, true);
+        // resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+        // notif.addAction(R.drawable.ic_list_white_24dp, getString(R.string.new_checklist), resultPendingIntent);
+
+        Intent settingsIntent = new Intent(this, SettingsActivity.class);
+        TaskStackBuilder newStackBuilder = TaskStackBuilder.create(this);
+        newStackBuilder.addParentStack(NoteActivity.class);
+        newStackBuilder.addNextIntent(settingsIntent);
+        resultPendingIntent =
+                newStackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+        notif.addAction(R.drawable.ic_settings_white_24dp, getString(R.string.action_settings), resultPendingIntent);
+
         notif.setContentIntent(resultPendingIntent);
         notif.setOngoing(true);
 

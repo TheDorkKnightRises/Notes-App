@@ -174,8 +174,10 @@ public class NoteActivity extends AppCompatActivity {
             Calendar c = Calendar.getInstance();
             //get date and time, specifically in 24-hr format suitable for sorting
             created_at = sdf.format(c.getTime());
-            if (getIntent().getBooleanExtra(NotesDb.Note.COLUMN_NAME_CHECKLIST, false))
+            if (getIntent().getBooleanExtra(NotesDb.Note.COLUMN_NAME_CHECKLIST, false)) {
                 checklist = 1;
+                Log.e(getClass().getName(), "New checklist");
+            }
         }
 
         if (!editMode) {
@@ -614,7 +616,10 @@ public class NoteActivity extends AppCompatActivity {
             stackBuilder.addNextIntent(resultIntent);
             // Gets a PendingIntent containing the entire back stack
             PendingIntent resultPendingIntent =
-                    stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+                    stackBuilder.getPendingIntent(id, PendingIntent.FLAG_UPDATE_CURRENT);
+
+            // TODO: Add actions to open and dismiss
+            // notif.addAction(R.drawable.common_full_open_on_phone, getString(R.string.open_app), resultPendingIntent);
 
             notif.setContentIntent(resultPendingIntent);
             notif.setOngoing(true);

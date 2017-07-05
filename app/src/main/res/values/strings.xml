@@ -150,4 +150,5 @@
     <string name="reminder_led">Enable notification LED</string>
     <string name="reminder_led_sub">Pulse the LED if the device has one</string>
     <string name="confirm_clear_reminders">Are you sure you want to clear all reminders?</string>
+    <string name="dismiss">Dismiss</string>
 </resources>
