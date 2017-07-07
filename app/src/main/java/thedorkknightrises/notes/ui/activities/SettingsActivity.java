@@ -232,6 +232,9 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
         // resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
         // notif.addAction(R.drawable.ic_list_white_24dp, getString(R.string.new_checklist), resultPendingIntent);
 
+        notif.setContentIntent(resultPendingIntent);
+        notif.setOngoing(true);
+
         Intent settingsIntent = new Intent(this, SettingsActivity.class);
         TaskStackBuilder newStackBuilder = TaskStackBuilder.create(this);
         newStackBuilder.addParentStack(NoteActivity.class);
@@ -239,9 +242,6 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
         resultPendingIntent =
                 newStackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
         notif.addAction(R.drawable.ic_settings_white_24dp, getString(R.string.action_settings), resultPendingIntent);
-
-        notif.setContentIntent(resultPendingIntent);
-        notif.setOngoing(true);
 
         // Builds the notification and issues it.
         mNotifyMgr.notify(0, notif.build());

@@ -618,11 +618,11 @@ public class NoteActivity extends AppCompatActivity {
             PendingIntent resultPendingIntent =
                     stackBuilder.getPendingIntent(id, PendingIntent.FLAG_UPDATE_CURRENT);
 
-            // TODO: Add actions to open and dismiss
-            // notif.addAction(R.drawable.common_full_open_on_phone, getString(R.string.open_app), resultPendingIntent);
-
             notif.setContentIntent(resultPendingIntent);
             notif.setOngoing(true);
+
+            // TODO: Add actions to open and dismiss
+            // notif.addAction(R.drawable.common_full_open_on_phone, getString(R.string.open_app), resultPendingIntent);
 
             Log.d("Note:", "id: " + id + " created_at: " + created_at);
             // Builds the notification and issues it.

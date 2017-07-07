@@ -159,11 +159,11 @@ public class BootReceiver extends BroadcastReceiver {
                 PendingIntent resultPendingIntent =
                         stackBuilder.getPendingIntent(id, PendingIntent.FLAG_UPDATE_CURRENT);
 
-                // TODO: Add actions to open and dismiss
-                // notif.addAction(R.drawable.common_full_open_on_phone, getString(R.string.open_app), resultPendingIntent);
-
                 notif.setContentIntent(resultPendingIntent);
                 notif.setOngoing(true);
+
+                // TODO: Add actions to open and dismiss
+                // notif.addAction(R.drawable.common_full_open_on_phone, getString(R.string.open_app), resultPendingIntent);
 
                 // Builds the notification and issues it.
                 mNotifyMgr.notify(id, notif.build());
@@ -197,6 +197,9 @@ public class BootReceiver extends BroadcastReceiver {
             // resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
             // notif.addAction(R.drawable.ic_list_white_24dp, context.getString(R.string.new_checklist), resultPendingIntent);
 
+            notif.setContentIntent(resultPendingIntent);
+            notif.setOngoing(true);
+
             Intent settingsIntent = new Intent(context, SettingsActivity.class);
             TaskStackBuilder newStackBuilder = TaskStackBuilder.create(context);
             newStackBuilder.addParentStack(NoteActivity.class);
@@ -204,9 +207,6 @@ public class BootReceiver extends BroadcastReceiver {
             resultPendingIntent =
                     newStackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
             notif.addAction(R.drawable.ic_settings_white_24dp, context.getString(R.string.action_settings), resultPendingIntent);
-
-            notif.setContentIntent(resultPendingIntent);
-            notif.setOngoing(true);
 
             // Builds the notification and issues it.
             mNotifyMgr.notify(0, notif.build());
