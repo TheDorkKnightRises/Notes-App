@@ -16,7 +16,7 @@ import thedorkknightrises.notes.NoteObj;
  * Created by Samriddha Basu on 6/20/2016.
  */
 public class NotesDbHelper extends SQLiteOpenHelper {
-    public static final int DATABASE_VERSION = 5;
+    public static final int DATABASE_VERSION = 6;
     public static final String DATABASE_NAME = "Notes.db";
     private static final String TEXT_TYPE = " TEXT";
     private static final String COMMA_SEP = ",";
@@ -39,12 +39,22 @@ public class NotesDbHelper extends SQLiteOpenHelper {
     private static final String SQL_DELETE_ENTRIES =
             "DROP TABLE IF EXISTS " + NotesDb.Note.TABLE_NAME;
 
+    private static final String SQL_CREATE_ENTRIES_CHECKLIST =
+            "CREATE TABLE " + NotesDb.Checklist.TABLE_NAME + " (" +
+                    NotesDb.Checklist._ID + " INTEGER PRIMARY KEY" + COMMA_SEP +
+                    NotesDb.Checklist.COLUMN_NAME_NOTE_ID + " INTEGER " + COMMA_SEP +
+                    NotesDb.Checklist.COLUMN_NAME_ITEM + TEXT_TYPE + COMMA_SEP +
+                    NotesDb.Checklist.COLUMN_NAME_CHECKED + " INTEGER ) ";
+    private static final String SQL_DELETE_ENTRIES_CHECKLIST =
+            "DROP TABLE IF EXISTS " + NotesDb.Checklist.TABLE_NAME;
+
     public NotesDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(SQL_CREATE_ENTRIES);
+        db.execSQL(SQL_CREATE_ENTRIES_CHECKLIST);
     }
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
@@ -52,8 +62,12 @@ public class NotesDbHelper extends SQLiteOpenHelper {
             db.execSQL("ALTER TABLE " + NotesDb.Note.TABLE_NAME + " ADD COLUMN " + NotesDb.Note.COLUMN_NAME_CHECKLIST + " INTEGER DEFAULT 0;" +
                     "UPDATE TABLE " + NotesDb.Note.TABLE_NAME + " SET " + NotesDb.Note.COLUMN_NAME_CHECKLIST + " = 0");
             Log.d(getClass().getName(), "Database updated successfully to version 5 (added checklist column)");
+        } else if (oldVersion == 5 && newVersion == 6) {
+            db.execSQL(SQL_CREATE_ENTRIES_CHECKLIST);
+            Log.d(getClass().getName(), "Database updated successfully to version 6 (created checklist table)");
         } else {
             db.execSQL(SQL_DELETE_ENTRIES);
+            db.execSQL(SQL_DELETE_ENTRIES_CHECKLIST);
             onCreate(db);
         }
     }
