@@ -98,6 +98,7 @@
     <string name="Notices">Notices</string>
     <string name="third_party_libs">3rd Party Libraries</string>
     <string name="loading">Loading…</string>
+    <string name="loading_ad">Ad</string>
     <string name="add_widget">Add widget</string>
     <string name="no_items">No items to show</string>
     <string name="open_app">Open app</string>

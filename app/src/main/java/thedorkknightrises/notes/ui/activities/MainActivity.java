@@ -22,6 +22,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
@@ -29,7 +30,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.ads.AdListener;
@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity
     FloatingActionButton fab;
     SharedPreferences pref;
     NativeExpressAdView adView;
-    RelativeLayout adContainer;
+    CardView adContainer;
     View addNoteView, addListView;
     View.OnClickListener fabClickListener, addNoteListener, addListListener;
     boolean fabOpen = false;
@@ -192,7 +192,7 @@ public class MainActivity extends AppCompatActivity
 
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
 
-        adContainer = ((RelativeLayout) findViewById(R.id.ad_container));
+        adContainer = ((CardView) findViewById(R.id.ad_container));
 
         MobileAds.initialize(this, getString(R.string.admob_app_id));
         adView = new NativeExpressAdView(this);
