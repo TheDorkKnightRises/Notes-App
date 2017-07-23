@@ -14,9 +14,10 @@
         android:layout_height="0dp"
         android:background="@android:color/transparent"
         android:focusable="true"
-        android:focusableInTouchMode="true"></LinearLayout>
+        android:focusableInTouchMode="true" />
 
     <ScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fitsSystemWindows="true">
@@ -35,80 +36,12 @@
                 android:transitionName="card"
                 app:cardElevation="4dp">
 
-                <LinearLayout
+                <thedorkknightrises.notes.ui.views.ChecklistView
+                    android:id="@+id/checklist_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="?attr/actionBarSize"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-
-                    <EditText
-                        android:id="@+id/title"
-                        android:layout_width="match_parent"
-                        android:layout_height="28sp"
-                        android:background="@android:color/transparent"
-                        android:hint="@string/title"
-                        android:inputType="text|textCapSentences"
-                        android:textAppearance="@style/TextAppearance.AppCompat"
-                        android:textSize="20sp"
-                        android:textStyle="bold"
-                        android:transitionName="title" />
-
-                    <EditText
-                        android:id="@+id/subtitle"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@android:color/transparent"
-                        android:gravity="start"
-                        android:hint="@string/subtitle"
-                        android:inputType="text|textCapSentences"
-                        android:maxLength="40"
-                        android:textSize="16sp"
-                        android:transitionName="subtitle" />
-
-                    <EditText
-                        android:id="@+id/content"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:background="@android:color/transparent"
-                        android:gravity="start"
-                        android:hint="@string/content"
-                        android:inputType="text|textMultiLine|textCapSentences"
-                        android:minHeight="96dp"
-                        android:textAppearance="@style/TextAppearance.AppCompat"
-                        android:textSize="18sp"
-                        android:transitionName="content" />
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="end">
-
-                        <TextView
-                            android:id="@+id/note_update"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="start"
-                            android:maxLines="2"
-                            android:paddingEnd="8dp"
-                            android:paddingLeft="8dp"
-                            android:paddingRight="8dp"
-                            android:paddingStart="8dp"
-                            android:text="@string/updated"
-                            android:visibility="gone" />
-
-                        <TextView
-                            android:id="@+id/note_date"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="end"
-                            android:maxLines="2"
-                            android:transitionName="time" />
-
-                    </LinearLayout>
-
-                </LinearLayout>
+                    android:padding="4dp" />
 
             </android.support.v7.widget.CardView>
 
@@ -121,8 +54,7 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:elevation="6dp"
-                android:visibility="invisible">
+                android:elevation="6dp">
 
                 <ImageView
                     android:id="@+id/close"

@@ -5,7 +5,6 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
-        android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
@@ -51,6 +50,11 @@
                 <data android:mimeType="text/plain" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".ui.activities.ChecklistActivity"
+            android:parentActivityName=".ui.activities.MainActivity"
+            android:theme="@style/Note"
+            android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".ui.activities.SettingsActivity"
             android:label="@string/action_settings"

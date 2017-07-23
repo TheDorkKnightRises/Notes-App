@@ -43,9 +43,10 @@
         android:layout_height="540dp"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
+        android:layout_marginBottom="32dp"
         android:gravity="center"
         android:maxWidth="320dp"
-        android:paddingBottom="64dp"
+        android:padding="48dp"
         android:text="@string/blank"
         android:textSize="16sp"
         android:visibility="gone" />

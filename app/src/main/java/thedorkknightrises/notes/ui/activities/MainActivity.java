@@ -115,20 +115,7 @@ public class MainActivity extends AppCompatActivity
         addNoteView = findViewById(R.id.note_fab);
         addListView = findViewById(R.id.list_fab);
 
-        //TODO: Remove this listener when checklists are implemented
         fabClickListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i = new Intent(MainActivity.this, NoteActivity.class);
-                i.putExtra(NotesDb.Note.COLUMN_NAME_CHECKLIST, false);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this);
-                    startActivity(i, options.toBundle());
-                } else startActivity(i);
-            }
-        };
-
-        /*fabClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (fabOpen) {
@@ -157,7 +144,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 closeFabMenu();
-                Intent i = new Intent(MainActivity.this, NoteActivity.class);
+                Intent i = new Intent(MainActivity.this, ChecklistActivity.class);
                 i.putExtra(NotesDb.Note.COLUMN_NAME_CHECKLIST, true);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this);
@@ -165,7 +152,7 @@ public class MainActivity extends AppCompatActivity
                 } else startActivity(i);
 
             }
-        };*/
+        };
 
         fab.setOnClickListener(fabClickListener);
 
