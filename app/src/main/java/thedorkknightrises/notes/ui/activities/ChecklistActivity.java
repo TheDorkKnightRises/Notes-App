@@ -43,12 +43,12 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+import thedorkknightrises.checklistview.views.ChecklistView;
 import thedorkknightrises.notes.AlarmReceiver;
 import thedorkknightrises.notes.Constants;
 import thedorkknightrises.notes.R;
 import thedorkknightrises.notes.data.NotesDb;
 import thedorkknightrises.notes.data.NotesDbHelper;
-import thedorkknightrises.notes.ui.views.ChecklistView;
 
 /**
  * Created by Samriddha on 23-07-2017.
@@ -89,11 +89,6 @@ public class ChecklistActivity extends AppCompatActivity {
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
 
         ChecklistView checklistView = (ChecklistView) findViewById(R.id.checklist_view);
-        if (lightTheme) {
-            checklistView.setItemBackground(getResources().getDrawable(R.color.cardview_light_background));
-        } else {
-            checklistView.setItemBackground(getResources().getDrawable(R.color.cardview_dark_background));
-        }
         checklistView.getDragLinearLayout().setContainerScrollView((ScrollView) findViewById(R.id.scrollView));
     }
 
@@ -104,22 +99,6 @@ public class ChecklistActivity extends AppCompatActivity {
 
     @Override
     protected void onSaveInstanceState(Bundle bundle) {
-        bundle.putBoolean("editMode", editMode);
-        bundle.putInt(NotesDb.Note._ID, id);
-        bundle.putString(NotesDb.Note.COLUMN_NAME_TITLE, title);
-        bundle.putString(NotesDb.Note.COLUMN_NAME_SUBTITLE, subtitle);
-        bundle.putString(NotesDb.Note.COLUMN_NAME_CONTENT, content);
-        bundle.putString(NotesDb.Note.COLUMN_NAME_CONTENT, time);
-        bundle.putString(NotesDb.Note.COLUMN_NAME_CREATED_AT, created_at);
-        bundle.putInt(NotesDb.Note.COLUMN_NAME_ARCHIVED, archived);
-        bundle.putInt(NotesDb.Note.COLUMN_NAME_NOTIFIED, notified);
-        bundle.putString(NotesDb.Note.COLUMN_NAME_COLOR, color);
-        bundle.putInt(NotesDb.Note.COLUMN_NAME_ARCHIVED, archived);
-        bundle.putInt(NotesDb.Note.COLUMN_NAME_ENCRYPTED, encrypted);
-        bundle.putInt(NotesDb.Note.COLUMN_NAME_PINNED, pinned);
-        bundle.putString(NotesDb.Note.COLUMN_NAME_REMINDER, reminder);
-        bundle.putInt(NotesDb.Note.COLUMN_NAME_CHECKLIST, checklist);
-
         super.onSaveInstanceState(bundle);
     }
 

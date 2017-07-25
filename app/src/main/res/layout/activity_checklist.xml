@@ -36,7 +36,7 @@
                 android:transitionName="card"
                 app:cardElevation="4dp">
 
-                <thedorkknightrises.notes.ui.views.ChecklistView
+                <thedorkknightrises.checklistview.views.ChecklistView
                     android:id="@+id/checklist_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

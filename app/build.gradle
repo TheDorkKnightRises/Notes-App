@@ -9,12 +9,12 @@ android {
             storePassword 'keystorepass@123'
         }
     }
-    compileSdkVersion 25
+    compileSdkVersion 26
     buildToolsVersion "26.0.0"
     defaultConfig {
         applicationId "thedorkknightrises.notes"
         minSdkVersion 16
-        targetSdkVersion 25
+        targetSdkVersion 26
         versionCode 47
         versionName "2.8.3"
     }
@@ -36,16 +36,16 @@ dependencies {
     compile('com.mikepenz:aboutlibraries:5.8.1@aar') {
         transitive = true
     }
-    compile 'com.android.support:appcompat-v7:25.3.1'
-    compile 'com.android.support:design:25.3.1'
-    compile 'com.android.support:cardview-v7:25.3.1'
-    compile 'com.android.support:recyclerview-v7:25.3.1'
+    compile 'com.android.support:appcompat-v7:26.0.0-alpha1'
+    compile 'com.android.support:design:26.0.0-alpha1'
+    compile 'com.android.support:cardview-v7:26.0.0-alpha1'
+    compile 'com.android.support:recyclerview-v7:26.0.0-alpha1'
     compile 'com.google.android.gms:play-services-drive:11.0.2'
     compile 'com.google.firebase:firebase-ads:11.0.2'
     compile 'com.google.firebase:firebase-crash:11.0.2'
     compile 'de.hdodenhof:circleimageview:2.0.0'
     compile 'com.heinrichreimersoftware:material-intro:1.6'
-    compile 'com.jmedeisis:draglinearlayout:1.1.0'
+    compile 'thedorkknightrises.lib:checklistview:0.1.1'
     testCompile 'junit:junit:4.12'
 }
 
