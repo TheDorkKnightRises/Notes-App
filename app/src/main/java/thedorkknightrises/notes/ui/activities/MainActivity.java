@@ -15,6 +15,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Parcelable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityOptionsCompat;
@@ -154,7 +155,18 @@ public class MainActivity extends AppCompatActivity
             }
         };
 
-        fab.setOnClickListener(fabClickListener);
+        // TODO: Add correct listener to show FAB menu
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(MainActivity.this, NoteActivity.class);
+                i.putExtra(NotesDb.Note.COLUMN_NAME_CHECKLIST, false);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this);
+                    startActivity(i, options.toBundle());
+                } else startActivity(i);
+            }
+        });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -254,6 +266,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onResume() {
         getLoaderManager().restartLoader(0, null, this);
+
         updateWidgets();
 
         if (archive == 1)
@@ -280,7 +293,6 @@ public class MainActivity extends AppCompatActivity
 
         super.onResume();
     }
-
 
     @Override
     public void onBackPressed() {
@@ -436,11 +448,20 @@ public class MainActivity extends AppCompatActivity
                 } while (cursor.moveToNext());
             }
 
+            Parcelable recyclerViewState = null;
+            if (layoutManager != null && mAdapter != null) {
+                // Save state
+                recyclerViewState = layoutManager.onSaveInstanceState();
+            }
             mAdapter = new NotesAdapter(this, this, cursor);
             layoutManager = new StaggeredGridLayoutManager(pref.getInt(NUM_COLUMNS, 1), StaggeredGridLayoutManager.VERTICAL);
             layoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
             recyclerView.setLayoutManager(layoutManager);
             recyclerView.setAdapter(mAdapter);
+            if (recyclerViewState != null) {
+                layoutManager.onRestoreInstanceState(recyclerViewState);
+                recyclerView.smoothScrollToPosition(0);
+            }
 
         }
 

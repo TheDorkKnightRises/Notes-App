@@ -9,6 +9,7 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -37,6 +38,7 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
     boolean lightTheme;
     ArrayList<NoteObj> noteObjArrayList;
     RecyclerView recyclerView;
+    LinearLayoutManager layoutManager;
     TextView blankText;
     NotesAdapter mAdapter;
     String query = "";
@@ -56,7 +58,7 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
         getLoaderManager().initLoader(0, null, this);
 
         recyclerView = (RecyclerView) this.findViewById(R.id.gridview);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        layoutManager = new LinearLayoutManager(this);
         noteObjArrayList = new ArrayList<>();
 
         recyclerView.setLayoutManager(layoutManager);
@@ -95,6 +97,11 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
         state.putSerializable("results", noteObjArrayList);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getLoaderManager().restartLoader(0, null, this);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -181,8 +188,17 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
                 } while (cursor.moveToNext());
             }
 
+            Parcelable recyclerViewState = null;
+            if (layoutManager != null && mAdapter != null) {
+                // Save state
+                recyclerViewState = layoutManager.onSaveInstanceState();
+            }
             mAdapter = new NotesAdapter(this, this, cursor);
             recyclerView.setAdapter(mAdapter);
+            if (recyclerViewState != null) {
+                layoutManager.onRestoreInstanceState(recyclerViewState);
+                recyclerView.smoothScrollToPosition(0);
+            }
 
         }
 
