@@ -28,6 +28,7 @@ public class NotesWidget extends AppWidgetProvider {
             if (intent.hasExtra(Constants.NOTE_DETAILS_BUNDLE)) {
                 Intent i = new Intent(context, NoteActivity.class);
                 i.putExtras(intent.getExtras());
+                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(i);
             }
         }

@@ -69,8 +69,6 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
             handleIntent(getIntent());
         else {
             noteObjArrayList = (ArrayList<NoteObj>) savedInstanceState.getSerializable("results");
-            //mAdapter = new NotesAdapter(noteObjArrayList, getApplicationContext(), this);
-            //recyclerView.setAdapter(mAdapter);
         }
     }
 
@@ -83,10 +81,6 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
 
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             query = intent.getStringExtra(SearchManager.QUERY);
-            //NotesDbHelper mHelper = new NotesDbHelper(this);
-            //noteObjArrayList = mHelper.searchDB(query, MainActivity.archive);
-            //mAdapter = new NotesAdapter(noteObjArrayList, this, this);
-            //recyclerView.setAdapter(mAdapter);
             getLoaderManager().restartLoader(0, null, this);
         }
     }
