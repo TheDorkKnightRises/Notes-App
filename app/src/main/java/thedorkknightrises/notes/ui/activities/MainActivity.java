@@ -132,7 +132,6 @@ public class MainActivity extends AppCompatActivity
             public void onClick(View view) {
                 closeFabMenu();
                 Intent i = new Intent(MainActivity.this, NoteActivity.class);
-                i.putExtra(NotesDb.Note.COLUMN_NAME_CHECKLIST, false);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this);
                     startActivity(i, options.toBundle());
@@ -146,7 +145,6 @@ public class MainActivity extends AppCompatActivity
             public void onClick(View view) {
                 closeFabMenu();
                 Intent i = new Intent(MainActivity.this, ChecklistActivity.class);
-                i.putExtra(NotesDb.Note.COLUMN_NAME_CHECKLIST, true);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this);
                     startActivity(i, options.toBundle());
@@ -156,7 +154,7 @@ public class MainActivity extends AppCompatActivity
         };
 
         // TODO: Add correct listener to show FAB menu
-        fab.setOnClickListener(new View.OnClickListener() {
+        fab.setOnClickListener(/*new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent i = new Intent(MainActivity.this, NoteActivity.class);
@@ -166,7 +164,7 @@ public class MainActivity extends AppCompatActivity
                     startActivity(i, options.toBundle());
                 } else startActivity(i);
             }
-        });
+        }*/ fabClickListener);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(

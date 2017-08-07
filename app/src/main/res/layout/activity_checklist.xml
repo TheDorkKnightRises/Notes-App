@@ -70,7 +70,8 @@
                     <thedorkknightrises.checklistview.views.ChecklistView
                         android:id="@+id/checklist_view"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:transitionName="content" />
 
                 </LinearLayout>
 
@@ -212,15 +213,5 @@
         </LinearLayout>
 
     </LinearLayout>
-
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab_note"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        android:onClick="onClick"
-        android:src="@drawable/ic_done_white_24dp" />
 
 </android.support.design.widget.CoordinatorLayout>

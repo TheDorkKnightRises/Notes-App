@@ -155,4 +155,5 @@
     <string name="add_to_list">Add to list</string>
     <string name="note_added">New note added. Tap to view</string>
     <string name="view">View</string>
+    <string name="back_press_checklist">Press back again to exit</string>
 </resources>

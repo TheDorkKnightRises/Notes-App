@@ -19,4 +19,5 @@ public final class Constants {
     public static final String REMINDER_SOUND = "reminder_sound";
     public static final String REMINDER_VIBRATE = "reminder_vibrate";
     public static final String REMINDER_LED = "reminder_led";
+    public static final String CHECKLIST_DATA = "checklist_data";
 }

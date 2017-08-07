@@ -9,6 +9,7 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
+import thedorkknightrises.checklistview.ChecklistData;
 import thedorkknightrises.notes.Constants;
 import thedorkknightrises.notes.NoteObj;
 
@@ -146,11 +147,9 @@ public class NotesDbHelper extends SQLiteOpenHelper {
     }
 
     public int deleteAllNotes() {
-
         SQLiteDatabase db = this.getWritableDatabase();
-
         int result = db.delete(NotesDb.Note.TABLE_NAME, null, null);
-
+        db.delete(NotesDb.Checklist.TABLE_NAME, null, null);
         db.close();
         if (result == 1)
             Log.d("DB", "All notes deleted");
@@ -310,6 +309,80 @@ public class NotesDbHelper extends SQLiteOpenHelper {
     public void clearAllReminders() {
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL("UPDATE " + NotesDb.Note.TABLE_NAME + " SET " + NotesDb.Note.COLUMN_NAME_REMINDER + " = '" + Constants.REMINDER_NONE + "'");
+        db.close();
+    }
+
+    public int saveChecklist(int id, String title, String subtitle, ArrayList<ChecklistData> checklistData, String time, String created_at, int archived, int notified, String color, int encrypted, int pinned, int tag, String reminder) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(NotesDb.Note.COLUMN_NAME_TITLE, title);
+        values.put(NotesDb.Note.COLUMN_NAME_SUBTITLE, subtitle);
+        values.put(NotesDb.Note.COLUMN_NAME_TIME, time);
+        values.put(NotesDb.Note.COLUMN_NAME_ARCHIVED, archived);
+        values.put(NotesDb.Note.COLUMN_NAME_NOTIFIED, notified);
+        values.put(NotesDb.Note.COLUMN_NAME_COLOR, color);
+        values.put(NotesDb.Note.COLUMN_NAME_ENCRYPTED, encrypted);
+        values.put(NotesDb.Note.COLUMN_NAME_PINNED, pinned);
+        values.put(NotesDb.Note.COLUMN_NAME_TAG, tag);
+        values.put(NotesDb.Note.COLUMN_NAME_REMINDER, reminder);
+        values.put(NotesDb.Note.COLUMN_NAME_CHECKLIST, 1);
+
+        int i = db.update(NotesDb.Note.TABLE_NAME, values,
+                NotesDb.Note.COLUMN_NAME_CREATED_AT + " = ? ",
+                new String[]{created_at});
+        if (i == 0) {
+            values.put(NotesDb.Note.COLUMN_NAME_CREATED_AT, created_at);
+            i = (int) db.insertWithOnConflict(NotesDb.Note.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+            Log.d("DB", "Added");
+        } else {
+            Log.d("DB", "Updated");
+            i = id;
+            db.execSQL("DELETE FROM " + NotesDb.Checklist.TABLE_NAME + " WHERE " + NotesDb.Checklist.COLUMN_NAME_NOTE_ID + " = " + i);
+        }
+
+        for (ChecklistData data : checklistData) {
+            ContentValues checklistValues = new ContentValues();
+            checklistValues.put(NotesDb.Checklist.COLUMN_NAME_NOTE_ID, i);
+            checklistValues.put(NotesDb.Checklist.COLUMN_NAME_ITEM, data.getText());
+            int checked = (data.isChecked()) ? 1 : 0;
+            checklistValues.put(NotesDb.Checklist.COLUMN_NAME_CHECKED, checked);
+            long cId = db.insertWithOnConflict(NotesDb.Checklist.TABLE_NAME, null, checklistValues, SQLiteDatabase.CONFLICT_REPLACE);
+            Log.d("DB", "Checklist item " + cId + " added");
+        }
+
+        db.close();
+        return i;
+    }
+
+    public ArrayList<ChecklistData> getChecklistData(int noteId) {
+        ArrayList<ChecklistData> mList = new ArrayList<ChecklistData>();
+        String[] projection = {
+                NotesDb.Checklist.COLUMN_NAME_NOTE_ID,
+                NotesDb.Checklist.COLUMN_NAME_ITEM,
+                NotesDb.Checklist.COLUMN_NAME_CHECKED
+        };
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.query(NotesDb.Checklist.TABLE_NAME, projection, NotesDb.Checklist.COLUMN_NAME_NOTE_ID + " = " + noteId,
+                null, null, null, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                boolean checked = (cursor.getInt(2) == 1);
+                ChecklistData checklistData = new ChecklistData(checked, cursor.getString(1));
+                mList.add(checklistData);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        db.close();
+        return mList;
+    }
+
+    public void deleteChecklistData(int noteId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("DELETE FROM " + NotesDb.Checklist.TABLE_NAME + " WHERE " + NotesDb.Checklist.COLUMN_NAME_NOTE_ID + " = " + noteId);
         db.close();
     }
 }

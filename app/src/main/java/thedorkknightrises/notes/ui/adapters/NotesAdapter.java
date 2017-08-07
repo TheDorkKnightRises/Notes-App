@@ -14,11 +14,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
+import thedorkknightrises.checklistview.ChecklistData;
 import thedorkknightrises.notes.Constants;
 import thedorkknightrises.notes.R;
 import thedorkknightrises.notes.data.NotesDb;
+import thedorkknightrises.notes.data.NotesDbHelper;
+import thedorkknightrises.notes.ui.activities.ChecklistActivity;
 import thedorkknightrises.notes.ui.activities.NoteActivity;
 
 /**
@@ -26,6 +32,8 @@ import thedorkknightrises.notes.ui.activities.NoteActivity;
  */
 public class NotesAdapter extends RecyclerViewCursorAdapter<NotesAdapter.ViewHolder> {
 
+    int checklist;
+    ArrayList<ChecklistData> arrayList;
     //public ArrayList<NoteObj> noteObjArrayList;
     private Cursor cursor;
     private Context context;
@@ -44,16 +52,34 @@ public class NotesAdapter extends RecyclerViewCursorAdapter<NotesAdapter.ViewHol
     @Override
     public NotesAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
                                                       int viewType) {
-        // create a new view
-        View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.note_layout, parent, false);
 
-        ViewHolder vh = new ViewHolder(v);
-        vh.title = (TextView) v.findViewById(R.id.note_title);
-        vh.subtitle = (TextView) v.findViewById(R.id.note_subtitle);
-        vh.content = (TextView) v.findViewById(R.id.note_content);
-        vh.date = (TextView) v.findViewById(R.id.note_date);
-        vh.card = v.findViewById(R.id.note_card);
+        checklist = cursor.getInt(cursor.getColumnIndex(NotesDb.Note.COLUMN_NAME_CHECKLIST));
+        ViewHolder vh;
+        if (checklist == 0) {
+            View v = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.note_layout, parent, false);
+            vh = new ViewHolder(v);
+            vh.title = v.findViewById(R.id.note_title);
+            vh.subtitle = v.findViewById(R.id.note_subtitle);
+            vh.content = v.findViewById(R.id.note_content);
+            vh.date = v.findViewById(R.id.note_date);
+            vh.card = v.findViewById(R.id.note_card);
+        } else {
+            View v = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.checklist_item_layout, parent, false);
+            vh = new ViewHolder(v);
+            vh.title = v.findViewById(R.id.note_title);
+            vh.subtitle = v.findViewById(R.id.note_subtitle);
+            vh.contentView = v.findViewById(R.id.checklist_items);
+            vh.checkBox1 = v.findViewById(R.id.checkbox1);
+            vh.checkBox2 = v.findViewById(R.id.checkbox2);
+            vh.checkBox3 = v.findViewById(R.id.checkbox3);
+            vh.checklist1 = v.findViewById(R.id.checklist_item1);
+            vh.checklist2 = v.findViewById(R.id.checklist_item2);
+            vh.checklist3 = v.findViewById(R.id.checklist_item3);
+            vh.date = v.findViewById(R.id.note_date);
+            vh.card = v.findViewById(R.id.note_card);
+        }
 
         return vh;
     }
@@ -73,7 +99,7 @@ public class NotesAdapter extends RecyclerViewCursorAdapter<NotesAdapter.ViewHol
         final int pinned = cursor.getInt(cursor.getColumnIndex(NotesDb.Note.COLUMN_NAME_PINNED));
         final int tag = cursor.getInt(cursor.getColumnIndex(NotesDb.Note.COLUMN_NAME_TAG));
         final String reminder = cursor.getString(cursor.getColumnIndex(NotesDb.Note.COLUMN_NAME_REMINDER));
-        final int checklist = cursor.getInt(cursor.getColumnIndex(NotesDb.Note.COLUMN_NAME_CHECKLIST));
+        checklist = cursor.getInt(cursor.getColumnIndex(NotesDb.Note.COLUMN_NAME_CHECKLIST));
 
         if (TextUtils.isEmpty(title)) {
             holder.title.setVisibility(View.GONE);
@@ -81,14 +107,45 @@ public class NotesAdapter extends RecyclerViewCursorAdapter<NotesAdapter.ViewHol
         if (TextUtils.isEmpty(subtitle)) {
             holder.subtitle.setVisibility(View.GONE);
         } else holder.subtitle.setText(subtitle);
-        holder.content.setText(content);
+        if (checklist == 0) {
+            holder.content.setText(content);
+        } else {
+            NotesDbHelper helper = new NotesDbHelper(context);
+            arrayList = helper.getChecklistData(id);
+            if (arrayList.size() == 0) {
+
+            }
+            if (arrayList.size() > 0) {
+                holder.checklist1.setText(arrayList.get(0).getText());
+                holder.checkBox1.setChecked(arrayList.get(0).isChecked());
+                holder.checklist1.setVisibility(View.VISIBLE);
+                holder.checkBox1.setVisibility(View.VISIBLE);
+            }
+            if (arrayList.size() > 1) {
+                holder.checklist2.setText(arrayList.get(1).getText());
+                holder.checkBox2.setChecked(arrayList.get(1).isChecked());
+                holder.checklist2.setVisibility(View.VISIBLE);
+                holder.checkBox2.setVisibility(View.VISIBLE);
+            }
+            if (arrayList.size() > 2) {
+                holder.checklist3.setText(arrayList.get(2).getText());
+                holder.checkBox3.setChecked(arrayList.get(2).isChecked());
+                holder.checklist3.setVisibility(View.VISIBLE);
+                holder.checkBox3.setVisibility(View.VISIBLE);
+            }
+        }
         holder.date.setText(time);
         View.OnClickListener onClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                InputMethodManager inputManager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+                InputMethodManager inputManager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
                 inputManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-                Intent i = new Intent(context, NoteActivity.class);
+                Intent i;
+                if (checklist == 0) {
+                    i = new Intent(context, NoteActivity.class);
+                } else {
+                    i = new Intent(context, ChecklistActivity.class);
+                }
                 Bundle bundle = new Bundle();
                 bundle.putInt(NotesDb.Note._ID, id);
                 bundle.putString(NotesDb.Note.COLUMN_NAME_TITLE, title);
@@ -109,27 +166,34 @@ public class NotesAdapter extends RecyclerViewCursorAdapter<NotesAdapter.ViewHol
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     holder.card.setTransitionName("card");
                     holder.title.setTransitionName("title");
-                    holder.title.setTransitionName("subtitle");
-                    holder.title.setTransitionName("content");
+                    holder.subtitle.setTransitionName("subtitle");
                     holder.date.setTransitionName("time");
                     Pair<View, String> p1 = Pair.create(holder.card, "card");
                     Pair<View, String> p2 = Pair.create((View) holder.title, "title");
                     Pair<View, String> p3 = Pair.create((View) holder.subtitle, "subtitle");
-                    Pair<View, String> p4 = Pair.create((View) holder.content, "content");
+                    Pair<View, String> p4;
+                    /* TODO: Pair 4 fix
+                    if (checklist == 0) {
+                        holder.content.setTransitionName("content");
+                        p4 = Pair.create((View) holder.content, "content");
+                    } else {
+                        holder.contentView.setTransitionName("content");
+                        p4 = Pair.create(holder.contentView, "content");
+                    }*/
                     Pair<View, String> p5 = Pair.create((View) holder.date, "time");
                     ActivityOptionsCompat options;
                     if (!TextUtils.isEmpty(subtitle)) {
                         if (!TextUtils.isEmpty(title))
-                        options = ActivityOptionsCompat.
-                                makeSceneTransitionAnimation(activity, p1, p2, p3, p4, p5);
+                            options = ActivityOptionsCompat.
+                                    makeSceneTransitionAnimation(activity, p1, p2, p3, /*p4,*/ p5);
                         else options = ActivityOptionsCompat.
-                                makeSceneTransitionAnimation(activity, p1, p3, p4, p5);
+                                makeSceneTransitionAnimation(activity, p1, p3, /*p4,*/ p5);
                     } else {
                         if (!TextUtils.isEmpty(title))
                             options = ActivityOptionsCompat.
-                                    makeSceneTransitionAnimation(activity, p1, p2, p4, p5);
+                                    makeSceneTransitionAnimation(activity, p1, p2, /*p4,*/ p5);
                         else options = ActivityOptionsCompat.
-                                makeSceneTransitionAnimation(activity, p1, p4, p5);
+                                makeSceneTransitionAnimation(activity, p1, /*p4,*/ p5);
                     }
                     context.startActivity(i, options.toBundle());
                 } else
@@ -137,7 +201,13 @@ public class NotesAdapter extends RecyclerViewCursorAdapter<NotesAdapter.ViewHol
             }
         };
         holder.card.setOnClickListener(onClickListener);
-        holder.content.setOnClickListener(onClickListener);
+        if (checklist == 0) {
+            holder.content.setOnClickListener(onClickListener);
+        } else {
+            holder.checklist1.setOnClickListener(onClickListener);
+            holder.checklist2.setOnClickListener(onClickListener);
+            holder.checklist3.setOnClickListener(onClickListener);
+        }
     }
 
     // Return the size of your data set (invoked by the layout manager)
@@ -154,11 +224,9 @@ public class NotesAdapter extends RecyclerViewCursorAdapter<NotesAdapter.ViewHol
     // you provide access to all the views for a data item in a view holder
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public View mView;
-        TextView title;
-        TextView subtitle;
-        TextView content;
-        TextView date;
-        View card;
+        TextView title, subtitle, content, date, checklist1, checklist2, checklist3;
+        CheckBox checkBox1, checkBox2, checkBox3;
+        View card, contentView;
 
         public ViewHolder(View v) {
             super(v);

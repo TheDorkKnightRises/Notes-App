@@ -64,9 +64,7 @@ public class NoteActivity extends AppCompatActivity {
     protected Boolean editMode;
     protected CoordinatorLayout coordinatorLayout;
     protected NotesDbHelper dbHelper;
-    protected EditText titleText;
-    protected EditText subtitleText;
-    protected EditText contentText;
+    protected EditText titleText, subtitleText, contentText;
     protected TextView timeText;
     FloatingActionButton fab;
     View toolbar_note, toolbar, bottom_bar;
@@ -174,10 +172,6 @@ public class NoteActivity extends AppCompatActivity {
             Calendar c = Calendar.getInstance();
             //get date and time, specifically in 24-hr format suitable for sorting
             created_at = sdf.format(c.getTime());
-            if (getIntent().getBooleanExtra(NotesDb.Note.COLUMN_NAME_CHECKLIST, false)) {
-                checklist = 1;
-                Log.e(getClass().getName(), "New checklist");
-            }
         }
 
         if (!editMode) {
