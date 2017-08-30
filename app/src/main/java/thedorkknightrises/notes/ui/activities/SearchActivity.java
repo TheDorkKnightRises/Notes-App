@@ -2,14 +2,20 @@ package thedorkknightrises.notes.ui.activities;
 
 import android.app.LoaderManager;
 import android.app.SearchManager;
+import android.appwidget.AppWidgetManager;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -29,19 +35,28 @@ import thedorkknightrises.notes.R;
 import thedorkknightrises.notes.data.NotesDb;
 import thedorkknightrises.notes.data.NotesProvider;
 import thedorkknightrises.notes.ui.adapters.NotesAdapter;
+import thedorkknightrises.notes.widget.NotesWidget;
+
 
 /**
  * Created by Samriddha Basu on 1/6/2017.
  */
 
 public class SearchActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>, SearchView.OnQueryTextListener {
-    boolean lightTheme;
+    boolean lightTheme, changed;
     ArrayList<NoteObj> noteObjArrayList;
     RecyclerView recyclerView;
     LinearLayoutManager layoutManager;
     TextView blankText;
     NotesAdapter mAdapter;
     String query = "";
+    SharedPreferences pref;
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            changed = true;
+        }
+    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -51,18 +66,20 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        pref = getSharedPreferences(Constants.PREFS, MODE_PRIVATE);
+
         getLoaderManager().initLoader(0, null, this);
 
-        recyclerView = (RecyclerView) this.findViewById(R.id.gridview);
+        recyclerView = this.findViewById(R.id.gridview);
         layoutManager = new LinearLayoutManager(this);
         noteObjArrayList = new ArrayList<>();
 
         recyclerView.setLayoutManager(layoutManager);
-        blankText = (TextView) findViewById(R.id.blankTextView);
+        blankText = findViewById(R.id.blankTextView);
 
 
         if (savedInstanceState == null)
@@ -70,6 +87,9 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
         else {
             noteObjArrayList = (ArrayList<NoteObj>) savedInstanceState.getSerializable("results");
         }
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,
+                new IntentFilter("note-list-changed"));
     }
 
     @Override
@@ -78,7 +98,6 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
     }
 
     private void handleIntent(Intent intent) {
-
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             query = intent.getStringExtra(SearchManager.QUERY);
             getLoaderManager().restartLoader(0, null, this);
@@ -94,7 +113,21 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
     @Override
     protected void onResume() {
         super.onResume();
-        getLoaderManager().restartLoader(0, null, this);
+        if (changed) {
+            getLoaderManager().restartLoader(0, null, this);
+            changed = false;
+            updateWidgets();
+        }
+    }
+
+    private void updateWidgets() {
+        Intent intent = new Intent();
+        intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+        AppWidgetManager man = AppWidgetManager.getInstance(this);
+        int[] ids = man.getAppWidgetIds(
+                new ComponentName(this, NotesWidget.class));
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
+        sendBroadcast(intent);
     }
 
     @Override
@@ -109,7 +142,7 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
                 (android.support.v7.widget.SearchView) menu.findItem(R.id.search).getActionView();
         searchView.setSearchableInfo(
                 searchManager.getSearchableInfo(getComponentName()));
-        if (MainActivity.archive == 1) {
+        if (pref.getBoolean(Constants.ARCHIVE, false)) {
             searchView.setQueryHint(getText(R.string.search_archive));
             blankText.setText(getText(R.string.search_no_results_archive));
         }
@@ -144,7 +177,8 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
                 NotesDb.Note.COLUMN_NAME_CHECKLIST
         };
 
-        String selection = NotesDb.Note.COLUMN_NAME_ARCHIVED + " LIKE " + MainActivity.archive
+        int archive = pref.getBoolean(Constants.ARCHIVE, false) ? 1 : 0;
+        String selection = NotesDb.Note.COLUMN_NAME_ARCHIVED + " LIKE " + archive
                 + " AND ( " + NotesDb.Note.COLUMN_NAME_TITLE + " LIKE " + "'%" + query
                 + "%' OR " + NotesDb.Note.COLUMN_NAME_SUBTITLE + " LIKE " + "'%" + query
                 + "%' OR " + NotesDb.Note.COLUMN_NAME_CONTENT + " LIKE " + "'%" + query + "%')";
@@ -177,7 +211,6 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
                             cursor.getInt(11),
                             cursor.getString(12),
                             cursor.getInt(13));
-                    if (noteObj.getArchived() == MainActivity.archive)
                         noteObjArrayList.add(noteObj);
                 } while (cursor.moveToNext());
             }

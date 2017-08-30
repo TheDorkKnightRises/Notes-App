@@ -172,28 +172,27 @@ public class NotesAdapter extends RecyclerViewCursorAdapter<NotesAdapter.ViewHol
                     Pair<View, String> p2 = Pair.create((View) holder.title, "title");
                     Pair<View, String> p3 = Pair.create((View) holder.subtitle, "subtitle");
                     Pair<View, String> p4;
-                    /* TODO: Pair 4 fix
                     if (checklist == 0) {
                         holder.content.setTransitionName("content");
                         p4 = Pair.create((View) holder.content, "content");
                     } else {
                         holder.contentView.setTransitionName("content");
                         p4 = Pair.create(holder.contentView, "content");
-                    }*/
+                    }
                     Pair<View, String> p5 = Pair.create((View) holder.date, "time");
                     ActivityOptionsCompat options;
                     if (!TextUtils.isEmpty(subtitle)) {
                         if (!TextUtils.isEmpty(title))
                             options = ActivityOptionsCompat.
-                                    makeSceneTransitionAnimation(activity, p1, p2, p3, /*p4,*/ p5);
+                                    makeSceneTransitionAnimation(activity, p1, p2, p3, p4, p5);
                         else options = ActivityOptionsCompat.
-                                makeSceneTransitionAnimation(activity, p1, p3, /*p4,*/ p5);
+                                makeSceneTransitionAnimation(activity, p1, p3, p4, p5);
                     } else {
                         if (!TextUtils.isEmpty(title))
                             options = ActivityOptionsCompat.
-                                    makeSceneTransitionAnimation(activity, p1, p2, /*p4,*/ p5);
+                                    makeSceneTransitionAnimation(activity, p1, p2, p4, p5);
                         else options = ActivityOptionsCompat.
-                                makeSceneTransitionAnimation(activity, p1, /*p4,*/ p5);
+                                makeSceneTransitionAnimation(activity, p1, p4, p5);
                     }
                     context.startActivity(i, options.toBundle());
                 } else

@@ -23,6 +23,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.text.format.DateFormat;
@@ -90,13 +91,13 @@ public class NoteActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note);
 
-        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
+        coordinatorLayout = findViewById(R.id.coordinatorLayout);
 
-        titleText = (EditText) findViewById(R.id.title);
-        subtitleText = (EditText) findViewById(R.id.subtitle);
-        contentText = (EditText) findViewById(R.id.content);
-        timeText = (TextView) findViewById(R.id.note_date);
-        fab = (FloatingActionButton) findViewById(R.id.fab_note);
+        titleText = findViewById(R.id.title);
+        subtitleText = findViewById(R.id.subtitle);
+        contentText = findViewById(R.id.content);
+        timeText = findViewById(R.id.note_date);
+        fab = findViewById(R.id.fab_note);
         toolbar_note = findViewById(R.id.toolbar_note);
         toolbar = findViewById(R.id.toolbar);
         bottom_bar = findViewById(R.id.bottom_bar);
@@ -337,6 +338,7 @@ public class NoteActivity extends AppCompatActivity {
         notif(0);
         toggleReminder(false);
         dbHelper.deleteNote(created_at);
+        onListChanged();
         finish();
     }
 
@@ -383,15 +385,12 @@ public class NoteActivity extends AppCompatActivity {
                 timeText.setText(time);
                 editMode = false;
 
-                if (MainActivity.archive == 1) {
-                    MainActivity.archive = 0;
-                }
-
                 notif(notified);
 
                 // Hide the keyboard
                 imm.hideSoftInputFromWindow(contentText.getWindowToken(), 0);
             }
+            onListChanged();
         } else {
             titleText.setEnabled(true);
             subtitleText.setEnabled(true);
@@ -444,10 +443,10 @@ public class NoteActivity extends AppCompatActivity {
     public void notifBtn(View v) {
         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this, R.style.BottomSheet_Dark);
         bottomSheetDialog.setContentView(R.layout.bottom_sheet_layout);
-        final TextView timeView = (TextView) bottomSheetDialog.findViewById(R.id.reminder_time);
-        Switch notifSwitch = (Switch) bottomSheetDialog.findViewById(R.id.notification_switch);
+        final TextView timeView = bottomSheetDialog.findViewById(R.id.reminder_time);
+        Switch notifSwitch = bottomSheetDialog.findViewById(R.id.notification_switch);
         if (notified == 1) notifSwitch.setChecked(true);
-        final Switch reminderSwitch = (Switch) bottomSheetDialog.findViewById(R.id.reminder_switch);
+        final Switch reminderSwitch = bottomSheetDialog.findViewById(R.id.reminder_switch);
         if (!reminder.equals(Constants.REMINDER_NONE)) {
             reminderSwitch.setChecked(true);
             timeView.setText(reminder);
@@ -640,6 +639,7 @@ public class NoteActivity extends AppCompatActivity {
             notif(notified);
             finish();
         }
+        onListChanged();
     }
 
     @Override
@@ -667,4 +667,10 @@ public class NoteActivity extends AppCompatActivity {
         toolbar.setVisibility(View.INVISIBLE);
         super.onBackPressed();
     }
+
+    private void onListChanged() {
+        Intent intent = new Intent("note-list-changed");
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+    }
+
 }
