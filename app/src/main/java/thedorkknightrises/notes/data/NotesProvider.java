@@ -140,7 +140,7 @@ public class NotesProvider extends ContentProvider {
         }
         switch (sUriMatcher.match(uri)) {
             case 1:
-                builder.setTables(NotesDb.Note.TABLE_NAME + " JOIN " + NotesDb.Checklist.TABLE_NAME + " ON " + NotesDb.Note.TABLE_NAME + "." + NotesDb.Note._ID + " = " + NotesDb.Checklist.TABLE_NAME + "." + NotesDb.Checklist.COLUMN_NAME_NOTE_ID);
+                builder.setTables(NotesDb.Note.TABLE_NAME + " LEFT OUTER JOIN " + NotesDb.Checklist.TABLE_NAME + " ON " + NotesDb.Note.TABLE_NAME + "." + NotesDb.Note._ID + " = " + NotesDb.Checklist.TABLE_NAME + "." + NotesDb.Checklist.COLUMN_NAME_NOTE_ID);
                 break;
             case 2:
                 builder.setTables(NotesDb.Note.TABLE_NAME);

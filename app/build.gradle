@@ -15,8 +15,8 @@ android {
         applicationId "thedorkknightrises.notes"
         minSdkVersion 16
         targetSdkVersion 26
-        versionCode 48
-        versionName "2.9"
+        versionCode 49
+        versionName "3.0 RC"
     }
     buildTypes {
         release {

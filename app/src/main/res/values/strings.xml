@@ -60,8 +60,10 @@
     <string name="edit">Edit</string>
     <string name="error">Error</string>
     <string name="search">Search</string>
-    <string name="search_hint">Search your notes</string>
+    <string name="search_hint">Search notes and lists</string>
     <string name="search_archive">Search archived notes</string>
+    <string name="search_notes">Search your notes</string>
+    <string name="search_checklists">Search your checklists</string>
     <string name="search_no_results">No results found :(</string>
     <string name="search_no_results_archive">No results found in archive :(</string>
     <string name="back_press">Press back again to discard changes</string>

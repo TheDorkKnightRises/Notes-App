@@ -38,7 +38,7 @@
         android:layout_marginTop="8dp"
         android:autoLink="all"
         android:ellipsize="end"
-        android:maxLines="2"
+        android:maxLines="3"
         android:textAppearance="@style/TextAppearance.AppCompat"
         android:textColor="#eee"
         android:textSize="16sp"

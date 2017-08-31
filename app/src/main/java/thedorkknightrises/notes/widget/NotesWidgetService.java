@@ -59,8 +59,8 @@ public class NotesWidgetService extends RemoteViewsService {
 
         @Override
         public RemoteViews getViewAt(int position) {
-            RemoteViews remoteViews = new RemoteViews(this.context.getPackageName(), R.layout.note_layout_widget);
             NoteObj note = notes.get(position);
+            RemoteViews remoteViews = new RemoteViews(this.context.getPackageName(), R.layout.note_layout_widget);
             if (note != null) {
                 if ("".equals(note.getTitle()))
                     remoteViews.setViewVisibility(R.id.note_title, View.GONE);

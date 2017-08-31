@@ -145,6 +145,10 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
         if (pref.getBoolean(Constants.ARCHIVE, false)) {
             searchView.setQueryHint(getText(R.string.search_archive));
             blankText.setText(getText(R.string.search_no_results_archive));
+        } else if (pref.getInt(Constants.LIST_MODE, 0) == 1) {
+            searchView.setQueryHint(getText(R.string.search_notes));
+        } else if (pref.getInt(Constants.LIST_MODE, 0) == 2) {
+            searchView.setQueryHint(getText(R.string.search_checklists));
         }
         searchView.onActionViewExpanded();
         searchView.setIconified(false);

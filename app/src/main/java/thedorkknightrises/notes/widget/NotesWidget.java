@@ -11,6 +11,8 @@ import android.widget.RemoteViews;
 
 import thedorkknightrises.notes.Constants;
 import thedorkknightrises.notes.R;
+import thedorkknightrises.notes.data.NotesDb;
+import thedorkknightrises.notes.ui.activities.ChecklistActivity;
 import thedorkknightrises.notes.ui.activities.MainActivity;
 import thedorkknightrises.notes.ui.activities.NoteActivity;
 
@@ -26,7 +28,10 @@ public class NotesWidget extends AppWidgetProvider {
         Log.d("WIDGET", "onReceive");
         if (intent.getAction().equals(TAP_ACTION)) {
             if (intent.hasExtra(Constants.NOTE_DETAILS_BUNDLE)) {
-                Intent i = new Intent(context, NoteActivity.class);
+                Intent i;
+                if (intent.getBundleExtra(Constants.NOTE_DETAILS_BUNDLE).getInt(NotesDb.Note.COLUMN_NAME_CHECKLIST) == 0)
+                    i = new Intent(context, NoteActivity.class);
+                else i = new Intent(context, ChecklistActivity.class);
                 i.putExtras(intent.getExtras());
                 i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(i);
