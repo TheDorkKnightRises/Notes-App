@@ -444,24 +444,21 @@ public class MainActivity extends AppCompatActivity
             sort = " DESC";
 
         int mode = pref.getInt(Constants.LIST_MODE, 0);
+        StringBuilder selection = new StringBuilder();
         switch (mode) {
-            // Notes only
-            case 1:
-                return new CursorLoader(this, baseUri,
-                        projection, NotesDb.Note.COLUMN_NAME_CHECKLIST + " LIKE " + 0, null,
-                        NotesDb.Note.COLUMN_NAME_TIME + sort);
-            // Checklists only
-            case 2:
-                return new CursorLoader(this, baseUri,
-                        projection, NotesDb.Note.COLUMN_NAME_CHECKLIST + " LIKE " + 1, null,
-                        NotesDb.Note.COLUMN_NAME_TIME + sort);
-            // Show both by default
-            default:
-                int archive = pref.getBoolean(Constants.ARCHIVE, false) ? 1 : 0;
-                return new CursorLoader(this, baseUri,
-                        projection, NotesDb.Note.COLUMN_NAME_ARCHIVED + " LIKE " + archive, null,
-                        NotesDb.Note.COLUMN_NAME_TIME + sort);
+            case 1: // Notes only
+                selection.append(NotesDb.Note.COLUMN_NAME_CHECKLIST + " LIKE " + 0 + " AND ");
+                break;
+            case 2: // Checklists only
+                selection.append(NotesDb.Note.COLUMN_NAME_CHECKLIST + " LIKE " + 1 + " AND ");
+                break;
         }
+
+        int archive = pref.getBoolean(Constants.ARCHIVE, false) ? 1 : 0;
+        selection.append(NotesDb.Note.COLUMN_NAME_ARCHIVED).append(" LIKE ").append(archive);
+        return new CursorLoader(this, baseUri,
+                projection, selection.toString(), null,
+                NotesDb.Note.COLUMN_NAME_TIME + sort);
     }
 
     @Override

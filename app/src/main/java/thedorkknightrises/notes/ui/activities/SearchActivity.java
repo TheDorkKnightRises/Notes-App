@@ -178,20 +178,18 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
         };
 
         int mode = pref.getInt(Constants.LIST_MODE, 0);
-        StringBuffer selection = new StringBuffer();
+        StringBuilder selection = new StringBuilder();
         switch (mode) {
-            // Notes only
-            case 1:
-                selection.append(NotesDb.Note.COLUMN_NAME_CHECKLIST + " LIKE " + 0);
-                // Checklists only
-            case 2:
-                selection.append(NotesDb.Note.COLUMN_NAME_CHECKLIST + " LIKE " + 1);
-                // Show both by default
-            default:
-                int archive = pref.getBoolean(Constants.ARCHIVE, false) ? 1 : 0;
-                selection.append(NotesDb.Note.COLUMN_NAME_CHECKLIST + " LIKE " + 0);
+            case 1: // Notes only
+                selection.append(NotesDb.Note.COLUMN_NAME_CHECKLIST + " LIKE " + 0 + " AND ");
+                break;
+            case 2: // Checklists only
+                selection.append(NotesDb.Note.COLUMN_NAME_CHECKLIST + " LIKE " + 1 + " AND ");
+                break;
         }
 
+        int archive = pref.getBoolean(Constants.ARCHIVE, false) ? 1 : 0;
+        selection.append(NotesDb.Note.COLUMN_NAME_ARCHIVED).append(" LIKE ").append(archive);
         selection.append(" AND ( ")
                 .append(NotesDb.Note.COLUMN_NAME_TITLE).append(" LIKE '%").append(query)
                 .append("%' OR ")
