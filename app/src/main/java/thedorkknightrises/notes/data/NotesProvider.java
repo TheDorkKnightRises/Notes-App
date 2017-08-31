@@ -10,6 +10,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import thedorkknightrises.notes.BuildConfig;
@@ -21,10 +22,6 @@ public class NotesProvider extends ContentProvider {
     private static final UriMatcher sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
     static {
-        /*
-         * The calls to addURI() go here, for all of the content URI patterns that the provider
-         * should recognize. For this snippet, only the calls for table 3 are shown.
-         */
 
         /*
          * Sets the integer value for multiple rows in table to 1. Notice that no wildcard is used
@@ -36,16 +33,19 @@ public class NotesProvider extends ContentProvider {
          * used
          */
         sUriMatcher.addURI(AUTHORITY, NotesDb.Note.TABLE_NAME + "/#", 2);
-        //sUriMatcher.addURI(AUTHORITY, SUGGEST_URI_PATH_QUERY + "/*", 5);
+
+        sUriMatcher.addURI(AUTHORITY, NotesDb.Checklist.TABLE_NAME, 3);
+        sUriMatcher.addURI(AUTHORITY, NotesDb.Checklist.TABLE_NAME + "/#", 4);
     }
 
     NotesDbHelper mHelper;
 
     public NotesProvider() {
+
     }
 
     @Override
-    public int delete(Uri uri, String selection, String[] selectionArgs) {
+    public int delete(@NonNull Uri uri, String selection, String[] selectionArgs) {
         // Implement this to handle requests to delete one or more rows.
         int delCount = 0;
         SQLiteDatabase db = mHelper.getWritableDatabase();
@@ -61,9 +61,18 @@ public class NotesProvider extends ContentProvider {
                 }
                 delCount = db.delete(NotesDb.Note.TABLE_NAME, where, selectionArgs);
                 break;
+            case 3:
+                delCount = db.delete(NotesDb.Checklist.TABLE_NAME, selection, selectionArgs);
+                break;
+            case 4:
+                String idStr1 = uri.getLastPathSegment();
+                String where1 = NotesDb.Note._ID + " = " + idStr1;
+                if (!TextUtils.isEmpty(selection)) {
+                    where1 += " AND " + selection;
+                }
+                delCount = db.delete(NotesDb.Checklist.TABLE_NAME, where1, selectionArgs);
+                break;
             default:
-                // no support for deleting photos or entities -
-                // photos are deleted by a trigger when the item is deleted
                 throw new IllegalArgumentException("Unsupported URI: " + uri);
         }
         // notify all listeners of changes:
@@ -80,6 +89,10 @@ public class NotesProvider extends ContentProvider {
                 return ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + NotesDb.Note.TABLE_NAME;
             case 2:
                 return ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + NotesDb.Note.TABLE_NAME;
+            case 3:
+                return ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + NotesDb.Checklist.TABLE_NAME;
+            case 4:
+                return ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + NotesDb.Checklist.TABLE_NAME;
             default:
                 throw new IllegalArgumentException("Unsupported URI: " + uri);
         }
@@ -92,6 +105,9 @@ public class NotesProvider extends ContentProvider {
         switch (sUriMatcher.match(uri)) {
             case 1:
                 id = db.insertWithOnConflict(NotesDb.Note.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+                return getUriForId(id, uri);
+            case 3:
+                id = db.insertWithOnConflict(NotesDb.Checklist.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
                 return getUriForId(id, uri);
             default:
                 throw new IllegalArgumentException("Unsupported URI for insertion: " + uri);
@@ -124,7 +140,7 @@ public class NotesProvider extends ContentProvider {
         }
         switch (sUriMatcher.match(uri)) {
             case 1:
-                builder.setTables(NotesDb.Note.TABLE_NAME);
+                builder.setTables(NotesDb.Note.TABLE_NAME + " JOIN " + NotesDb.Checklist.TABLE_NAME + " ON " + NotesDb.Note.TABLE_NAME + "." + NotesDb.Note._ID + " = " + NotesDb.Checklist.TABLE_NAME + "." + NotesDb.Checklist.COLUMN_NAME_NOTE_ID);
                 break;
             case 2:
                 builder.setTables(NotesDb.Note.TABLE_NAME);
@@ -132,14 +148,10 @@ public class NotesProvider extends ContentProvider {
                 builder.appendWhere(NotesDb.Note._ID + " = "
                         + uri.getLastPathSegment());
                 break;
-            case 5:
-                String query = Uri.decode(uri.getLastPathSegment());
-                selection = NotesDb.Note.COLUMN_NAME_TITLE + " LIKE" + "'%" + query + "%' OR " + NotesDb.Note.COLUMN_NAME_SUBTITLE + " LIKE" + "'%" + query + "%' OR " + NotesDb.Note.COLUMN_NAME_CONTENT + " LIKE" + "'%" + query + "%'";
-                break;
             default:
                 throw new IllegalArgumentException("Unsupported URI: " + uri);
         }
-        return builder.query(db, projection, selection, selectionArgs, null, null, sortOrder);
+        return builder.query(db, projection, selection, selectionArgs, NotesDb.Note.TABLE_NAME + "." + NotesDb.Note._ID, null, sortOrder);
     }
 
     @Override

@@ -15,7 +15,7 @@
     <string name="device">Device:\u0020</string>
 
     <string name="license_info">Copyright notice for the app and attributions for 3rd party libraries used</string>
-    <string name="provider_desc">Content Provider for Notes app</string>
+    <string name="provider_desc">Content Provider for NotePal</string>
     <string name="copyright_notice">Copyright Notice</string>
     <string name="copyright" translatable="false">
     Copyright © 2016-2017  Samriddha Basu

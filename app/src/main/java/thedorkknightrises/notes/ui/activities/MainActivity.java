@@ -421,7 +421,7 @@ public class MainActivity extends AppCompatActivity
         Uri baseUri = builder.build();
 
         String[] projection = {
-                NotesDb.Note._ID,
+                NotesDb.Note.TABLE_NAME + "." + NotesDb.Note._ID,
                 NotesDb.Note.COLUMN_NAME_TITLE,
                 NotesDb.Note.COLUMN_NAME_SUBTITLE,
                 NotesDb.Note.COLUMN_NAME_CONTENT,
