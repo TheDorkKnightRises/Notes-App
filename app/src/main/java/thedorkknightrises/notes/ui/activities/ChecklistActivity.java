@@ -308,6 +308,12 @@ public class ChecklistActivity extends AppCompatActivity {
         finish();
     }
 
+    public void archive(View v) {
+        archived = 1 - archived;
+        saveData();
+        exit();
+    }
+
     @Override
     public void onBackPressed() {
         if (!titleText.getText().toString().trim().equals(oTitle) || !subtitleText.getText().toString().trim().equals(oSubtitle) || !checklistView.getChecklistData().equals(oDatas)) {
