@@ -9,6 +9,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -24,6 +25,7 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.text.format.DateFormat;
@@ -79,7 +81,6 @@ public class NoteActivity extends AppCompatActivity {
     private int cx, cy;
     private int id = -1, archived = 0, notified = 0, encrypted = 0, pinned = 0, tag = 0, checklist = 0;
     private String title, subtitle, content, time, created_at, color = Constants.COLOR_NONE, reminder = Constants.REMINDER_NONE;
-    private boolean backPressFlag = false;
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -327,21 +328,6 @@ public class NoteActivity extends AppCompatActivity {
         } else bottom_bar.setVisibility(View.INVISIBLE);
     }
 
-    public void close(View v) {
-        if (titleText.getText().toString().isEmpty()) titleText.setVisibility(View.INVISIBLE);
-        if (subtitleText.getText().toString().isEmpty()) subtitleText.setVisibility(View.INVISIBLE);
-        backPressFlag = true;
-        onBackPressed();
-    }
-
-    public void delete(View v) {
-        notif(0);
-        toggleReminder(false);
-        dbHelper.deleteNote(created_at);
-        onListChanged();
-        finish();
-    }
-
     public void onClick(View v) {
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         if (editMode) {
@@ -430,8 +416,18 @@ public class NoteActivity extends AppCompatActivity {
     }
 
     public void share(View v) {
+        StringBuffer shareText = new StringBuffer();
+        if (!titleText.getText().toString().trim().equals("")) {
+            shareText.append(titleText.getText().toString().trim()).append("\n");
+        }
+        if (!subtitleText.getText().toString().trim().equals("")) {
+            shareText.append("(").append(subtitleText.getText().toString().trim()).append(")\n\n");
+        }
+        shareText.append(content);
+        if (pref.getBoolean(Constants.SHARE_INFO, true))
+            shareText.append("\n").append(getString(R.string.shared_using)).append(" | https://goo.gl/o4Sr7n");
         Intent share = new Intent(Intent.ACTION_SEND);
-        share.putExtra(Intent.EXTRA_TEXT, content);
+        share.putExtra(Intent.EXTRA_TEXT, shareText.toString());
         share.setType("text/plain");
         if (share.resolveActivity(getPackageManager()) != null) {
             startActivity(Intent.createChooser(share, getResources().getString(R.string.share_via)));
@@ -642,28 +638,48 @@ public class NoteActivity extends AppCompatActivity {
         onListChanged();
     }
 
+    public void close(View v) {
+        onBackPressed();
+    }
+
+    public void delete(View v) {
+        notif(0);
+        toggleReminder(false);
+        dbHelper.deleteNote(created_at);
+        onListChanged();
+        finish();
+    }
+
     @Override
     public void onBackPressed() {
-        if (editMode && !backPressFlag) {
-            Toast.makeText(getApplicationContext(), getText(R.string.back_press), Toast.LENGTH_SHORT).show();
-            backPressFlag = true;
-
-            // Thread to change backPressedFlag to false after 3000ms
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        Thread.sleep(3000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    } finally {
-                        backPressFlag = false;
-                    }
-                }
-            }).start();
-            return;
+        if (editMode) {
+            new AlertDialog.Builder(this)
+                    .setMessage(R.string.confirm_discard)
+                    .setPositiveButton(R.string.save_exit, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            NoteActivity.this.onClick(fab);
+                            exit();
+                        }
+                    })
+                    .setNeutralButton(R.string.cancel, null)
+                    .setNegativeButton(R.string.discard, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            exit();
+                        }
+                    })
+                    .show();
+        } else {
+            exit();
         }
+    }
+
+    private void exit() {
         hideToolbar();
+        if (titleText.getText().toString().isEmpty()) titleText.setVisibility(View.INVISIBLE);
+        if (subtitleText.getText().toString().isEmpty())
+            subtitleText.setVisibility(View.INVISIBLE);
         toolbar.setVisibility(View.INVISIBLE);
         super.onBackPressed();
     }

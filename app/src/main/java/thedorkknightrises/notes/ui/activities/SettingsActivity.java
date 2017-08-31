@@ -66,7 +66,7 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
     NotificationManager mNotifyMgr;
     ProgressDialog progress;
     private SharedPreferences pref;
-    private SwitchCompat theme_switch, notif_switch, ad_switch, reminder_sound_switch, reminder_vibrate_switch, reminder_led_switch;
+    private SwitchCompat theme_switch, notif_switch, ad_switch, reminder_sound_switch, reminder_vibrate_switch, reminder_led_switch, share_info_switch;
     private int type = 0;
 
     @Override
@@ -76,7 +76,7 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
             setTheme(R.style.AppTheme_Light_NoActionBar);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         pref = getSharedPreferences(Constants.PREFS, MODE_PRIVATE);
@@ -92,7 +92,7 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
 
         progress = new ProgressDialog(this);
 
-        theme_switch = (SwitchCompat) findViewById(R.id.theme_switch);
+        theme_switch = findViewById(R.id.theme_switch);
         theme_switch.setChecked(pref.getBoolean(Constants.LIGHT_THEME, false));
         theme_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -104,7 +104,7 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
             }
         });
 
-        notif_switch = (SwitchCompat) findViewById(R.id.quicknotify_switch);
+        notif_switch = findViewById(R.id.quicknotify_switch);
         notif_switch.setChecked(pref.getBoolean(Constants.QUICK_NOTIFY, false));
         notif_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -119,7 +119,7 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
             }
         });
 
-        ad_switch = (SwitchCompat) findViewById(R.id.ads_switch);
+        ad_switch = findViewById(R.id.ads_switch);
         ad_switch.setChecked(pref.getBoolean(Constants.ADS_ENABLED, true));
         ad_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -130,7 +130,7 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
             }
         });
 
-        reminder_vibrate_switch = (SwitchCompat) findViewById(R.id.reminder_vibrate_switch);
+        reminder_vibrate_switch = findViewById(R.id.reminder_vibrate_switch);
         reminder_vibrate_switch.setChecked(pref.getBoolean(Constants.REMINDER_VIBRATE, true));
         reminder_vibrate_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -141,7 +141,7 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
             }
         });
 
-        reminder_sound_switch = (SwitchCompat) findViewById(R.id.reminder_sound_switch);
+        reminder_sound_switch = findViewById(R.id.reminder_sound_switch);
         reminder_sound_switch.setChecked(pref.getBoolean(Constants.REMINDER_SOUND, true));
         reminder_sound_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -152,13 +152,24 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
             }
         });
 
-        reminder_led_switch = (SwitchCompat) findViewById(R.id.reminder_led_switch);
+        reminder_led_switch = findViewById(R.id.reminder_led_switch);
         reminder_led_switch.setChecked(pref.getBoolean(Constants.REMINDER_LED, true));
         reminder_led_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 SharedPreferences.Editor e = pref.edit();
                 e.putBoolean(Constants.REMINDER_LED, isChecked);
+                e.apply();
+            }
+        });
+
+        share_info_switch = findViewById(R.id.share_info_switch);
+        share_info_switch.setChecked(pref.getBoolean(Constants.SHARE_INFO, true));
+        share_info_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                SharedPreferences.Editor e = pref.edit();
+                e.putBoolean(Constants.SHARE_INFO, isChecked);
                 e.apply();
             }
         });
@@ -202,6 +213,8 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
             reminder_vibrate_switch.toggle();
         } else if (v.equals(findViewById(R.id.reminder_led_switch_row))) {
             reminder_led_switch.toggle();
+        } else if (v.equals(findViewById(R.id.share_info_row))) {
+            share_info_switch.toggle();
         }
     }
 

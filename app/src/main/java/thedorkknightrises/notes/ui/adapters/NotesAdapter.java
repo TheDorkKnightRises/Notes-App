@@ -112,7 +112,7 @@ public class NotesAdapter extends RecyclerViewCursorAdapter<NotesAdapter.ViewHol
             NotesDbHelper helper = new NotesDbHelper(context);
             arrayList = helper.getChecklistData(id);
             if (arrayList.size() == 0) {
-
+                return;
             }
             if (arrayList.size() > 0) {
                 holder.checklist1.setText(arrayList.get(0).getText());

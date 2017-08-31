@@ -70,6 +70,7 @@
                         android:id="@+id/content"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
                         android:layout_marginTop="16dp"
                         android:background="@android:color/transparent"
                         android:gravity="start"
@@ -128,7 +129,7 @@
                     android:id="@+id/close"
                     android:layout_width="56dp"
                     android:layout_height="56dp"
-                    android:contentDescription="@string/discard"
+                    android:contentDescription="@string/close"
                     android:foreground="?attr/selectableItemBackgroundBorderless"
                     android:onClick="close"
                     android:padding="16dp"
@@ -249,7 +250,6 @@
         </LinearLayout>
 
     </LinearLayout>
-
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_note"
