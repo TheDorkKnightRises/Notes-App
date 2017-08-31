@@ -12,7 +12,7 @@
         android:id="@+id/note_card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="2dp"
+        android:layout_marginBottom="1dp"
         app:cardElevation="4dp">
 
         <LinearLayout
@@ -57,6 +57,8 @@
                         android:id="@+id/checkbox1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginEnd="4dp"
+                        android:layout_marginStart="4dp"
                         android:clickable="false"
                         android:visibility="gone" />
 
@@ -65,7 +67,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:padding="8dp"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                        android:textAppearance="@style/TextAppearance.AppCompat"
+                        android:textSize="18sp"
                         android:visibility="gone"
                         tools:text="Item 1" />
                 </LinearLayout>
@@ -78,6 +81,8 @@
                         android:id="@+id/checkbox2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginEnd="4dp"
+                        android:layout_marginStart="4dp"
                         android:clickable="false"
                         android:visibility="gone" />
 
@@ -86,7 +91,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:padding="8dp"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                        android:textAppearance="@style/TextAppearance.AppCompat"
+                        android:textSize="18sp"
                         android:visibility="gone"
                         tools:text="Item 2" />
                 </LinearLayout>
@@ -99,6 +105,8 @@
                         android:id="@+id/checkbox3"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginEnd="4dp"
+                        android:layout_marginStart="4dp"
                         android:clickable="false"
                         android:visibility="gone" />
 
@@ -107,12 +115,23 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:padding="8dp"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                        android:textAppearance="@style/TextAppearance.AppCompat"
+                        android:textSize="18sp"
                         android:visibility="gone"
                         tools:text="Item 3" />
                 </LinearLayout>
 
+                <TextView
+                    android:id="@+id/overflow_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="14dp"
+                    android:layout_marginStart="14dp"
+                    android:text="..."
+                    android:textAppearance="@style/TextAppearance.AppCompat"
+                    android:visibility="invisible" />
             </LinearLayout>
+
 
             <TextView
                 android:id="@+id/note_date"

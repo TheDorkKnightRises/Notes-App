@@ -32,7 +32,6 @@ import thedorkknightrises.notes.ui.activities.NoteActivity;
  */
 public class NotesAdapter extends RecyclerViewCursorAdapter<NotesAdapter.ViewHolder> {
 
-    int checklist;
     ArrayList<ChecklistData> arrayList;
     //public ArrayList<NoteObj> noteObjArrayList;
     private Cursor cursor;
@@ -52,8 +51,7 @@ public class NotesAdapter extends RecyclerViewCursorAdapter<NotesAdapter.ViewHol
     @Override
     public NotesAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
                                                       int viewType) {
-
-        checklist = cursor.getInt(cursor.getColumnIndex(NotesDb.Note.COLUMN_NAME_CHECKLIST));
+        int checklist = cursor.getInt(cursor.getColumnIndex(NotesDb.Note.COLUMN_NAME_CHECKLIST));
         ViewHolder vh;
         if (checklist == 0) {
             View v = LayoutInflater.from(parent.getContext())
@@ -77,6 +75,7 @@ public class NotesAdapter extends RecyclerViewCursorAdapter<NotesAdapter.ViewHol
             vh.checklist1 = v.findViewById(R.id.checklist_item1);
             vh.checklist2 = v.findViewById(R.id.checklist_item2);
             vh.checklist3 = v.findViewById(R.id.checklist_item3);
+            vh.more = v.findViewById(R.id.overflow_text);
             vh.date = v.findViewById(R.id.note_date);
             vh.card = v.findViewById(R.id.note_card);
         }
@@ -99,7 +98,7 @@ public class NotesAdapter extends RecyclerViewCursorAdapter<NotesAdapter.ViewHol
         final int pinned = cursor.getInt(cursor.getColumnIndex(NotesDb.Note.COLUMN_NAME_PINNED));
         final int tag = cursor.getInt(cursor.getColumnIndex(NotesDb.Note.COLUMN_NAME_TAG));
         final String reminder = cursor.getString(cursor.getColumnIndex(NotesDb.Note.COLUMN_NAME_REMINDER));
-        checklist = cursor.getInt(cursor.getColumnIndex(NotesDb.Note.COLUMN_NAME_CHECKLIST));
+        final int checklist = cursor.getInt(cursor.getColumnIndex(NotesDb.Note.COLUMN_NAME_CHECKLIST));
 
         if (TextUtils.isEmpty(title)) {
             holder.title.setVisibility(View.GONE);
@@ -132,6 +131,9 @@ public class NotesAdapter extends RecyclerViewCursorAdapter<NotesAdapter.ViewHol
                 holder.checkBox3.setChecked(arrayList.get(2).isChecked());
                 holder.checklist3.setVisibility(View.VISIBLE);
                 holder.checkBox3.setVisibility(View.VISIBLE);
+            }
+            if (arrayList.size() > 3) {
+                holder.more.setVisibility(View.VISIBLE);
             }
         }
         holder.date.setText(time);
@@ -223,7 +225,7 @@ public class NotesAdapter extends RecyclerViewCursorAdapter<NotesAdapter.ViewHol
     // you provide access to all the views for a data item in a view holder
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public View mView;
-        TextView title, subtitle, content, date, checklist1, checklist2, checklist3;
+        TextView title, subtitle, content, date, checklist1, checklist2, checklist3, more;
         CheckBox checkBox1, checkBox2, checkBox3;
         View card, contentView;
 

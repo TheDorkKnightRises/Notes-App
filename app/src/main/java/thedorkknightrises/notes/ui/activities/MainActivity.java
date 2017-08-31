@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity
     SharedPreferences pref;
     NativeExpressAdView adView;
     CardView adContainer;
-    View addNoteView, addListView;
+    View addNoteView, addListView, shadow;
     View.OnClickListener fabClickListener, addNoteListener, addListListener;
     boolean fabOpen = false;
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
@@ -121,6 +121,7 @@ public class MainActivity extends AppCompatActivity
         fab = findViewById(R.id.fab);
         addNoteView = findViewById(R.id.note_fab);
         addListView = findViewById(R.id.list_fab);
+        shadow = findViewById(R.id.shadow);
 
         fabClickListener = new View.OnClickListener() {
             @Override
@@ -159,18 +160,8 @@ public class MainActivity extends AppCompatActivity
             }
         };
 
-        // TODO: Add correct listener to show FAB menu
-        fab.setOnClickListener(/*new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i = new Intent(MainActivity.this, NoteActivity.class);
-                i.putExtra(NotesDb.Note.COLUMN_NAME_CHECKLIST, false);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this);
-                    startActivity(i, options.toBundle());
-                } else startActivity(i);
-            }
-        }*/ fabClickListener);
+        fab.setOnClickListener(fabClickListener);
+        shadow.setOnClickListener(fabClickListener);
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -242,6 +233,9 @@ public class MainActivity extends AppCompatActivity
         addListView.setVisibility(View.VISIBLE);
         addListView.setAlpha(0f);
         addListView.animate().translationYBy(convertDpToPixel(-100)).alpha(1f).setDuration(300).start();
+        shadow.setVisibility(View.VISIBLE);
+        shadow.setAlpha(0f);
+        shadow.animate().alpha(1f).setDuration(300).start();
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -258,11 +252,13 @@ public class MainActivity extends AppCompatActivity
         fabOpen = false;
         addNoteView.animate().translationYBy(convertDpToPixel(52)).alpha(0f).setDuration(300).start();
         addListView.animate().translationYBy(convertDpToPixel(100)).alpha(0f).setDuration(300).start();
+        shadow.animate().alpha(0f).setDuration(300).start();
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 addNoteView.setVisibility(View.GONE);
                 addListView.setVisibility(View.GONE);
+                shadow.setVisibility(View.GONE);
                 addNoteView.setOnClickListener(null);
                 addListView.setOnClickListener(null);
                 fab.setOnClickListener(fabClickListener);

@@ -1,11 +1,14 @@
 package thedorkknightrises.notes.ui.activities;
 
 import android.annotation.TargetApi;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.transition.Slide;
 import android.view.Gravity;
@@ -13,7 +16,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -39,12 +41,13 @@ public class ChecklistActivity extends AppCompatActivity {
     SharedPreferences pref;
     boolean lightTheme;
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"), readableDateFormat = new SimpleDateFormat("EEE MMM dd yyyy HH:mm:ss");
-    ArrayList<ChecklistData> checklistDatas;
-    private boolean backPressFlag = false;
+    ArrayList<ChecklistData> checklistDatas, oDatas;
+    View toolbar;
     private ChecklistView checklistView;
     private NotesDbHelper dbHelper;
     private int id = -1, archived = 0, notified = 0, encrypted = 0, pinned = 0, tag = 0, checklist = 1;
     private String title, subtitle, time, created_at, color = Constants.COLOR_NONE, reminder = Constants.REMINDER_NONE;
+    private String oTitle, oSubtitle;
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -58,13 +61,14 @@ public class ChecklistActivity extends AppCompatActivity {
 
         dbHelper = new NotesDbHelper(this);
 
-        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
+        coordinatorLayout = findViewById(R.id.coordinatorLayout);
+        toolbar = findViewById(R.id.toolbar);
 
-        titleText = (EditText) findViewById(R.id.title);
-        subtitleText = (EditText) findViewById(R.id.subtitle);
-        timeText = (TextView) findViewById(R.id.note_date);
+        titleText = findViewById(R.id.title);
+        subtitleText = findViewById(R.id.subtitle);
+        timeText = findViewById(R.id.note_date);
 
-        checklistView = (ChecklistView) findViewById(R.id.checklist_view);
+        checklistView = findViewById(R.id.checklist_view);
         checklistView.getDragLinearLayout().setContainerScrollView((ScrollView) findViewById(R.id.scrollView));
 
         Bundle bundle = getIntent().getBundleExtra(Constants.NOTE_DETAILS_BUNDLE);
@@ -139,15 +143,42 @@ public class ChecklistActivity extends AppCompatActivity {
 
         // Toast.makeText(this, checklistDatas.get(0).getText(), Toast.LENGTH_SHORT).show();
 
+        if (title == null || title.isEmpty()) {
+            title = "";
+            titleText.setVisibility(View.INVISIBLE);
+        }
+        if (subtitle == null || subtitle.isEmpty()) {
+            subtitle = "";
+            subtitleText.setVisibility(View.INVISIBLE);
+        }
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                toolbar.setVisibility(View.VISIBLE);
+                if (title == null || title.isEmpty()) titleText.setVisibility(View.VISIBLE);
+                if (subtitle == null || subtitle.isEmpty())
+                    subtitleText.setVisibility(View.VISIBLE);
+            }
+        }, 350);
+
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
             setupWindowAnimations();
         }
 
-    }
+        // save original values in case there are assignments later
+        oTitle = title.trim();
+        oSubtitle = subtitle.trim();
+        oDatas = checklistDatas;
 
-    @Override
-    protected void onResume() {
-        super.onResume();
+        if (lightTheme)
+            titleText.setTextColor(getResources().getColor(R.color.black));
+        else titleText.setTextColor(getResources().getColor(R.color.white));
+
+        if (lightTheme)
+            subtitleText.setTextColor(getResources().getColor(R.color.dark_gray));
+        else subtitleText.setTextColor(getResources().getColor(R.color.light_gray));
+
     }
 
     @Override
@@ -174,8 +205,6 @@ public class ChecklistActivity extends AppCompatActivity {
     private void setupWindowAnimations() {
         Slide slide = new Slide(Gravity.TOP);
         slide.addTarget(R.id.note_card);
-        slide.addTarget(R.id.note_title);
-        slide.addTarget(R.id.note_subtitle);
         slide.addTarget(R.id.note_content);
         getWindow().setEnterTransition(slide);
         getWindow().setExitTransition(slide);
@@ -183,42 +212,25 @@ public class ChecklistActivity extends AppCompatActivity {
     }
 
     public void close(View v) {
-        backPressFlag = true;
         onBackPressed();
     }
 
     public void delete(View v) {
         dbHelper.deleteNote(created_at);
         dbHelper.deleteChecklistData(id);
+        onListChanged();
         finish();
-    }
-
-    public void onClick(View v) {
-
     }
 
     @Override
     public void onBackPressed() {
-        if (!backPressFlag) {
-            Toast.makeText(getApplicationContext(), getText(R.string.back_press_checklist), Toast.LENGTH_SHORT).show();
-            backPressFlag = true;
-
-            // Thread to change backPressedFlag to false after 3000ms
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        Thread.sleep(3000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    } finally {
-                        backPressFlag = false;
-                    }
-                }
-            }).start();
-            return;
-        }
-        saveData();
+        if (!titleText.getText().toString().trim().equals(oTitle) || !subtitleText.getText().toString().trim().equals(oSubtitle) || !checklistView.getChecklistData().equals(oDatas))
+            saveData();
+        toolbar.setVisibility(View.INVISIBLE);
+        if (oTitle.isEmpty())
+            titleText.setVisibility(View.INVISIBLE);
+        if (oSubtitle.isEmpty())
+            subtitleText.setVisibility(View.INVISIBLE);
         super.onBackPressed();
     }
 
@@ -227,5 +239,11 @@ public class ChecklistActivity extends AppCompatActivity {
         subtitle = subtitleText.getText().toString();
         time = sdf.format(Calendar.getInstance().getTime());
         dbHelper.saveChecklist(id, title, subtitle, checklistView.getChecklistData(), time, created_at, archived, notified, color, encrypted, pinned, tag, reminder);
+        onListChanged();
+    }
+
+    private void onListChanged() {
+        Intent intent = new Intent("note-list-changed");
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 }
