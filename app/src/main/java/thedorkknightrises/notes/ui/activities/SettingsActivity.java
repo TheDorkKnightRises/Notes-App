@@ -1,21 +1,18 @@
 package thedorkknightrises.notes.ui.activities;
 
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.TaskStackBuilder;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
@@ -219,45 +216,7 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
     }
 
     private void createQuickNotification() {
-        NotificationCompat.Builder notif =
-                new NotificationCompat.Builder(this)
-                        .setSmallIcon(R.mipmap.ic_launcher)
-                        .setContentTitle(getString(R.string.new_note))
-                        .setContentText(getString(R.string.tap_create_note))
-                        .setShowWhen(false)
-                        .setGroup(Constants.QUICK_NOTIFY)
-                        .setPriority(NotificationCompat.PRIORITY_MIN)
-                        .setColor(Color.argb(255, 32, 128, 200));
-        Intent resultIntent = new Intent(this, NoteActivity.class);
-        resultIntent.setAction("ACTION_NOTE_" + 0);
-
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-        stackBuilder.addParentStack(NoteActivity.class);
-        // Adds the Intent to the top of the stack
-        stackBuilder.addNextIntent(resultIntent);
-        // Gets a PendingIntent containing the entire back stack
-        PendingIntent resultPendingIntent =
-                stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        notif.addAction(R.drawable.ic_note_white_24dp, getString(R.string.new_note), resultPendingIntent);
-        // TODO: Uncomment once checklists are implemented
-        // resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_CHECKLIST, true);
-        // resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-        // notif.addAction(R.drawable.ic_list_white_24dp, getString(R.string.new_checklist), resultPendingIntent);
-
-        notif.setContentIntent(resultPendingIntent);
-        notif.setOngoing(true);
-
-        Intent settingsIntent = new Intent(this, SettingsActivity.class);
-        TaskStackBuilder newStackBuilder = TaskStackBuilder.create(this);
-        newStackBuilder.addParentStack(NoteActivity.class);
-        newStackBuilder.addNextIntent(settingsIntent);
-        resultPendingIntent =
-                newStackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-        notif.addAction(R.drawable.ic_settings_white_24dp, getString(R.string.action_settings), resultPendingIntent);
-
-        // Builds the notification and issues it.
-        mNotifyMgr.notify(0, notif.build());
+        new BootReceiver().onReceive(this, null);
     }
 
     public void driveBackup(View v) {
@@ -383,6 +342,7 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
                         NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
                         mNotifyMgr.cancelAll();
                         new BootReceiver().onReceive(SettingsActivity.this, null);
+                        onListChanged();
                     }
                 })
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -405,6 +365,7 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
                         NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
                         mNotifyMgr.cancelAll();
                         new BootReceiver().onReceive(SettingsActivity.this, null);
+                        onListChanged();
                     }
                 })
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -425,6 +386,7 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
                         NotesDbHelper dbHelper = new NotesDbHelper(SettingsActivity.this);
                         dbHelper.clearAllReminders();
                         new BootReceiver().onReceive(SettingsActivity.this, null);
+                        onListChanged();
                     }
                 })
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -434,6 +396,11 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
                     }
                 })
                 .show();
+    }
+
+    private void onListChanged() {
+        Intent intent = new Intent("note-list-changed");
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
     public class BackupFileTask extends AsyncTask<Void, Void, Void> {
@@ -547,6 +514,7 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
                 NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
                 mNotifyMgr.cancelAll();
                 new BootReceiver().onReceive(context, null);
+                onListChanged();
             } else
                 Toast.makeText(context, getString(R.string.error_restore), Toast.LENGTH_SHORT).show();
             progress.dismiss();
