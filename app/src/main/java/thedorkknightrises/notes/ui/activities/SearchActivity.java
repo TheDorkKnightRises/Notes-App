@@ -177,17 +177,40 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
                 NotesDb.Note.COLUMN_NAME_CHECKLIST
         };
 
-        int archive = pref.getBoolean(Constants.ARCHIVE, false) ? 1 : 0;
-        String selection = NotesDb.Note.COLUMN_NAME_ARCHIVED + " LIKE " + archive
-                + " AND ( " + NotesDb.Note.COLUMN_NAME_TITLE + " LIKE " + "'%" + query
-                + "%' OR " + NotesDb.Note.COLUMN_NAME_SUBTITLE + " LIKE " + "'%" + query
-                + "%' OR " + NotesDb.Note.COLUMN_NAME_CONTENT + " LIKE " + "'%" + query + "%')";
+        int mode = pref.getInt(Constants.LIST_MODE, 0);
+        StringBuffer selection = new StringBuffer();
+        switch (mode) {
+            // Notes only
+            case 1:
+                selection.append(NotesDb.Note.COLUMN_NAME_CHECKLIST + " LIKE " + 0);
+                // Checklists only
+            case 2:
+                selection.append(NotesDb.Note.COLUMN_NAME_CHECKLIST + " LIKE " + 1);
+                // Show both by default
+            default:
+                int archive = pref.getBoolean(Constants.ARCHIVE, false) ? 1 : 0;
+                selection.append(NotesDb.Note.COLUMN_NAME_CHECKLIST + " LIKE " + 0);
+        }
+
+        selection.append(" AND ( ")
+                .append(NotesDb.Note.COLUMN_NAME_TITLE).append(" LIKE '%").append(query)
+                .append("%' OR ")
+                .append(NotesDb.Note.COLUMN_NAME_SUBTITLE).append(" LIKE '%").append(query)
+                .append("%' OR ")
+                .append(NotesDb.Note.COLUMN_NAME_CONTENT).append(" LIKE '%").append(query)
+                .append("%')");
+
+        String sort;
+        if (pref.getBoolean(Constants.OLDEST_FIRST, false))
+            sort = " ASC";
+        else
+            sort = " DESC";
 
         // Now create and return a CursorLoader that will take care of
         // creating a Cursor for the data being displayed.
         return new CursorLoader(this, baseUri,
-                projection, selection, null,
-                NotesDb.Note.COLUMN_NAME_TIME + " DESC");
+                projection, selection.toString(), null,
+                NotesDb.Note.COLUMN_NAME_TIME + sort);
     }
 
     @Override

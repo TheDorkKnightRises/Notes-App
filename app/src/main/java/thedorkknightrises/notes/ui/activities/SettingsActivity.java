@@ -50,11 +50,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import thedorkknightrises.notes.BootReceiver;
 import thedorkknightrises.notes.Constants;
 import thedorkknightrises.notes.R;
 import thedorkknightrises.notes.data.BackupDbHelper;
 import thedorkknightrises.notes.data.NotesDbHelper;
+import thedorkknightrises.notes.receivers.BootReceiver;
 import thedorkknightrises.notes.util.NetworkUtil;
 
 /**

@@ -3,25 +3,43 @@ package thedorkknightrises.notes.ui.activities;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.app.AlarmManager;
+import android.app.DatePickerDialog;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
+import android.text.format.DateFormat;
 import android.transition.Slide;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewAnimationUtils;
+import android.widget.CompoundButton;
+import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ScrollView;
+import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import java.text.ParseException;
@@ -36,6 +54,7 @@ import thedorkknightrises.notes.Constants;
 import thedorkknightrises.notes.R;
 import thedorkknightrises.notes.data.NotesDb;
 import thedorkknightrises.notes.data.NotesDbHelper;
+import thedorkknightrises.notes.receivers.AlarmReceiver;
 
 /**
  * Created by Samriddha on 23-07-2017.
@@ -48,9 +67,11 @@ public class ChecklistActivity extends AppCompatActivity {
     SharedPreferences pref;
     boolean lightTheme;
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"), readableDateFormat = new SimpleDateFormat("EEE MMM dd yyyy HH:mm:ss");
-    ArrayList<ChecklistData> checklistDatas, oDatas;
+    ArrayList<ChecklistData> checklistDatas = new ArrayList<>(), oDatas;
     View toolbar_note, toolbar, bottom_bar;
     float radius;
+    // Counters to work around Android Date and Time Picker bugs on lower versions
+    int noOfTimesCalledDate, noOfTimesCalledTime;
     private ChecklistView checklistView;
     private NotesDbHelper dbHelper;
     private int cx, cy;
@@ -179,6 +200,10 @@ public class ChecklistActivity extends AppCompatActivity {
             setupWindowAnimations();
         }
 
+        if (archived == 1) {
+            ((ImageButton) findViewById(R.id.archive_button)).setImageDrawable(getResources().getDrawable(R.drawable.ic_unarchive_white_24dp));
+        }
+
         // save original values in case there are assignments later
         oTitle = title.trim();
         oSubtitle = subtitle.trim();
@@ -267,6 +292,208 @@ public class ChecklistActivity extends AppCompatActivity {
         oSubtitle = subtitleText.getText().toString().trim();
         oDatas = checklistView.getChecklistData();
         saveData();
+    }
+
+    public void notifBtn(View v) {
+        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this, R.style.BottomSheet_Dark);
+        bottomSheetDialog.setContentView(R.layout.bottom_sheet_layout);
+        final TextView timeView = bottomSheetDialog.findViewById(R.id.reminder_time);
+        Switch notifSwitch = bottomSheetDialog.findViewById(R.id.notification_switch);
+        if (notified == 1) notifSwitch.setChecked(true);
+        final Switch reminderSwitch = bottomSheetDialog.findViewById(R.id.reminder_switch);
+        if (!reminder.equals(Constants.REMINDER_NONE)) {
+            reminderSwitch.setChecked(true);
+            timeView.setText(reminder);
+            timeView.setVisibility(View.VISIBLE);
+        }
+
+        title = titleText.getText().toString();
+        subtitle = subtitleText.getText().toString();
+        time = sdf.format(Calendar.getInstance().getTime());
+        final StringBuffer content = new StringBuffer();
+        checklistDatas = checklistView.getChecklistData();
+        for (ChecklistData data : checklistDatas) {
+            if (data.isChecked()) {
+                content.append("[\u2713] ").append(data.getText()).append("\n");
+            } else {
+                content.append("[    ] ").append(data.getText()).append("\n");
+            }
+        }
+
+        notifSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                notified = 1 - notified;
+                saveData();
+                notif(notified);
+            }
+        });
+
+        reminderSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (reminderSwitch.getTag() != null) {
+                    return;
+                }
+                if (!b) {
+                    reminder = Constants.REMINDER_NONE;
+                    saveData();
+                    toggleReminder(false);
+                    timeView.setVisibility(View.GONE);
+                } else {
+                    noOfTimesCalledDate = 0;
+                    noOfTimesCalledTime = 0;
+                    final Calendar calendar = Calendar.getInstance();
+                    DatePickerDialog datePickerDialog = new DatePickerDialog(ChecklistActivity.this,
+                            new DatePickerDialog.OnDateSetListener() {
+                                @Override
+                                public void onDateSet(DatePicker datePicker, final int year, final int month, final int day) {
+                                    if (noOfTimesCalledDate % 2 == 0) {
+                                        new TimePickerDialog(ChecklistActivity.this,
+                                                new TimePickerDialog.OnTimeSetListener() {
+                                                    @Override
+                                                    public void onTimeSet(TimePicker timePicker, int hour, int min) {
+                                                        if (noOfTimesCalledTime % 2 == 0) {
+                                                            calendar.set(year, month, day, hour, min);
+                                                            calendar.set(Calendar.SECOND, 0);
+                                                            if (calendar.compareTo(Calendar.getInstance()) <= 0) {
+                                                                Toast.makeText(ChecklistActivity.this, R.string.invalid_time, Toast.LENGTH_SHORT).show();
+                                                                return;
+                                                            }
+                                                            reminder = readableDateFormat.format(calendar.getTime());
+                                                            saveData();
+                                                            toggleReminder(true);
+                                                            reminderSwitch.setTag(Boolean.TRUE);
+                                                            reminderSwitch.setChecked(true);
+                                                            reminderSwitch.setTag(null);
+                                                            timeView.setText(reminder);
+                                                            timeView.setVisibility(View.VISIBLE);
+                                                            noOfTimesCalledTime++;
+                                                        }
+                                                    }
+                                                }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), DateFormat.is24HourFormat(ChecklistActivity.this)).show();
+                                        noOfTimesCalledDate++;
+                                    }
+                                }
+                            },
+                            calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+                    datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
+                    datePickerDialog.show();
+
+                    reminderSwitch.setTag(Boolean.TRUE);
+                    reminderSwitch.setChecked(false);
+                    reminderSwitch.setTag(null);
+                }
+            }
+        });
+
+        bottomSheetDialog.show();
+    }
+
+    private void toggleReminder(boolean enable) {
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(this, AlarmReceiver.class);
+        Bundle bundle = new Bundle();
+        bundle.putInt(NotesDb.Note._ID, id);
+        intent.putExtra(Constants.NOTE_DETAILS_BUNDLE, bundle);
+
+        PendingIntent alarmIntent = PendingIntent.getBroadcast(this, id, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+
+        if (enable) {
+            Calendar calendar = Calendar.getInstance();
+            try {
+                calendar.setTime(readableDateFormat.parse(reminder));
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), alarmIntent);
+                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), alarmIntent);
+                } else {
+                    alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), alarmIntent);
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        } else {
+            alarmManager.cancel(alarmIntent);
+        }
+    }
+
+    public void notif(int notified) {
+        // Gets an instance of the NotificationManager service
+        NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        if (notified == 0) {
+            mNotifyMgr.cancel(id);
+        } else {
+            String info;
+
+            title = titleText.getText().toString();
+            subtitle = subtitleText.getText().toString();
+            time = sdf.format(Calendar.getInstance().getTime());
+            final StringBuffer content = new StringBuffer();
+            checklistDatas = checklistView.getChecklistData();
+            for (ChecklistData data : checklistDatas) {
+                if (data.isChecked()) {
+                    content.append("[\u2713] ").append(data.getText()).append("\n");
+                } else {
+                    content.append("[    ] ").append(data.getText()).append("\n");
+                }
+            }
+
+            if (!subtitle.equals("")) info = subtitle;
+            else info = time;
+            NotificationCompat.Builder notif =
+                    new NotificationCompat.Builder(this)
+                            .setSmallIcon(R.mipmap.ic_launcher)
+                            .setContentText(content)
+                            .setSubText(info)
+                            .setShowWhen(false)
+                            .setCategory(getString(R.string.notes))
+                            .setColor(Color.argb(255, 32, 128, 200));
+
+            if (!TextUtils.isEmpty(title)) {
+                notif.setContentTitle(title);
+            } else {
+                notif.setContentTitle(getString(R.string.note));
+            }
+
+            notif.setStyle(new NotificationCompat.BigTextStyle().bigText(content).setSummaryText(time));
+            // Sets an ID for the notification
+            Log.d("NOTIFICATION ID", String.valueOf(id));
+            Intent resultIntent = new Intent(this, ChecklistActivity.class);
+            Bundle bundle = new Bundle();
+            bundle.putInt(NotesDb.Note._ID, id);
+            bundle.putString(NotesDb.Note.COLUMN_NAME_TITLE, title);
+            bundle.putString(NotesDb.Note.COLUMN_NAME_SUBTITLE, subtitle);
+            bundle.putString(NotesDb.Note.COLUMN_NAME_CONTENT, content.toString());
+            bundle.putString(NotesDb.Note.COLUMN_NAME_TIME, time);
+            bundle.putString(NotesDb.Note.COLUMN_NAME_CREATED_AT, created_at);
+            bundle.putInt(NotesDb.Note.COLUMN_NAME_NOTIFIED, notified);
+            bundle.putInt(NotesDb.Note.COLUMN_NAME_ARCHIVED, archived);
+            bundle.putString(NotesDb.Note.COLUMN_NAME_COLOR, color);
+            bundle.putInt(NotesDb.Note.COLUMN_NAME_ENCRYPTED, encrypted);
+            bundle.putInt(NotesDb.Note.COLUMN_NAME_PINNED, pinned);
+            bundle.putInt(NotesDb.Note.COLUMN_NAME_TAG, tag);
+            bundle.putString(NotesDb.Note.COLUMN_NAME_REMINDER, reminder);
+            bundle.putInt(NotesDb.Note.COLUMN_NAME_CHECKLIST, checklist);
+            resultIntent.putExtra(Constants.NOTE_DETAILS_BUNDLE, bundle);
+            resultIntent.setAction("ACTION_NOTE_" + id);
+
+            TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+            stackBuilder.addParentStack(ChecklistActivity.class);
+            // Adds the Intent to the top of the stack
+            stackBuilder.addNextIntent(resultIntent);
+            // Gets a PendingIntent containing the entire back stack
+            PendingIntent resultPendingIntent =
+                    stackBuilder.getPendingIntent(id, PendingIntent.FLAG_UPDATE_CURRENT);
+
+            notif.setContentIntent(resultPendingIntent);
+            notif.setOngoing(true);
+
+            Log.d("Note:", "id: " + id + " created_at: " + created_at);
+            // Builds the notification and issues it.
+            mNotifyMgr.notify(id, notif.build());
+
+        }
     }
 
     public void share(View v) {
@@ -358,7 +585,16 @@ public class ChecklistActivity extends AppCompatActivity {
         title = titleText.getText().toString();
         subtitle = subtitleText.getText().toString();
         time = sdf.format(Calendar.getInstance().getTime());
-        dbHelper.saveChecklist(id, title, subtitle, checklistView.getChecklistData(), time, created_at, archived, notified, color, encrypted, pinned, tag, reminder);
+        StringBuffer content = new StringBuffer();
+        checklistDatas = checklistView.getChecklistData();
+        for (ChecklistData data : checklistDatas) {
+            if (data.isChecked()) {
+                content.append("[\u2713] ").append(data.getText()).append("\n");
+            } else {
+                content.append("[    ] ").append(data.getText()).append("\n");
+            }
+        }
+        dbHelper.saveChecklist(id, title, subtitle, content.toString(), checklistDatas, time, created_at, archived, notified, color, encrypted, pinned, tag, reminder);
         onListChanged();
         return true;
     }

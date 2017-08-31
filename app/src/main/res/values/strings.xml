@@ -26,7 +26,9 @@
 \n- The original author will not be held liable for any misuse, or direct or indirect harm caused to any person(s).</string>
     <string name="license_icon">App icon is from Moonshine Icon Pack by Pedro Peguero Jr. available under Creative Commons Attribution 4.0 International (CC BY 4.0) license</string>
 
-    <string name="blank">No notes saved\n Add a new note by tapping the floating button below</string>
+    <string name="blank">No notes or checklists saved\n Add one by tapping the floating button below</string>
+    <string name="blank_notes">No notes saved\n Add one by tapping the floating button below</string>
+    <string name="blank_checklists">No checklists saved\n Add one by tapping the floating button below</string>
     <string name="blank_archive">No notes archived</string>
 
     <string name="title">Title</string>
@@ -164,4 +166,6 @@
     <string name="share_info">Share app info</string>
     <string name="share_info_sub">When sharing notes and lists</string>
     <string name="shared_using">Shared using NotePal</string>
+    <string name="home">Home</string>
+    <string name="checklists">Checklists</string>
 </resources>

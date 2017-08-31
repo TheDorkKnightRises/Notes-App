@@ -312,12 +312,13 @@ public class NotesDbHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    public int saveChecklist(int id, String title, String subtitle, ArrayList<ChecklistData> checklistData, String time, String created_at, int archived, int notified, String color, int encrypted, int pinned, int tag, String reminder) {
+    public int saveChecklist(int id, String title, String subtitle, String content, ArrayList<ChecklistData> checklistData, String time, String created_at, int archived, int notified, String color, int encrypted, int pinned, int tag, String reminder) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
         values.put(NotesDb.Note.COLUMN_NAME_TITLE, title);
         values.put(NotesDb.Note.COLUMN_NAME_SUBTITLE, subtitle);
+        values.put(NotesDb.Note.COLUMN_NAME_CONTENT, content);
         values.put(NotesDb.Note.COLUMN_NAME_TIME, time);
         values.put(NotesDb.Note.COLUMN_NAME_ARCHIVED, archived);
         values.put(NotesDb.Note.COLUMN_NAME_NOTIFIED, notified);

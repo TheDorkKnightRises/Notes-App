@@ -54,11 +54,11 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-import thedorkknightrises.notes.AlarmReceiver;
 import thedorkknightrises.notes.Constants;
 import thedorkknightrises.notes.R;
 import thedorkknightrises.notes.data.NotesDb;
 import thedorkknightrises.notes.data.NotesDbHelper;
+import thedorkknightrises.notes.receivers.AlarmReceiver;
 
 /**
  * Created by Samriddha Basu on 6/20/2016.
@@ -71,7 +71,6 @@ public class NoteActivity extends AppCompatActivity {
     protected TextView timeText;
     FloatingActionButton fab;
     View toolbar_note, toolbar, bottom_bar;
-    View archive_hint;
     SharedPreferences pref;
     boolean lightTheme;
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"), readableDateFormat = new SimpleDateFormat("EEE MMM dd yyyy HH:mm:ss");
@@ -102,7 +101,6 @@ public class NoteActivity extends AppCompatActivity {
         toolbar_note = findViewById(R.id.toolbar_note);
         toolbar = findViewById(R.id.toolbar);
         bottom_bar = findViewById(R.id.bottom_bar);
-        archive_hint = findViewById(R.id.archive_hint);
 
         dbHelper = new NotesDbHelper(this);
 
@@ -222,7 +220,6 @@ public class NoteActivity extends AppCompatActivity {
         }, 350);
 
         if (archived == 1) {
-            archive_hint.setVisibility(View.VISIBLE);
             ((ImageButton) findViewById(R.id.archive_button)).setImageDrawable(getResources().getDrawable(R.drawable.ic_unarchive_white_24dp));
         }
 
@@ -342,7 +339,6 @@ public class NoteActivity extends AppCompatActivity {
                 //get date and time, specifically in 24-hr format suitable for sorting
                 time = sdf.format(c.getTime());
                 Log.d("TIME", time);
-                archived = 0;
                 notif(0);
                 id = dbHelper.addOrUpdateNote(id, title, subtitle, content, time, created_at, archived, notified, color, encrypted, pinned, tag, reminder, checklist);
                 editMode = false;
@@ -365,7 +361,6 @@ public class NoteActivity extends AppCompatActivity {
 
                 fab.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_mode_edit_white_24dp));
 
-                archive_hint.setVisibility(View.GONE);
                 revealToolbar();
                 findViewById(R.id.note_update).setVisibility(View.VISIBLE);
                 timeText.setText(time);
@@ -386,9 +381,6 @@ public class NoteActivity extends AppCompatActivity {
             subtitleText.setVisibility(View.VISIBLE);
             fab.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_done_white_24dp));
             hideToolbar();
-            if (archived == 1) {
-                archive_hint.setVisibility(View.VISIBLE);
-            }
             findViewById(R.id.note_update).setVisibility(View.GONE);
             timeText.setText("");
             editMode = true;
@@ -609,9 +601,6 @@ public class NoteActivity extends AppCompatActivity {
 
             notif.setContentIntent(resultPendingIntent);
             notif.setOngoing(true);
-
-            // TODO: Add actions to open and dismiss
-            // notif.addAction(R.drawable.common_full_open_on_phone, getString(R.string.open_app), resultPendingIntent);
 
             Log.d("Note:", "id: " + id + " created_at: " + created_at);
             // Builds the notification and issues it.

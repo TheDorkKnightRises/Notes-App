@@ -1,4 +1,4 @@
-package thedorkknightrises.notes;
+package thedorkknightrises.notes.receivers;
 
 import android.app.AlarmManager;
 import android.app.NotificationManager;
@@ -19,8 +19,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import thedorkknightrises.notes.Constants;
+import thedorkknightrises.notes.NoteObj;
+import thedorkknightrises.notes.R;
 import thedorkknightrises.notes.data.NotesDb;
 import thedorkknightrises.notes.data.NotesDbHelper;
+import thedorkknightrises.notes.ui.activities.ChecklistActivity;
 import thedorkknightrises.notes.ui.activities.NoteActivity;
 import thedorkknightrises.notes.ui.activities.SettingsActivity;
 
@@ -107,7 +111,7 @@ public class BootReceiver extends BroadcastReceiver {
                         mNotifyMgr.notify(id, notif.build());
 
                     } else {
-                        Log.e(getClass().getName(), "Settings alarm at " + note.getReminder() + " for note id " + id);
+                        Log.d(getClass().getName(), "Settings alarm at " + note.getReminder() + " for note id " + id);
                         PendingIntent alarmIntent = PendingIntent.getBroadcast(context, id, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
                         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
@@ -192,17 +196,22 @@ public class BootReceiver extends BroadcastReceiver {
                     stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
 
             notif.addAction(R.drawable.ic_note_white_24dp, context.getString(R.string.new_note), resultPendingIntent);
-            // TODO: Uncomment once checklists are implemented
-            // resultIntent.putExtra(NotesDb.Note.COLUMN_NAME_CHECKLIST, true);
-            // resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-            // notif.addAction(R.drawable.ic_list_white_24dp, context.getString(R.string.new_checklist), resultPendingIntent);
+
 
             notif.setContentIntent(resultPendingIntent);
             notif.setOngoing(true);
 
+            Intent checklistIntent = new Intent(context, ChecklistActivity.class);
+            TaskStackBuilder stackBuilder1 = TaskStackBuilder.create(context);
+            stackBuilder1.addParentStack(ChecklistActivity.class);
+            stackBuilder1.addNextIntent(checklistIntent);
+            resultPendingIntent =
+                    stackBuilder1.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+            notif.addAction(R.drawable.ic_list_white_24dp, context.getString(R.string.new_checklist), resultPendingIntent);
+
             Intent settingsIntent = new Intent(context, SettingsActivity.class);
             TaskStackBuilder newStackBuilder = TaskStackBuilder.create(context);
-            newStackBuilder.addParentStack(NoteActivity.class);
+            newStackBuilder.addParentStack(SettingsActivity.class);
             newStackBuilder.addNextIntent(settingsIntent);
             resultPendingIntent =
                     newStackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);

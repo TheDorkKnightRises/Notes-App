@@ -3,9 +3,17 @@
 
     <group>
         <item
+            android:id="@+id/nav_home"
+            android:icon="@drawable/ic_home_white_24dp"
+            android:title="@string/home" />
+        <item
             android:id="@+id/nav_notes"
             android:icon="@drawable/ic_note_white_24dp"
             android:title="@string/notes" />
+        <item
+            android:id="@+id/nav_checklists"
+            android:icon="@drawable/ic_list_white_24dp"
+            android:title="@string/checklists" />
         <item
             android:id="@+id/nav_archive"
             android:icon="@drawable/ic_archive_white_24dp"

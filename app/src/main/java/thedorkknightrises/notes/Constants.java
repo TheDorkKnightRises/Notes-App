@@ -21,5 +21,6 @@ public final class Constants {
     public static final String REMINDER_LED = "reminder_led";
     public static final String CHECKLIST_DATA = "checklist_data";
     public static final String ARCHIVE = "archive_mode";
+    public static final String LIST_MODE = "list_mode";
     public static final String SHARE_INFO = "share_app_info";
 }

@@ -1,4 +1,4 @@
-package thedorkknightrises.notes;
+package thedorkknightrises.notes.receivers;
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -14,8 +14,12 @@ import android.support.v4.app.TaskStackBuilder;
 import android.text.TextUtils;
 import android.util.Log;
 
+import thedorkknightrises.notes.Constants;
+import thedorkknightrises.notes.NoteObj;
+import thedorkknightrises.notes.R;
 import thedorkknightrises.notes.data.NotesDb;
 import thedorkknightrises.notes.data.NotesDbHelper;
+import thedorkknightrises.notes.ui.activities.ChecklistActivity;
 import thedorkknightrises.notes.ui.activities.NoteActivity;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -67,7 +71,14 @@ public class AlarmReceiver extends BroadcastReceiver {
                 notif.setStyle(new NotificationCompat.BigTextStyle().bigText(content).setSummaryText(time));
                 // Sets an ID for the notification
                 Log.d("NOTIFICATION ID", String.valueOf(id));
-                Intent resultIntent = new Intent(context, NoteActivity.class);
+
+                Class c;
+                if (note.getChecklist() == 0)
+                    c = NoteActivity.class;
+                else
+                    c = ChecklistActivity.class;
+                Intent resultIntent = new Intent(context, c);
+
                 bundle.putInt(NotesDb.Note._ID, id);
                 bundle.putString(NotesDb.Note.COLUMN_NAME_TITLE, title);
                 bundle.putString(NotesDb.Note.COLUMN_NAME_SUBTITLE, subtitle);
@@ -86,7 +97,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                 resultIntent.setAction("REMINDER_NOTE_" + id);
 
                 TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
-                stackBuilder.addParentStack(NoteActivity.class);
+                stackBuilder.addParentStack(c);
                 // Adds the Intent to the top of the stack
                 stackBuilder.addNextIntent(resultIntent);
                 // Gets a PendingIntent containing the entire back stack

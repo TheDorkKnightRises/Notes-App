@@ -44,13 +44,13 @@ import com.google.android.gms.ads.NativeExpressAdView;
 
 import java.util.ArrayList;
 
-import thedorkknightrises.notes.BootReceiver;
 import thedorkknightrises.notes.Constants;
 import thedorkknightrises.notes.NoteObj;
 import thedorkknightrises.notes.R;
 import thedorkknightrises.notes.data.NotesDb;
 import thedorkknightrises.notes.data.NotesDbHelper;
 import thedorkknightrises.notes.data.NotesProvider;
+import thedorkknightrises.notes.receivers.BootReceiver;
 import thedorkknightrises.notes.ui.adapters.NotesAdapter;
 import thedorkknightrises.notes.util.NetworkUtil;
 import thedorkknightrises.notes.widget.NotesWidget;
@@ -359,15 +359,34 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-
-        if (id == R.id.nav_notes) {
-            pref.edit().putBoolean(Constants.ARCHIVE, false).apply();
-            getSupportActionBar().setTitle(R.string.notes);
+        if (id == R.id.nav_home) {
+            pref.edit()
+                    .putBoolean(Constants.ARCHIVE, false)
+                    .putInt(Constants.LIST_MODE, 0).apply();
+            getSupportActionBar().setTitle(R.string.app_name);
             blankText.setText(R.string.blank);
             getLoaderManager().restartLoader(0, null, this);
             fab.setVisibility(View.VISIBLE);
+        } else if (id == R.id.nav_notes) {
+            pref.edit()
+                    .putBoolean(Constants.ARCHIVE, false)
+                    .putInt(Constants.LIST_MODE, 1).apply();
+            getSupportActionBar().setTitle(R.string.notes);
+            blankText.setText(R.string.blank_notes);
+            getLoaderManager().restartLoader(0, null, this);
+            fab.setVisibility(View.VISIBLE);
+        } else if (id == R.id.nav_checklists) {
+            pref.edit()
+                    .putBoolean(Constants.ARCHIVE, false)
+                    .putInt(Constants.LIST_MODE, 2).apply();
+            getSupportActionBar().setTitle(R.string.checklists);
+            blankText.setText(R.string.blank_checklists);
+            getLoaderManager().restartLoader(0, null, this);
+            fab.setVisibility(View.VISIBLE);
         } else if (id == R.id.nav_archive) {
-            pref.edit().putBoolean(Constants.ARCHIVE, true).apply();
+            pref.edit()
+                    .putBoolean(Constants.ARCHIVE, true)
+                    .putInt(Constants.LIST_MODE, 0).apply();
             getSupportActionBar().setTitle(R.string.archive);
             blankText.setText(R.string.blank_archive);
             getLoaderManager().restartLoader(0, null, this);
@@ -424,12 +443,25 @@ public class MainActivity extends AppCompatActivity
         else
             sort = " DESC";
 
-        int archive = pref.getBoolean(Constants.ARCHIVE, false) ? 1 : 0;
-        // Now create and return a CursorLoader that will take care of
-        // creating a Cursor for the data being displayed.
-        return new CursorLoader(this, baseUri,
-                projection, NotesDb.Note.COLUMN_NAME_ARCHIVED + " LIKE " + archive, null,
-                NotesDb.Note.COLUMN_NAME_TIME + sort);
+        int mode = pref.getInt(Constants.LIST_MODE, 0);
+        switch (mode) {
+            // Notes only
+            case 1:
+                return new CursorLoader(this, baseUri,
+                        projection, NotesDb.Note.COLUMN_NAME_CHECKLIST + " LIKE " + 0, null,
+                        NotesDb.Note.COLUMN_NAME_TIME + sort);
+            // Checklists only
+            case 2:
+                return new CursorLoader(this, baseUri,
+                        projection, NotesDb.Note.COLUMN_NAME_CHECKLIST + " LIKE " + 1, null,
+                        NotesDb.Note.COLUMN_NAME_TIME + sort);
+            // Show both by default
+            default:
+                int archive = pref.getBoolean(Constants.ARCHIVE, false) ? 1 : 0;
+                return new CursorLoader(this, baseUri,
+                        projection, NotesDb.Note.COLUMN_NAME_ARCHIVED + " LIKE " + archive, null,
+                        NotesDb.Note.COLUMN_NAME_TIME + sort);
+        }
     }
 
     @Override
