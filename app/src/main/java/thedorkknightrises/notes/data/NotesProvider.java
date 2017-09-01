@@ -36,6 +36,8 @@ public class NotesProvider extends ContentProvider {
 
         sUriMatcher.addURI(AUTHORITY, NotesDb.Checklist.TABLE_NAME, 3);
         sUriMatcher.addURI(AUTHORITY, NotesDb.Checklist.TABLE_NAME + "/#", 4);
+
+        sUriMatcher.addURI(AUTHORITY, "/join", 0);
     }
 
     NotesDbHelper mHelper;
@@ -139,8 +141,11 @@ public class NotesProvider extends ContentProvider {
             sortOrder = NotesDb.Note.COLUMN_NAME_TIME + " DESC";
         }
         switch (sUriMatcher.match(uri)) {
-            case 1:
+            case 0:
                 builder.setTables(NotesDb.Note.TABLE_NAME + " LEFT OUTER JOIN " + NotesDb.Checklist.TABLE_NAME + " ON " + NotesDb.Note.TABLE_NAME + "." + NotesDb.Note._ID + " = " + NotesDb.Checklist.TABLE_NAME + "." + NotesDb.Checklist.COLUMN_NAME_NOTE_ID);
+                break;
+            case 1:
+                builder.setTables(NotesDb.Note.TABLE_NAME);
                 break;
             case 2:
                 builder.setTables(NotesDb.Note.TABLE_NAME);
@@ -148,6 +153,7 @@ public class NotesProvider extends ContentProvider {
                 builder.appendWhere(NotesDb.Note._ID + " = "
                         + uri.getLastPathSegment());
                 break;
+
             default:
                 throw new IllegalArgumentException("Unsupported URI: " + uri);
         }

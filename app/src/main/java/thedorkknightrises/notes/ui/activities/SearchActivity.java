@@ -161,7 +161,7 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
         if (query.trim().equals("")) return new Loader<>(this);
         // This is called when a new Loader needs to be created.
-        Uri.Builder builder = NotesProvider.BASE_URI.buildUpon().appendPath(NotesDb.Note.TABLE_NAME);
+        Uri.Builder builder = NotesProvider.BASE_URI.buildUpon().appendPath("join");
         Uri baseUri = builder.build();
 
         String[] projection = {

@@ -417,7 +417,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         // This is called when a new Loader needs to be created.
-        Uri.Builder builder = NotesProvider.BASE_URI.buildUpon().appendPath(NotesDb.Note.TABLE_NAME);
+        Uri.Builder builder = NotesProvider.BASE_URI.buildUpon().appendPath("join");
         Uri baseUri = builder.build();
 
         String[] projection = {
