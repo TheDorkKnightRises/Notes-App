@@ -30,7 +30,7 @@ import thedorkknightrises.notes.ui.activities.NoteActivity;
 /**
  * Created by Samriddha Basu on 6/20/2016.
  */
-public class NotesAdapter extends RecyclerViewCursorAdapter<NotesAdapter.ViewHolder> {
+public class NotesAdapter extends RecyclerViewCursorAdapter<RecyclerView.ViewHolder> {
 
     ArrayList<ChecklistData> arrayList;
     //public ArrayList<NoteObj> noteObjArrayList;
@@ -49,42 +49,20 @@ public class NotesAdapter extends RecyclerViewCursorAdapter<NotesAdapter.ViewHol
 
     // Create new views (invoked by the layout manager)
     @Override
-    public NotesAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
-                                                      int viewType) {
-        int checklist = cursor.getInt(cursor.getColumnIndex(NotesDb.Note.COLUMN_NAME_CHECKLIST));
-        ViewHolder vh;
-        if (checklist == 0) {
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        if (viewType == 0) {
             View v = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.note_layout, parent, false);
-            vh = new ViewHolder(v);
-            vh.title = v.findViewById(R.id.note_title);
-            vh.subtitle = v.findViewById(R.id.note_subtitle);
-            vh.content = v.findViewById(R.id.note_content);
-            vh.date = v.findViewById(R.id.note_date);
-            vh.card = v.findViewById(R.id.note_card);
+            return new NoteViewHolder(v);
         } else {
             View v = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.checklist_item_layout, parent, false);
-            vh = new ViewHolder(v);
-            vh.title = v.findViewById(R.id.note_title);
-            vh.subtitle = v.findViewById(R.id.note_subtitle);
-            vh.contentView = v.findViewById(R.id.checklist_items);
-            vh.checkBox1 = v.findViewById(R.id.checkbox1);
-            vh.checkBox2 = v.findViewById(R.id.checkbox2);
-            vh.checkBox3 = v.findViewById(R.id.checkbox3);
-            vh.checklist1 = v.findViewById(R.id.checklist_item1);
-            vh.checklist2 = v.findViewById(R.id.checklist_item2);
-            vh.checklist3 = v.findViewById(R.id.checklist_item3);
-            vh.more = v.findViewById(R.id.overflow_text);
-            vh.date = v.findViewById(R.id.note_date);
-            vh.card = v.findViewById(R.id.note_card);
+            return new ChecklistViewHolder(v);
         }
-
-        return vh;
     }
 
     @Override
-    protected void onBindViewHolder(final ViewHolder holder, Cursor cursor) {
+    protected void onBindViewHolder(RecyclerView.ViewHolder vh, Cursor cursor) {
         final int id = cursor.getInt(cursor.getColumnIndex(NotesDb.Note._ID));
         final String title = cursor.getString(cursor.getColumnIndex(NotesDb.Note.COLUMN_NAME_TITLE));
         final String subtitle = cursor.getString(cursor.getColumnIndex(NotesDb.Note.COLUMN_NAME_SUBTITLE));
@@ -100,15 +78,78 @@ public class NotesAdapter extends RecyclerViewCursorAdapter<NotesAdapter.ViewHol
         final String reminder = cursor.getString(cursor.getColumnIndex(NotesDb.Note.COLUMN_NAME_REMINDER));
         final int checklist = cursor.getInt(cursor.getColumnIndex(NotesDb.Note.COLUMN_NAME_CHECKLIST));
 
-        if (TextUtils.isEmpty(title)) {
-            holder.title.setVisibility(View.GONE);
-        } else holder.title.setText(title);
-        if (TextUtils.isEmpty(subtitle)) {
-            holder.subtitle.setVisibility(View.GONE);
-        } else holder.subtitle.setText(subtitle);
-        if (checklist == 0) {
+        if (vh.getItemViewType() == 0) {
+            // note ViewHolder
+            final NoteViewHolder holder = (NoteViewHolder) vh;
+            if (TextUtils.isEmpty(title)) {
+                holder.title.setVisibility(View.GONE);
+            } else holder.title.setText(title);
+            if (TextUtils.isEmpty(subtitle)) {
+                holder.subtitle.setVisibility(View.GONE);
+            } else holder.subtitle.setText(subtitle);
             holder.content.setText(content);
+            holder.date.setText(time);
+            View.OnClickListener onClickListener = new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    InputMethodManager inputManager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+                    inputManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+                    Intent i = new Intent(context, NoteActivity.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putInt(NotesDb.Note._ID, id);
+                    bundle.putString(NotesDb.Note.COLUMN_NAME_TITLE, title);
+                    bundle.putString(NotesDb.Note.COLUMN_NAME_SUBTITLE, subtitle);
+                    bundle.putString(NotesDb.Note.COLUMN_NAME_CONTENT, content);
+                    bundle.putString(NotesDb.Note.COLUMN_NAME_TIME, time);
+                    bundle.putString(NotesDb.Note.COLUMN_NAME_CREATED_AT, created_at);
+                    bundle.putInt(NotesDb.Note.COLUMN_NAME_NOTIFIED, notified);
+                    bundle.putInt(NotesDb.Note.COLUMN_NAME_ARCHIVED, archived);
+                    bundle.putString(NotesDb.Note.COLUMN_NAME_COLOR, color);
+                    bundle.putInt(NotesDb.Note.COLUMN_NAME_ENCRYPTED, encrypted);
+                    bundle.putInt(NotesDb.Note.COLUMN_NAME_PINNED, pinned);
+                    bundle.putInt(NotesDb.Note.COLUMN_NAME_TAG, tag);
+                    bundle.putString(NotesDb.Note.COLUMN_NAME_REMINDER, reminder);
+                    bundle.putInt(NotesDb.Note.COLUMN_NAME_CHECKLIST, checklist);
+                    i.putExtra(Constants.NOTE_DETAILS_BUNDLE, bundle);
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        holder.card.setTransitionName("card");
+                        holder.title.setTransitionName("title");
+                        holder.subtitle.setTransitionName("subtitle");
+                        holder.date.setTransitionName("time");
+                        holder.content.setTransitionName("content");
+                        Pair<View, String> p1 = Pair.create(holder.card, "card");
+                        Pair<View, String> p2 = Pair.create((View) holder.title, "title");
+                        Pair<View, String> p3 = Pair.create((View) holder.subtitle, "subtitle");
+                        Pair<View, String> p4 = Pair.create((View) holder.content, "content");
+                        Pair<View, String> p5 = Pair.create((View) holder.date, "time");
+                        ActivityOptionsCompat options;
+                        if (!TextUtils.isEmpty(subtitle)) {
+                            if (!TextUtils.isEmpty(title))
+                                options = ActivityOptionsCompat.
+                                        makeSceneTransitionAnimation(activity, p1, p2, p3, p4, p5);
+                            else options = ActivityOptionsCompat.
+                                    makeSceneTransitionAnimation(activity, p1, p3, p4, p5);
+                        } else {
+                            if (!TextUtils.isEmpty(title))
+                                options = ActivityOptionsCompat.
+                                        makeSceneTransitionAnimation(activity, p1, p2, p4, p5);
+                            else options = ActivityOptionsCompat.
+                                    makeSceneTransitionAnimation(activity, p1, p4, p5);
+                        }
+                        context.startActivity(i, options.toBundle());
+                    } else
+                        context.startActivity(i);
+                }
+            };
+            
+            holder.card.setOnClickListener(onClickListener);
+            holder.content.setOnClickListener(onClickListener);
+
         } else {
+            // checklist ViewHolder
+            final ChecklistViewHolder holder = (ChecklistViewHolder) vh;
+
             NotesDbHelper helper = new NotesDbHelper(context);
             arrayList = helper.getChecklistData(id);
             if (arrayList.size() == 0) {
@@ -135,76 +176,71 @@ public class NotesAdapter extends RecyclerViewCursorAdapter<NotesAdapter.ViewHol
             if (arrayList.size() > 3) {
                 holder.more.setVisibility(View.VISIBLE);
             }
-        }
-        holder.date.setText(time);
-        View.OnClickListener onClickListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                InputMethodManager inputManager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
-                inputManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-                Intent i;
-                if (checklist == 0) {
-                    i = new Intent(context, NoteActivity.class);
-                } else {
-                    i = new Intent(context, ChecklistActivity.class);
-                }
-                Bundle bundle = new Bundle();
-                bundle.putInt(NotesDb.Note._ID, id);
-                bundle.putString(NotesDb.Note.COLUMN_NAME_TITLE, title);
-                bundle.putString(NotesDb.Note.COLUMN_NAME_SUBTITLE, subtitle);
-                bundle.putString(NotesDb.Note.COLUMN_NAME_CONTENT, content);
-                bundle.putString(NotesDb.Note.COLUMN_NAME_TIME, time);
-                bundle.putString(NotesDb.Note.COLUMN_NAME_CREATED_AT, created_at);
-                bundle.putInt(NotesDb.Note.COLUMN_NAME_NOTIFIED, notified);
-                bundle.putInt(NotesDb.Note.COLUMN_NAME_ARCHIVED, archived);
-                bundle.putString(NotesDb.Note.COLUMN_NAME_COLOR, color);
-                bundle.putInt(NotesDb.Note.COLUMN_NAME_ENCRYPTED, encrypted);
-                bundle.putInt(NotesDb.Note.COLUMN_NAME_PINNED, pinned);
-                bundle.putInt(NotesDb.Note.COLUMN_NAME_TAG, tag);
-                bundle.putString(NotesDb.Note.COLUMN_NAME_REMINDER, reminder);
-                bundle.putInt(NotesDb.Note.COLUMN_NAME_CHECKLIST, checklist);
-                i.putExtra(Constants.NOTE_DETAILS_BUNDLE, bundle);
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    holder.card.setTransitionName("card");
-                    holder.title.setTransitionName("title");
-                    holder.subtitle.setTransitionName("subtitle");
-                    holder.date.setTransitionName("time");
-                    Pair<View, String> p1 = Pair.create(holder.card, "card");
-                    Pair<View, String> p2 = Pair.create((View) holder.title, "title");
-                    Pair<View, String> p3 = Pair.create((View) holder.subtitle, "subtitle");
-                    Pair<View, String> p4;
-                    if (checklist == 0) {
-                        holder.content.setTransitionName("content");
-                        p4 = Pair.create((View) holder.content, "content");
-                    } else {
+            if (TextUtils.isEmpty(title)) {
+                holder.title.setVisibility(View.GONE);
+            } else holder.title.setText(title);
+            if (TextUtils.isEmpty(subtitle)) {
+                holder.subtitle.setVisibility(View.GONE);
+            } else holder.subtitle.setText(subtitle);
+            holder.date.setText(time);
+
+            View.OnClickListener onClickListener = new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    InputMethodManager inputManager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+                    inputManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+                    Intent i = new Intent(context, ChecklistActivity.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putInt(NotesDb.Note._ID, id);
+                    bundle.putString(NotesDb.Note.COLUMN_NAME_TITLE, title);
+                    bundle.putString(NotesDb.Note.COLUMN_NAME_SUBTITLE, subtitle);
+                    bundle.putString(NotesDb.Note.COLUMN_NAME_CONTENT, content);
+                    bundle.putString(NotesDb.Note.COLUMN_NAME_TIME, time);
+                    bundle.putString(NotesDb.Note.COLUMN_NAME_CREATED_AT, created_at);
+                    bundle.putInt(NotesDb.Note.COLUMN_NAME_NOTIFIED, notified);
+                    bundle.putInt(NotesDb.Note.COLUMN_NAME_ARCHIVED, archived);
+                    bundle.putString(NotesDb.Note.COLUMN_NAME_COLOR, color);
+                    bundle.putInt(NotesDb.Note.COLUMN_NAME_ENCRYPTED, encrypted);
+                    bundle.putInt(NotesDb.Note.COLUMN_NAME_PINNED, pinned);
+                    bundle.putInt(NotesDb.Note.COLUMN_NAME_TAG, tag);
+                    bundle.putString(NotesDb.Note.COLUMN_NAME_REMINDER, reminder);
+                    bundle.putInt(NotesDb.Note.COLUMN_NAME_CHECKLIST, checklist);
+                    i.putExtra(Constants.NOTE_DETAILS_BUNDLE, bundle);
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        holder.card.setTransitionName("card");
+                        holder.title.setTransitionName("title");
+                        holder.subtitle.setTransitionName("subtitle");
+                        holder.date.setTransitionName("time");
                         holder.contentView.setTransitionName("content");
-                        p4 = Pair.create(holder.contentView, "content");
-                    }
-                    Pair<View, String> p5 = Pair.create((View) holder.date, "time");
-                    ActivityOptionsCompat options;
-                    if (!TextUtils.isEmpty(subtitle)) {
-                        if (!TextUtils.isEmpty(title))
-                            options = ActivityOptionsCompat.
-                                    makeSceneTransitionAnimation(activity, p1, p2, p3, p4, p5);
-                        else options = ActivityOptionsCompat.
-                                makeSceneTransitionAnimation(activity, p1, p3, p4, p5);
-                    } else {
-                        if (!TextUtils.isEmpty(title))
-                            options = ActivityOptionsCompat.
-                                    makeSceneTransitionAnimation(activity, p1, p2, p4, p5);
-                        else options = ActivityOptionsCompat.
-                                makeSceneTransitionAnimation(activity, p1, p4, p5);
-                    }
-                    context.startActivity(i, options.toBundle());
-                } else
-                    context.startActivity(i);
-            }
-        };
-        holder.card.setOnClickListener(onClickListener);
-        if (checklist == 0) {
-            holder.content.setOnClickListener(onClickListener);
-        } else {
+                        Pair<View, String> p1 = Pair.create(holder.card, "card");
+                        Pair<View, String> p2 = Pair.create((View) holder.title, "title");
+                        Pair<View, String> p3 = Pair.create((View) holder.subtitle, "subtitle");
+                        Pair<View, String> p4 = Pair.create(holder.contentView, "content");
+                        Pair<View, String> p5 = Pair.create((View) holder.date, "time");
+                        ActivityOptionsCompat options;
+                        if (!TextUtils.isEmpty(subtitle)) {
+                            if (!TextUtils.isEmpty(title))
+                                options = ActivityOptionsCompat.
+                                        makeSceneTransitionAnimation(activity, p1, p2, p3, p4, p5);
+                            else options = ActivityOptionsCompat.
+                                    makeSceneTransitionAnimation(activity, p1, p3, p4, p5);
+                        } else {
+                            if (!TextUtils.isEmpty(title))
+                                options = ActivityOptionsCompat.
+                                        makeSceneTransitionAnimation(activity, p1, p2, p4, p5);
+                            else options = ActivityOptionsCompat.
+                                    makeSceneTransitionAnimation(activity, p1, p4, p5);
+                        }
+                        context.startActivity(i, options.toBundle());
+                    } else
+                        context.startActivity(i);
+                }
+            };
+
+            holder.card.setOnClickListener(onClickListener);
+            holder.more.setOnClickListener(onClickListener);
             holder.checklist1.setOnClickListener(onClickListener);
             holder.checklist2.setOnClickListener(onClickListener);
             holder.checklist3.setOnClickListener(onClickListener);
@@ -223,15 +259,44 @@ public class NotesAdapter extends RecyclerViewCursorAdapter<NotesAdapter.ViewHol
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
     // you provide access to all the views for a data item in a view holder
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public static class NoteViewHolder extends RecyclerView.ViewHolder {
         public View mView;
-        TextView title, subtitle, content, date, checklist1, checklist2, checklist3, more;
+        TextView title, subtitle, content, date;
+        View card;
+
+        public NoteViewHolder(View v) {
+            super(v);
+            mView = v;
+            title = v.findViewById(R.id.note_title);
+            subtitle = v.findViewById(R.id.note_subtitle);
+            content = v.findViewById(R.id.note_content);
+            date = v.findViewById(R.id.note_date);
+            card = v.findViewById(R.id.note_card);
+        }
+
+    }
+
+    public static class ChecklistViewHolder extends RecyclerView.ViewHolder {
+        public View mView;
+        TextView title, subtitle, date, checklist1, checklist2, checklist3, more;
         CheckBox checkBox1, checkBox2, checkBox3;
         View card, contentView;
 
-        public ViewHolder(View v) {
+        public ChecklistViewHolder(View v) {
             super(v);
             mView = v;
+            title = v.findViewById(R.id.note_title);
+            subtitle = v.findViewById(R.id.note_subtitle);
+            contentView = v.findViewById(R.id.checklist_items);
+            checkBox1 = v.findViewById(R.id.checkbox1);
+            checkBox2 = v.findViewById(R.id.checkbox2);
+            checkBox3 = v.findViewById(R.id.checkbox3);
+            checklist1 = v.findViewById(R.id.checklist_item1);
+            checklist2 = v.findViewById(R.id.checklist_item2);
+            checklist3 = v.findViewById(R.id.checklist_item3);
+            more = v.findViewById(R.id.overflow_text);
+            date = v.findViewById(R.id.note_date);
+            card = v.findViewById(R.id.note_card);
         }
 
     }

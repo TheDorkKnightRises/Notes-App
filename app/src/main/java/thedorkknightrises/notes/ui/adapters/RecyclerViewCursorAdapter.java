@@ -33,7 +33,7 @@ public abstract class RecyclerViewCursorAdapter<VH extends RecyclerView.ViewHold
     };
 
     public RecyclerViewCursorAdapter(Cursor cursor) {
-        setHasStableIds(true);
+        //setHasStableIds(true);
         swapCursor(cursor);
         mCursor = cursor;
     }
@@ -52,6 +52,17 @@ public abstract class RecyclerViewCursorAdapter<VH extends RecyclerView.ViewHold
         }
         if (mCursor != null) onBindViewHolder(holder, mCursor);
         else Log.d("RecyclerViewAdapter", "Cursor is null!");
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        if (!mDataValid) {
+            Log.d("RecyclerViewAdapter", "Cursor is not valid!");
+        }
+        if ((mCursor != null && !mCursor.moveToPosition(position)) || mCursor == null) {
+            throw new IllegalStateException("Could not move cursor to position " + position);
+        }
+        return mCursor.getInt(mCursor.getColumnIndex(NotesDb.Note.COLUMN_NAME_CHECKLIST));
     }
 
     @Override
@@ -107,4 +118,5 @@ public abstract class RecyclerViewCursorAdapter<VH extends RecyclerView.ViewHold
         }
         return oldCursor;
     }
+
 }
