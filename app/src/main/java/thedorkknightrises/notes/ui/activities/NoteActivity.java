@@ -601,6 +601,7 @@ public class NoteActivity extends AppCompatActivity {
 
             notif.setContentIntent(resultPendingIntent);
             notif.setOngoing(true);
+            notif.setChannelId(Constants.CHANNEL_ID_NOTE);
 
             Log.d("Note:", "id: " + id + " created_at: " + created_at);
             // Builds the notification and issues it.

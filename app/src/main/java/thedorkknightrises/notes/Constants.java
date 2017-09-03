@@ -23,4 +23,8 @@ public final class Constants {
     public static final String ARCHIVE = "archive_mode";
     public static final String LIST_MODE = "list_mode";
     public static final String SHARE_INFO = "share_app_info";
+
+    public static final String CHANNEL_ID_DEFAULT = "default_channel";
+    public static final String CHANNEL_ID_NOTE = "notes_channel";
+    public static final String CHANNEL_ID_REMINDER = "reminders_channel";
 }

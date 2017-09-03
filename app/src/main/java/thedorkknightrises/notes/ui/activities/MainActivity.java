@@ -18,6 +18,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Parcelable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityOptionsCompat;
@@ -95,6 +96,7 @@ public class MainActivity extends AppCompatActivity
                     //  Launch app intro
                     Intent i = new Intent(MainActivity.this, IntroActivity.class);
                     startActivity(i);
+
                     //  Make a new preferences editor
                     SharedPreferences.Editor e = pref.edit();
                     //  Edit preference to make it false because we don't want this to run again
@@ -486,11 +488,20 @@ public class MainActivity extends AppCompatActivity
                 } while (cursor.moveToNext());
             }
 
+            Parcelable recyclerViewState = null;
+            if (layoutManager != null && mAdapter != null) {
+                // Save state
+                recyclerViewState = layoutManager.onSaveInstanceState();
+            }
             mAdapter = new NotesAdapter(this, this, cursor);
             layoutManager = new StaggeredGridLayoutManager(pref.getInt(Constants.NUM_COLUMNS, 1), StaggeredGridLayoutManager.VERTICAL);
             layoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
             recyclerView.setLayoutManager(layoutManager);
             recyclerView.setAdapter(mAdapter);
+            if (recyclerViewState != null) {
+                layoutManager.onRestoreInstanceState(recyclerViewState);
+                recyclerView.smoothScrollToPosition(0);
+            }
 
         }
 

@@ -148,6 +148,11 @@ public class ChecklistActivity extends AppCompatActivity {
             reminder = savedInstanceState.getString(NotesDb.Note.COLUMN_NAME_REMINDER);
             checklist = savedInstanceState.getInt(NotesDb.Note.COLUMN_NAME_CHECKLIST);
             checklistDatas = savedInstanceState.getParcelableArrayList(Constants.CHECKLIST_DATA);
+
+            oTitle = savedInstanceState.getString("oTitle");
+            oSubtitle = savedInstanceState.getString("oSubtitle");
+            oDatas = savedInstanceState.getParcelableArrayList("oDatas");
+
             // bottom_bar.setVisibility(View.VISIBLE);
             if (!reminder.equals(Constants.REMINDER_NONE)) {
                 try {
@@ -161,6 +166,20 @@ public class ChecklistActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }
+        } else {
+            if (title == null || title.isEmpty()) {
+                title = "";
+                titleText.setVisibility(View.INVISIBLE);
+            }
+            if (subtitle == null || subtitle.isEmpty()) {
+                subtitle = "";
+                subtitleText.setVisibility(View.INVISIBLE);
+            }
+
+            // save original values in case there are assignments later
+            oTitle = title.trim();
+            oSubtitle = subtitle.trim();
+            oDatas = checklistDatas;
         }
 
         if (bundle == null && savedInstanceState == null) {
@@ -170,25 +189,19 @@ public class ChecklistActivity extends AppCompatActivity {
         } else {
             titleText.setText(title);
             subtitleText.setText(subtitle);
+            for (ChecklistData checklistData : checklistDatas) {
+                Log.d(getLocalClassName(), checklistData.toString());
+            }
             checklistView.setChecklistData(checklistDatas);
         }
 
         // Toast.makeText(this, checklistDatas.get(0).getText(), Toast.LENGTH_SHORT).show();
 
-        if (title == null || title.isEmpty()) {
-            title = "";
-            titleText.setVisibility(View.INVISIBLE);
-        }
-        if (subtitle == null || subtitle.isEmpty()) {
-            subtitle = "";
-            subtitleText.setVisibility(View.INVISIBLE);
-        }
-
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 toolbar.setVisibility(View.VISIBLE);
-                if (savedInstanceState == null) revealToolbar();
+                revealToolbar();
                 if (title == null || title.isEmpty())
                     titleText.setVisibility(View.VISIBLE);
                 if (subtitle == null || subtitle.isEmpty())
@@ -203,11 +216,6 @@ public class ChecklistActivity extends AppCompatActivity {
         if (archived == 1) {
             ((ImageButton) findViewById(R.id.archive_button)).setImageDrawable(getResources().getDrawable(R.drawable.ic_unarchive_white_24dp));
         }
-
-        // save original values in case there are assignments later
-        oTitle = title.trim();
-        oSubtitle = subtitle.trim();
-        oDatas = checklistDatas;
 
         if (lightTheme)
             titleText.setTextColor(getResources().getColor(R.color.black));
@@ -235,6 +243,10 @@ public class ChecklistActivity extends AppCompatActivity {
         bundle.putString(NotesDb.Note.COLUMN_NAME_REMINDER, reminder);
         bundle.putInt(NotesDb.Note.COLUMN_NAME_CHECKLIST, checklist);
         bundle.putParcelableArrayList(Constants.CHECKLIST_DATA, checklistView.getChecklistData());
+
+        bundle.putString("oTitle", oTitle);
+        bundle.putString("oSubtitle", oSubtitle);
+        bundle.putParcelableArrayList("oDatas", oDatas);
 
         super.onSaveInstanceState(bundle);
     }
@@ -288,9 +300,6 @@ public class ChecklistActivity extends AppCompatActivity {
     }
 
     public void onClick(View view) {
-        oTitle = titleText.getText().toString().trim();
-        oSubtitle = subtitleText.getText().toString().trim();
-        oDatas = checklistView.getChecklistData();
         saveData();
     }
 
@@ -488,6 +497,7 @@ public class ChecklistActivity extends AppCompatActivity {
 
             notif.setContentIntent(resultPendingIntent);
             notif.setOngoing(true);
+            notif.setChannelId(Constants.CHANNEL_ID_NOTE);
 
             Log.d("Note:", "id: " + id + " created_at: " + created_at);
             // Builds the notification and issues it.
@@ -529,6 +539,8 @@ public class ChecklistActivity extends AppCompatActivity {
     }
 
     public void delete(View v) {
+        notif(0);
+        toggleReminder(false);
         dbHelper.deleteNote(created_at);
         dbHelper.deleteChecklistData(id);
         onListChanged();
@@ -582,11 +594,11 @@ public class ChecklistActivity extends AppCompatActivity {
             return false;
         }
 
-        title = titleText.getText().toString();
-        subtitle = subtitleText.getText().toString();
+        oTitle = title = titleText.getText().toString();
+        oSubtitle = subtitle = subtitleText.getText().toString();
         time = sdf.format(Calendar.getInstance().getTime());
         StringBuffer content = new StringBuffer();
-        checklistDatas = checklistView.getChecklistData();
+        oDatas = checklistDatas = checklistView.getChecklistData();
         for (ChecklistData data : checklistDatas) {
             if (data.isChecked()) {
                 content.append("[\u2713] ").append(data.getText()).append("\n");
@@ -594,7 +606,7 @@ public class ChecklistActivity extends AppCompatActivity {
                 content.append("[    ] ").append(data.getText()).append("\n");
             }
         }
-        dbHelper.saveChecklist(id, title, subtitle, content.toString(), checklistDatas, time, created_at, archived, notified, color, encrypted, pinned, tag, reminder);
+        id = dbHelper.saveChecklist(id, title, subtitle, content.toString(), checklistDatas, time, created_at, archived, notified, color, encrypted, pinned, tag, reminder);
         onListChanged();
         return true;
     }

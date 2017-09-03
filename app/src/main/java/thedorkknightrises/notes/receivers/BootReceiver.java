@@ -1,6 +1,7 @@
 package thedorkknightrises.notes.receivers;
 
 import android.app.AlarmManager;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -41,6 +42,28 @@ public class BootReceiver extends BroadcastReceiver {
         ArrayList<NoteObj> list = new NotesDbHelper(context).getNotificationsAndReminders();
         // Gets an instance of the NotificationManager service
         NotificationManager mNotifyMgr = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+
+
+        if (Build.VERSION.SDK_INT >= 26) {
+
+            NotificationChannel mChannel = new NotificationChannel(Constants.CHANNEL_ID_DEFAULT, context.getString(R.string.channel_name_default), NotificationManager.IMPORTANCE_LOW);
+            mChannel.setDescription(context.getString(R.string.channel_description_default));
+            mChannel.enableLights(false);
+            mChannel.enableVibration(false);
+            mNotifyMgr.createNotificationChannel(mChannel);
+
+            mChannel = new NotificationChannel(Constants.CHANNEL_ID_NOTE, context.getString(R.string.channel_name_notes), NotificationManager.IMPORTANCE_LOW);
+            mChannel.setDescription(context.getString(R.string.channel_description_notes));
+            mChannel.enableLights(false);
+            mChannel.enableVibration(false);
+            mNotifyMgr.createNotificationChannel(mChannel);
+
+            mChannel = new NotificationChannel(Constants.CHANNEL_ID_REMINDER, context.getString(R.string.channel_name_reminders), NotificationManager.IMPORTANCE_MAX);
+            mChannel.setDescription(context.getString(R.string.channel_description_reminders));
+            mNotifyMgr.createNotificationChannel(mChannel);
+
+        }
+
         for (int i = 0; i < list.size(); i++) {
             NoteObj note = list.get(i);
             int id = note.getId();
@@ -106,6 +129,7 @@ public class BootReceiver extends BroadcastReceiver {
                         notif.setAutoCancel(true);
                         notif.setContentIntent(resultPendingIntent);
                         notif.setOngoing(false);
+                        notif.setChannelId(Constants.CHANNEL_ID_REMINDER);
 
                         // Builds the notification and issues it.
                         mNotifyMgr.notify(id, notif.build());
@@ -150,7 +174,12 @@ public class BootReceiver extends BroadcastReceiver {
 
                 notif.setStyle(new NotificationCompat.BigTextStyle().bigText(content).setSummaryText(time));
 
-                Intent resultIntent = new Intent(context, NoteActivity.class);
+                Class c;
+                if (note.getChecklist() == 0)
+                    c = NoteActivity.class;
+                else
+                    c = ChecklistActivity.class;
+                Intent resultIntent = new Intent(context, c);
                 bundle.putString(NotesDb.Note.COLUMN_NAME_REMINDER, note.getReminder());
                 resultIntent.putExtra(Constants.NOTE_DETAILS_BUNDLE, bundle);
                 resultIntent.setAction("ACTION_NOTE_" + id);
@@ -165,9 +194,7 @@ public class BootReceiver extends BroadcastReceiver {
 
                 notif.setContentIntent(resultPendingIntent);
                 notif.setOngoing(true);
-
-                // TODO: Add actions to open and dismiss
-                // notif.addAction(R.drawable.common_full_open_on_phone, getString(R.string.open_app), resultPendingIntent);
+                notif.setChannelId(Constants.CHANNEL_ID_NOTE);
 
                 // Builds the notification and issues it.
                 mNotifyMgr.notify(id, notif.build());
@@ -200,6 +227,7 @@ public class BootReceiver extends BroadcastReceiver {
 
             notif.setContentIntent(resultPendingIntent);
             notif.setOngoing(true);
+            notif.setChannelId(Constants.CHANNEL_ID_DEFAULT);
 
             Intent checklistIntent = new Intent(context, ChecklistActivity.class);
             TaskStackBuilder stackBuilder1 = TaskStackBuilder.create(context);

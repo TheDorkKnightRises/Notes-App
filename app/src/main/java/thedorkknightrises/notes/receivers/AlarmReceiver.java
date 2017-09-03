@@ -105,12 +105,11 @@ public class AlarmReceiver extends BroadcastReceiver {
                         stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
 
                 notif.setContentIntent(resultPendingIntent);
-                if (context.getSharedPreferences(Constants.PREFS, MODE_PRIVATE).getBoolean(Constants.REMINDER_ONGOING, false))
-                    notif.setOngoing(true);
-                else {
-                    notif.setAutoCancel(true);
-                    notif.setDeleteIntent(PendingIntent.getBroadcast(context, id, new Intent(context, BootReceiver.class), PendingIntent.FLAG_UPDATE_CURRENT));
-                }
+
+                notif.setAutoCancel(true);
+                notif.setDeleteIntent(PendingIntent.getBroadcast(context, id, new Intent(context, BootReceiver.class), PendingIntent.FLAG_UPDATE_CURRENT));
+                notif.setChannelId(Constants.CHANNEL_ID_REMINDER);
+
                 SharedPreferences pref = context.getSharedPreferences(Constants.PREFS, MODE_PRIVATE);
                 if (pref.getBoolean(Constants.REMINDER_SOUND, true))
                     notif.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
