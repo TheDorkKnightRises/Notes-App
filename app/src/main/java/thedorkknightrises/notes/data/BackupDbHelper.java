@@ -121,10 +121,16 @@ public class BackupDbHelper extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
                 ContentValues checklistValues = new ContentValues();
-                checklistValues.put(NotesDb.Checklist.COLUMN_NAME_NOTE_ID, cursor.getInt(0));
-                checklistValues.put(NotesDb.Checklist.COLUMN_NAME_ITEM, cursor.getString(1));
-                checklistValues.put(NotesDb.Checklist.COLUMN_NAME_CHECKED, cursor.getInt(2));
-                db1.insertWithOnConflict(NotesDb.Checklist.TABLE_NAME, null, checklistValues, SQLiteDatabase.CONFLICT_REPLACE);
+                int id = cursor.getInt(0);
+                String text = cursor.getString(1);
+                Cursor c = db1.rawQuery("SELECT * FROM " + NotesDb.Checklist.TABLE_NAME + " WHERE " + NotesDb.Checklist.COLUMN_NAME_NOTE_ID + " = " + id + " AND " + NotesDb.Checklist.COLUMN_NAME_ITEM + " = '" + text + "'", null);
+                if (c.getCount() == 0) {
+                    checklistValues.put(NotesDb.Checklist.COLUMN_NAME_NOTE_ID, id);
+                    checklistValues.put(NotesDb.Checklist.COLUMN_NAME_ITEM, text);
+                    checklistValues.put(NotesDb.Checklist.COLUMN_NAME_CHECKED, cursor.getInt(2));
+                    db1.insertWithOnConflict(NotesDb.Checklist.TABLE_NAME, null, checklistValues, SQLiteDatabase.CONFLICT_REPLACE);
+                }
+                c.close();
             } while (cursor.moveToNext());
         }
         cursor.close();
