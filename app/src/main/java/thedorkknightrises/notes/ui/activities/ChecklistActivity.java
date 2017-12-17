@@ -607,6 +607,7 @@ public class ChecklistActivity extends AppCompatActivity {
             }
         }
         id = dbHelper.saveChecklist(id, title, subtitle, content.toString(), checklistDatas, time, created_at, archived, notified, color, encrypted, pinned, tag, reminder);
+        notif(notified);
         onListChanged();
         return true;
     }
