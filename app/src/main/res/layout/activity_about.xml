@@ -61,7 +61,7 @@
                                 android:layout_gravity="center"
                                 android:layout_margin="8dp"
                                 android:contentDescription="@string/icon"
-                                android:src="@mipmap/ic_launcher" />
+                                android:src="@drawable/ic_launcher" />
 
                             <LinearLayout
                                 android:layout_width="match_parent"

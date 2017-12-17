@@ -20,7 +20,6 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.webkit.MimeTypeMap;
 import android.widget.CompoundButton;
 import android.widget.Toast;
 
@@ -441,7 +440,6 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
             }
 
             MetadataChangeSet metadataChangeSet = new MetadataChangeSet.Builder()
-                    .setMimeType(MimeTypeMap.getSingleton().getMimeTypeFromExtension("db"))
                     .setTitle(NotesDbHelper.DATABASE_NAME)
                     .build();
 

@@ -58,7 +58,7 @@ public class BootReceiver extends BroadcastReceiver {
             mChannel.enableVibration(false);
             mNotifyMgr.createNotificationChannel(mChannel);
 
-            mChannel = new NotificationChannel(Constants.CHANNEL_ID_REMINDER, context.getString(R.string.channel_name_reminders), NotificationManager.IMPORTANCE_MAX);
+            mChannel = new NotificationChannel(Constants.CHANNEL_ID_REMINDER, context.getString(R.string.channel_name_reminders), NotificationManager.IMPORTANCE_HIGH);
             mChannel.setDescription(context.getString(R.string.channel_description_reminders));
             mNotifyMgr.createNotificationChannel(mChannel);
 
@@ -108,7 +108,7 @@ public class BootReceiver extends BroadcastReceiver {
                         resultIntent.setAction("REMINDER_NOTE_" + id);
                         NotificationCompat.Builder notif =
                                 new NotificationCompat.Builder(context)
-                                        .setSmallIcon(R.mipmap.ic_launcher)
+                                        .setSmallIcon(R.drawable.ic_stat_notepal)
                                         .setContentTitle(context.getString(R.string.missed_reminder))
                                         .setContentText(content)
                                         .setSubText(info)
@@ -159,7 +159,7 @@ public class BootReceiver extends BroadcastReceiver {
                 else info = time;
                 NotificationCompat.Builder notif =
                         new NotificationCompat.Builder(context)
-                                .setSmallIcon(R.mipmap.ic_launcher)
+                                .setSmallIcon(R.drawable.ic_stat_notepal)
                                 .setContentText(content)
                                 .setSubText(info)
                                 .setShowWhen(false)
@@ -204,7 +204,7 @@ public class BootReceiver extends BroadcastReceiver {
         if (context.getSharedPreferences(Constants.PREFS, MODE_PRIVATE).getBoolean(Constants.QUICK_NOTIFY, false)) {
             NotificationCompat.Builder notif =
                     new NotificationCompat.Builder(context)
-                            .setSmallIcon(R.mipmap.ic_launcher)
+                            .setSmallIcon(R.drawable.ic_stat_notepal)
                             .setContentTitle(context.getString(R.string.new_note))
                             .setContentText(context.getString(R.string.tap_create_note))
                             .setShowWhen(false)

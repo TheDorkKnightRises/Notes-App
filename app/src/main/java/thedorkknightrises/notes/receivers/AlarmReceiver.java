@@ -54,7 +54,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                 else info = time;
                 NotificationCompat.Builder notif =
                         new NotificationCompat.Builder(context)
-                                .setSmallIcon(R.mipmap.ic_launcher)
+                                .setSmallIcon(R.drawable.ic_stat_notepal)
                                 .setContentText(content)
                                 .setSubText(info)
                                 .setPriority(NotificationCompat.PRIORITY_HIGH)

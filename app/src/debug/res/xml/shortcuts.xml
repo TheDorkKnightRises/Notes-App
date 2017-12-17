@@ -9,7 +9,7 @@
         <intent
             android:action="android.intent.action.VIEW"
             android:targetClass="thedorkknightrises.notes.ui.activities.NoteActivity"
-            android:targetPackage="thedorkknightrises.notes" />
+            android:targetPackage="thedorkknightrises.notes.debug" />
         <categories android:name="android.shortcut.notes" />
     </shortcut>
     <shortcut
@@ -21,7 +21,7 @@
         <intent
             android:action="android.intent.action.VIEW"
             android:targetClass="thedorkknightrises.notes.ui.activities.ChecklistActivity"
-            android:targetPackage="thedorkknightrises.notes" />
+            android:targetPackage="thedorkknightrises.notes.debug" />
         <categories android:name="android.shortcut.notes" />
     </shortcut>
     <shortcut
@@ -33,7 +33,7 @@
         <intent
             android:action="android.intent.action.VIEW"
             android:targetClass="thedorkknightrises.notes.ui.activities.SearchActivity"
-            android:targetPackage="thedorkknightrises.notes" />
+            android:targetPackage="thedorkknightrises.notes.debug" />
         <categories android:name="android.shortcut.notes" />
     </shortcut>
 </shortcuts>

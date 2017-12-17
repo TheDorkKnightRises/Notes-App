@@ -556,7 +556,7 @@ public class NoteActivity extends AppCompatActivity {
             else info = time;
             NotificationCompat.Builder notif =
                     new NotificationCompat.Builder(this)
-                            .setSmallIcon(R.mipmap.ic_launcher)
+                            .setSmallIcon(R.drawable.ic_stat_notepal)
                             .setContentText(content)
                             .setSubText(info)
                             .setShowWhen(false)

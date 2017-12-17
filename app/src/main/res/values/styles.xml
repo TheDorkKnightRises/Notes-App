@@ -29,7 +29,7 @@
 
     <style name="Note" parent="AppTheme.NoActionBar" />
 
-    <style name="NoteLight" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="NoteLight" parent="AppTheme.Light.NoActionBar">
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
