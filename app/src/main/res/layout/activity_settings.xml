@@ -555,6 +555,94 @@
                             android:textSize="14sp" />
 
                         <LinearLayout
+                            android:id="@+id/local_backup"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="?android:attr/selectableItemBackground"
+                            android:baselineAligned="false"
+                            android:clickable="true"
+                            android:gravity="center_vertical"
+                            android:minHeight="80dp"
+                            android:onClick="localBackup"
+                            android:paddingBottom="@dimen/activity_horizontal_margin"
+                            android:paddingEnd="8dp"
+                            android:paddingLeft="8dp"
+                            android:paddingRight="8dp"
+                            android:paddingStart="8dp"
+                            android:paddingTop="@dimen/activity_horizontal_margin">
+
+                            <LinearLayout
+                                android:id="@+id/local_backup_row"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="8dp"
+                                android:layout_marginStart="8dp"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center_vertical"
+                                    android:paddingTop="4dp"
+                                    android:text="@string/local_backup"
+                                    android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                                    android:textSize="18sp" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/backup_local_sub" />
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/local_restore_row"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="?android:attr/selectableItemBackground"
+                            android:baselineAligned="false"
+                            android:clickable="true"
+                            android:gravity="center_vertical"
+                            android:minHeight="80dp"
+                            android:onClick="localRestore"
+                            android:paddingBottom="@dimen/activity_horizontal_margin"
+                            android:paddingEnd="8dp"
+                            android:paddingLeft="8dp"
+                            android:paddingRight="8dp"
+                            android:paddingStart="8dp"
+                            android:paddingTop="@dimen/activity_horizontal_margin">
+
+                            <LinearLayout
+                                android:id="@+id/local_restore"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="8dp"
+                                android:layout_marginStart="8dp"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center_vertical"
+                                    android:paddingTop="4dp"
+                                    android:text="@string/local_restore"
+                                    android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                                    android:textSize="18sp" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/restore_local_sub" />
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                        <LinearLayout
                             android:id="@+id/drive_backup"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -585,14 +673,14 @@
                                     android:layout_height="wrap_content"
                                     android:gravity="center_vertical"
                                     android:paddingTop="4dp"
-                                    android:text="@string/backup"
+                                    android:text="@string/backup_to_drive"
                                     android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
                                     android:textSize="18sp" />
 
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="@string/backup_sub" />
+                                    android:text="@string/backup_drive_sub" />
 
                             </LinearLayout>
 
@@ -629,14 +717,14 @@
                                     android:layout_height="wrap_content"
                                     android:gravity="center_vertical"
                                     android:paddingTop="4dp"
-                                    android:text="@string/restore"
+                                    android:text="@string/restore_from_drive"
                                     android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
                                     android:textSize="18sp" />
 
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="@string/restore_sub" />
+                                    android:text="@string/restore_drive_sub" />
 
                             </LinearLayout>
 

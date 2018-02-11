@@ -73,17 +73,22 @@
     <string name="light_theme_sub">Throughout the app</string>
     <string name="restored">Restore complete</string>
     <string name="backup_and_reset">Backup and reset</string>
-    <string name="backup">Backup to Google Drive</string>
+    <string name="backup_to_drive">Backup to Google Drive</string>
     <string name="drive_error">Error connecting to Drive</string>
-    <string name="backup_sub">Save your current notes to the cloud</string>
+    <string name="backup_drive_sub">Save your current notes to the cloud</string>
     <string name="backing_up">Backing up…</string>
     <string name="error_backup">Failed to backup to Drive</string>
     <string name="backup_success">Backup successful!</string>
-    <string name="restore">Restore from Google Drive</string>
-    <string name="restore_sub">Retrieve previously your backup from the cloud</string>
+    <string name="restore_from_drive">Restore from Google Drive</string>
+    <string name="restore_drive_sub">Retrieve previously your backup from the cloud</string>
     <string name="restoring">Restoring…</string>
     <string name="error_restore">Error retrieving backups from Drive</string>
     <string name="no_backups">No backups found</string>
+    <string name="local_backup">Backup to internal storage</string>
+    <string name="backup_local_sub">Create a local backup</string>
+    <string name="local_restore">Restore from internal storage</string>
+    <string name="restore_local_sub">Retrieve notes from local backup</string>
+    <string name="storage_permission_rationale">Storage access permission is required to import and export local backups</string>
 
     <string name="yes">Yes</string>
     <string name="no">No</string>
@@ -176,4 +181,5 @@
     <string name="channel_description_notes">Notifications for notes and checklists created by user</string>
     <string name="channel_name_reminders">Reminders</string>
     <string name="channel_description_reminders">Scheduled reminders and missed reminder notifications</string>
+    <string name="choose_backup_to_restore">Choose backup to restore</string>
 </resources>

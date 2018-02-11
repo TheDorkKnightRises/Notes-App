@@ -1,5 +1,6 @@
 package thedorkknightrises.notes.ui.activities;
 
+import android.Manifest;
 import android.app.NotificationManager;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -7,10 +8,14 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
@@ -18,9 +23,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -45,19 +53,22 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.DecimalFormat;
+import java.util.Calendar;
 
 import thedorkknightrises.notes.Constants;
 import thedorkknightrises.notes.R;
 import thedorkknightrises.notes.data.BackupDbHelper;
 import thedorkknightrises.notes.data.NotesDbHelper;
 import thedorkknightrises.notes.receivers.BootReceiver;
-import thedorkknightrises.notes.util.NetworkUtil;
+import thedorkknightrises.notes.util.NetworkUtils;
 
 /**
  * Created by Samriddha Basu on 6/22/2016.
  */
 public class SettingsActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     private static final int REQUEST_CODE_RESOLUTION = 3;
+    private static final int STORAGE_PERMISSION_REQUEST_CODE = 101;
     GoogleApiClient mGoogleApiClient;
     NotificationManager mNotifyMgr;
     ProgressDialog progress;
@@ -219,7 +230,7 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
     }
 
     public void driveBackup(View v) {
-        if (!NetworkUtil.isNetworkConnected(this)) {
+        if (!NetworkUtils.isNetworkConnected(this)) {
             Toast.makeText(this, R.string.no_connection, Toast.LENGTH_SHORT).show();
             return;
         }
@@ -249,7 +260,7 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
     }
 
     public void driveRestore(View v) {
-        if (!NetworkUtil.isNetworkConnected(this)) {
+        if (!NetworkUtils.isNetworkConnected(this)) {
             Toast.makeText(this, R.string.no_connection, Toast.LENGTH_SHORT).show();
             return;
         }
@@ -400,6 +411,116 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
     private void onListChanged() {
         Intent intent = new Intent("note-list-changed");
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+    }
+
+    public void localBackup(View view) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, STORAGE_PERMISSION_REQUEST_CODE);
+            return;
+        }
+
+        File dbFile = this.getDatabasePath(NotesDbHelper.DATABASE_NAME);
+        Calendar calendar = Calendar.getInstance();
+        DecimalFormat decimalFormat = new DecimalFormat("00");
+        String dateTimeString = String.valueOf(calendar.get(Calendar.YEAR)) +
+                "-" + decimalFormat.format(calendar.get(Calendar.MONTH) + 1) +
+                "-" + decimalFormat.format(calendar.get(Calendar.DATE)) +
+                "_" + decimalFormat.format(calendar.get(Calendar.HOUR)) +
+                "-" + decimalFormat.format(calendar.get(Calendar.MINUTE));
+        File file = new File(Environment.getExternalStoragePublicDirectory("NotePal").getAbsolutePath()
+                + File.separator + "Backups" + File.separator + "Backup_" + dateTimeString);
+
+        progress.setMessage(getString(R.string.backing_up));
+        progress.show();
+        if (copyFile(dbFile, file))
+            Toast.makeText(this, getString(R.string.backup_success) + ": " + file.getAbsolutePath(), Toast.LENGTH_LONG).show();
+        else
+            Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
+        progress.dismiss();
+    }
+
+    public void localRestore(View view) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, STORAGE_PERMISSION_REQUEST_CODE);
+            return;
+        }
+
+        File dir = new File(Environment.getExternalStoragePublicDirectory("NotePal").getAbsolutePath()
+                + File.separator + "Backups");
+        dir.mkdirs();
+        Log.d(getLocalClassName(), "Path: " + dir.getAbsolutePath());
+        File[] files = dir.listFiles();
+        Log.d(getLocalClassName(), "Number of backups: " + files.length);
+
+        if (files.length > 0) {
+            BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this, (pref.getBoolean(Constants.LIGHT_THEME, false)) ? R.style.BottomSheet_Light : R.style.BottomSheet_Dark);
+            bottomSheetDialog.setContentView(R.layout.backups_list_bottom_sheet_layout);
+            LinearLayout linearLayout = bottomSheetDialog.findViewById(R.id.linearLayout);
+            for (final File file : files) {
+                TextView textView = new TextView(this);
+                textView.setPadding(16, 16, 16, 16);
+                textView.setMinHeight(144);
+                textView.setGravity(Gravity.CENTER_VERTICAL);
+                textView.setText(file.getName());
+                textView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        File backupDbFile = getDatabasePath(BackupDbHelper.DATABASE_NAME);
+                        progress.setMessage(getString(R.string.restoring));
+                        progress.show();
+                        if (copyFile(file, backupDbFile)) {
+                            BackupDbHelper backupDbHelper = new BackupDbHelper(SettingsActivity.this);
+                            backupDbHelper.merge(getApplicationContext());
+                            Toast.makeText(SettingsActivity.this, getString(R.string.restored), Toast.LENGTH_SHORT).show();
+
+                            NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                            mNotifyMgr.cancelAll();
+                            new BootReceiver().onReceive(SettingsActivity.this, null);
+                            onListChanged();
+                        } else {
+                            Toast.makeText(SettingsActivity.this, R.string.error, Toast.LENGTH_SHORT).show();
+                        }
+                        progress.dismiss();
+                    }
+                });
+                linearLayout.addView(textView);
+            }
+            bottomSheetDialog.show();
+        } else {
+            Toast.makeText(this, R.string.no_backups, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == STORAGE_PERMISSION_REQUEST_CODE) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                localBackup(null);
+            } else {
+                Toast.makeText(this, R.string.storage_permission_rationale, Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    public boolean copyFile(File src, File dest) {
+        try {
+            dest.getParentFile().mkdirs();
+            dest.createNewFile();
+            InputStream is = new FileInputStream(src);
+            OutputStream os = new FileOutputStream(dest);
+            byte[] buff = new byte[1024];
+            int len;
+            while ((len = is.read(buff)) > 0) {
+                os.write(buff, 0, len);
+            }
+            is.close();
+            os.close();
+        } catch (IOException e) {
+            Log.d(getLocalClassName(), e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 
     public class BackupFileTask extends AsyncTask<Void, Void, Void> {

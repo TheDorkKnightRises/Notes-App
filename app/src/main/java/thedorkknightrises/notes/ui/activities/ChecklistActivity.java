@@ -305,7 +305,7 @@ public class ChecklistActivity extends AppCompatActivity {
 
     public void notifBtn(View v) {
         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this, R.style.BottomSheet_Dark);
-        bottomSheetDialog.setContentView(R.layout.bottom_sheet_layout);
+        bottomSheetDialog.setContentView(R.layout.notification_options_bottom_sheet_layout);
         final TextView timeView = bottomSheetDialog.findViewById(R.id.reminder_time);
         Switch notifSwitch = bottomSheetDialog.findViewById(R.id.notification_switch);
         if (notified == 1) notifSwitch.setChecked(true);

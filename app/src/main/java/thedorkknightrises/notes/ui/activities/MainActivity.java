@@ -53,7 +53,7 @@ import thedorkknightrises.notes.data.NotesDbHelper;
 import thedorkknightrises.notes.data.NotesProvider;
 import thedorkknightrises.notes.receivers.BootReceiver;
 import thedorkknightrises.notes.ui.adapters.NotesAdapter;
-import thedorkknightrises.notes.util.NetworkUtil;
+import thedorkknightrises.notes.util.NetworkUtils;
 import thedorkknightrises.notes.widget.NotesWidget;
 
 
@@ -291,7 +291,7 @@ public class MainActivity extends AppCompatActivity
             recreate();
         }
 
-        if (!pref.getBoolean(Constants.ADS_ENABLED, true) || !NetworkUtil.isNetworkConnected(this)) {
+        if (!pref.getBoolean(Constants.ADS_ENABLED, true) || !NetworkUtils.isNetworkConnected(this)) {
             adContainer.setVisibility(View.GONE);
         } else {
             adContainer.setVisibility(View.VISIBLE);

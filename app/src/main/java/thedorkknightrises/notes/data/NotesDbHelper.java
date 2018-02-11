@@ -61,9 +61,15 @@ public class NotesDbHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         if (oldVersion == 4 && newVersion == 5) {
             db.execSQL("ALTER TABLE " + NotesDb.Note.TABLE_NAME + " ADD COLUMN " + NotesDb.Note.COLUMN_NAME_CHECKLIST + " INTEGER DEFAULT 0;" +
-                    "UPDATE TABLE " + NotesDb.Note.TABLE_NAME + " SET " + NotesDb.Note.COLUMN_NAME_CHECKLIST + " = 0");
+                    "UPDATE " + NotesDb.Note.TABLE_NAME + " SET " + NotesDb.Note.COLUMN_NAME_CHECKLIST + " = 0");
             Log.d(getClass().getName(), "Database updated successfully to version 5 (added checklist column)");
         } else if (oldVersion == 5 && newVersion == 6) {
+            db.execSQL(SQL_CREATE_ENTRIES_CHECKLIST);
+            Log.d(getClass().getName(), "Database updated successfully to version 6 (created checklist table)");
+        } else if (oldVersion == 4 && newVersion == 6) {
+            db.execSQL("ALTER TABLE " + NotesDb.Note.TABLE_NAME + " ADD COLUMN " + NotesDb.Note.COLUMN_NAME_CHECKLIST + " INTEGER DEFAULT 0;" +
+                    "UPDATE " + NotesDb.Note.TABLE_NAME + " SET " + NotesDb.Note.COLUMN_NAME_CHECKLIST + " = 0");
+            Log.d(getClass().getName(), "Database updated successfully to version 5 (added checklist column)");
             db.execSQL(SQL_CREATE_ENTRIES_CHECKLIST);
             Log.d(getClass().getName(), "Database updated successfully to version 6 (created checklist table)");
         } else {

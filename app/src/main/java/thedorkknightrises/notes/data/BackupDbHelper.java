@@ -47,6 +47,10 @@ public class BackupDbHelper extends SQLiteOpenHelper {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
+    public BackupDbHelper(Context context, String fileName) {
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    }
+
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(SQL_CREATE_ENTRIES);
         db.execSQL(SQL_CREATE_ENTRIES_CHECKLIST);
@@ -55,7 +59,7 @@ public class BackupDbHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         if (oldVersion == 4 && newVersion == 5) {
             db.execSQL("ALTER TABLE " + NotesDb.Note.TABLE_NAME + " ADD COLUMN " + NotesDb.Note.COLUMN_NAME_CHECKLIST + " INTEGER DEFAULT 0;" +
-                    "UPDATE TABLE " + NotesDb.Note.TABLE_NAME + " SET " + NotesDb.Note.COLUMN_NAME_CHECKLIST + " = 0");
+                    "UPDATE " + NotesDb.Note.TABLE_NAME + " SET " + NotesDb.Note.COLUMN_NAME_CHECKLIST + " = 0");
             Log.d(getClass().getName(), "Database updated successfully to version 5 (added checklist column)");
         } else if (oldVersion == 5 && newVersion == 6) {
             db.execSQL(SQL_CREATE_ENTRIES_CHECKLIST);
@@ -74,6 +78,10 @@ public class BackupDbHelper extends SQLiteOpenHelper {
     public void merge(Context context) {
         SQLiteDatabase db = this.getReadableDatabase();
         NotesDbHelper notesDbHelper = new NotesDbHelper(context);
+
+        int orig_id;
+        int new_id;
+
         String[] projection = {
                 NotesDb.Note._ID,
                 NotesDb.Note.COLUMN_NAME_TITLE,
@@ -93,7 +101,7 @@ public class BackupDbHelper extends SQLiteOpenHelper {
         Cursor cursor = db.query(NotesDb.Note.TABLE_NAME, projection, null, null, null, null, NotesDb.Note._ID);
         if (cursor.moveToFirst()) {
             do {
-                notesDbHelper.addOrUpdateNote(cursor.getInt(0),
+                new_id = notesDbHelper.addOrUpdateNote(cursor.getInt(0),
                         cursor.getString(1),
                         cursor.getString(2),
                         cursor.getString(3),
@@ -107,34 +115,36 @@ public class BackupDbHelper extends SQLiteOpenHelper {
                         cursor.getInt(11),
                         cursor.getString(12),
                         cursor.getInt(13));
-            } while (cursor.moveToNext());
-        }
-        cursor.close();
 
-        String[] projection1 = {
-                NotesDb.Checklist.COLUMN_NAME_NOTE_ID,
-                NotesDb.Checklist.COLUMN_NAME_ITEM,
-                NotesDb.Checklist.COLUMN_NAME_CHECKED
-        };
-        cursor = db.query(NotesDb.Checklist.TABLE_NAME, projection1, null, null, null, null, NotesDb.Checklist.COLUMN_NAME_NOTE_ID);
-        SQLiteDatabase db1 = notesDbHelper.getWritableDatabase();
-        if (cursor.moveToFirst()) {
-            do {
-                ContentValues checklistValues = new ContentValues();
-                int id = cursor.getInt(0);
-                String text = cursor.getString(1);
-                Cursor c = db1.rawQuery("SELECT * FROM " + NotesDb.Checklist.TABLE_NAME + " WHERE " + NotesDb.Checklist.COLUMN_NAME_NOTE_ID + " = " + id + " AND " + NotesDb.Checklist.COLUMN_NAME_ITEM + " = '" + text + "'", null);
-                if (c.getCount() == 0) {
-                    checklistValues.put(NotesDb.Checklist.COLUMN_NAME_NOTE_ID, id);
-                    checklistValues.put(NotesDb.Checklist.COLUMN_NAME_ITEM, text);
-                    checklistValues.put(NotesDb.Checklist.COLUMN_NAME_CHECKED, cursor.getInt(2));
-                    db1.insertWithOnConflict(NotesDb.Checklist.TABLE_NAME, null, checklistValues, SQLiteDatabase.CONFLICT_REPLACE);
+                orig_id = cursor.getInt(0);
+
+                String[] projection1 = {
+                        NotesDb.Checklist.COLUMN_NAME_NOTE_ID,
+                        NotesDb.Checklist.COLUMN_NAME_ITEM,
+                        NotesDb.Checklist.COLUMN_NAME_CHECKED
+                };
+
+                SQLiteDatabase db1 = notesDbHelper.getWritableDatabase();
+
+                Cursor checklistCursor = db.query(NotesDb.Checklist.TABLE_NAME, projection1,
+                        NotesDb.Checklist.COLUMN_NAME_NOTE_ID + " = ? ", new String[]{String.valueOf(orig_id)},
+                        null, null, NotesDb.Checklist.COLUMN_NAME_NOTE_ID);
+
+                if (checklistCursor.moveToFirst()) {
+                    do {
+                        ContentValues checklistValues = new ContentValues();
+                        checklistValues.put(NotesDb.Checklist.COLUMN_NAME_NOTE_ID, new_id);
+                        checklistValues.put(NotesDb.Checklist.COLUMN_NAME_ITEM, checklistCursor.getString(1));
+                        checklistValues.put(NotesDb.Checklist.COLUMN_NAME_CHECKED, cursor.getInt(2));
+                        db1.insertWithOnConflict(NotesDb.Checklist.TABLE_NAME, null, checklistValues, SQLiteDatabase.CONFLICT_REPLACE);
+                    } while (checklistCursor.moveToNext());
                 }
-                c.close();
+                checklistCursor.close();
+                db1.close();
+
             } while (cursor.moveToNext());
         }
         cursor.close();
-        db1.close();
         db.close();
     }
 
