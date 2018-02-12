@@ -42,7 +42,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
             NoteObj note = notesDbHelper.getNote(id);
 
-            if (note != null) {
+            if (note != null && note.getDeleted() == 0) {
 
                 String title = note.getTitle();
                 String subtitle = note.getSubtitle();
@@ -93,6 +93,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                 bundle.putInt(NotesDb.Note.COLUMN_NAME_TAG, note.getTag());
                 bundle.putString(NotesDb.Note.COLUMN_NAME_REMINDER, note.getReminder());
                 bundle.putInt(NotesDb.Note.COLUMN_NAME_CHECKLIST, note.getChecklist());
+                bundle.putInt(NotesDb.Note.COLUMN_NAME_DELETED, note.getDeleted());
                 resultIntent.putExtra(Constants.NOTE_DETAILS_BUNDLE, bundle);
                 resultIntent.setAction("REMINDER_NOTE_" + id);
 

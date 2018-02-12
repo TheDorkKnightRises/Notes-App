@@ -17,7 +17,7 @@ import thedorkknightrises.notes.NoteObj;
  * Created by Samriddha Basu on 6/20/2016.
  */
 public class NotesDbHelper extends SQLiteOpenHelper {
-    public static final int DATABASE_VERSION = 6;
+    public static final int DATABASE_VERSION = 7;
     public static final String DATABASE_NAME = "Notes.db";
     private static final String TEXT_TYPE = " TEXT";
     private static final String COMMA_SEP = ",";
@@ -36,7 +36,8 @@ public class NotesDbHelper extends SQLiteOpenHelper {
                     NotesDb.Note.COLUMN_NAME_PINNED + " INTEGER" + COMMA_SEP +
                     NotesDb.Note.COLUMN_NAME_TAG + " INTEGER" + COMMA_SEP +
                     NotesDb.Note.COLUMN_NAME_REMINDER + TEXT_TYPE + COMMA_SEP +
-                    NotesDb.Note.COLUMN_NAME_CHECKLIST + " INTEGER" + " ) ";
+                    NotesDb.Note.COLUMN_NAME_CHECKLIST + " INTEGER" + COMMA_SEP +
+                    NotesDb.Note.COLUMN_NAME_DELETED + " INTEGER" + " ) ";
     private static final String SQL_DELETE_ENTRIES =
             "DROP TABLE IF EXISTS " + NotesDb.Note.TABLE_NAME;
 
@@ -59,23 +60,23 @@ public class NotesDbHelper extends SQLiteOpenHelper {
     }
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        if (oldVersion == 4 && newVersion == 5) {
-            db.execSQL("ALTER TABLE " + NotesDb.Note.TABLE_NAME + " ADD COLUMN " + NotesDb.Note.COLUMN_NAME_CHECKLIST + " INTEGER DEFAULT 0;" +
-                    "UPDATE " + NotesDb.Note.TABLE_NAME + " SET " + NotesDb.Note.COLUMN_NAME_CHECKLIST + " = 0");
-            Log.d(getClass().getName(), "Database updated successfully to version 5 (added checklist column)");
-        } else if (oldVersion == 5 && newVersion == 6) {
-            db.execSQL(SQL_CREATE_ENTRIES_CHECKLIST);
-            Log.d(getClass().getName(), "Database updated successfully to version 6 (created checklist table)");
-        } else if (oldVersion == 4 && newVersion == 6) {
-            db.execSQL("ALTER TABLE " + NotesDb.Note.TABLE_NAME + " ADD COLUMN " + NotesDb.Note.COLUMN_NAME_CHECKLIST + " INTEGER DEFAULT 0;" +
-                    "UPDATE " + NotesDb.Note.TABLE_NAME + " SET " + NotesDb.Note.COLUMN_NAME_CHECKLIST + " = 0");
-            Log.d(getClass().getName(), "Database updated successfully to version 5 (added checklist column)");
-            db.execSQL(SQL_CREATE_ENTRIES_CHECKLIST);
-            Log.d(getClass().getName(), "Database updated successfully to version 6 (created checklist table)");
-        } else {
-            db.execSQL(SQL_DELETE_ENTRIES);
-            db.execSQL(SQL_DELETE_ENTRIES_CHECKLIST);
-            onCreate(db);
+        switch (oldVersion) {
+            case 4:
+                db.execSQL("ALTER TABLE " + NotesDb.Note.TABLE_NAME + " ADD COLUMN " + NotesDb.Note.COLUMN_NAME_CHECKLIST + " INTEGER DEFAULT 0;" +
+                        "UPDATE " + NotesDb.Note.TABLE_NAME + " SET " + NotesDb.Note.COLUMN_NAME_CHECKLIST + " = 0");
+                Log.d(getClass().getName(), "Database updated successfully to version 5 (added checklist column)");
+            case 5:
+                db.execSQL(SQL_CREATE_ENTRIES_CHECKLIST);
+                Log.d(getClass().getName(), "Database updated successfully to version 6 (created checklist table)");
+            case 6:
+                db.execSQL("ALTER TABLE " + NotesDb.Note.TABLE_NAME + " ADD COLUMN " + NotesDb.Note.COLUMN_NAME_DELETED + " INTEGER DEFAULT 0;" +
+                        "UPDATE " + NotesDb.Note.TABLE_NAME + " SET " + NotesDb.Note.COLUMN_NAME_DELETED + " = 0");
+                Log.d(getClass().getName(), "Database updated successfully to version 7 (added deleted column)");
+                break;
+            default:
+                db.execSQL(SQL_DELETE_ENTRIES);
+                db.execSQL(SQL_DELETE_ENTRIES_CHECKLIST);
+                onCreate(db);
         }
     }
 
@@ -83,7 +84,7 @@ public class NotesDbHelper extends SQLiteOpenHelper {
         onUpgrade(db, oldVersion, newVersion);
     }
 
-    public int addOrUpdateNote(int id, String title, String subtitle, String content, String time, String created_at, int archived, int notified, String color, int encrypted, int pinned, int tag, String reminder, int checklist) {
+    public int addOrUpdateNote(int id, String title, String subtitle, String content, String time, String created_at, int archived, int notified, String color, int encrypted, int pinned, int tag, String reminder, int checklist, int deleted) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -99,6 +100,7 @@ public class NotesDbHelper extends SQLiteOpenHelper {
         values.put(NotesDb.Note.COLUMN_NAME_TAG, tag);
         values.put(NotesDb.Note.COLUMN_NAME_REMINDER, reminder);
         values.put(NotesDb.Note.COLUMN_NAME_CHECKLIST, checklist);
+        values.put(NotesDb.Note.COLUMN_NAME_DELETED, deleted);
 
         int i = db.update(NotesDb.Note.TABLE_NAME, values,
                 NotesDb.Note.COLUMN_NAME_CREATED_AT + " = ? ",
@@ -178,7 +180,8 @@ public class NotesDbHelper extends SQLiteOpenHelper {
                 NotesDb.Note.COLUMN_NAME_PINNED,
                 NotesDb.Note.COLUMN_NAME_TAG,
                 NotesDb.Note.COLUMN_NAME_REMINDER,
-                NotesDb.Note.COLUMN_NAME_CHECKLIST
+                NotesDb.Note.COLUMN_NAME_CHECKLIST,
+                NotesDb.Note.COLUMN_NAME_DELETED
         };
 
         SQLiteDatabase db = this.getWritableDatabase();
@@ -199,7 +202,8 @@ public class NotesDbHelper extends SQLiteOpenHelper {
                     cursor.getInt(10),
                     cursor.getInt(11),
                     cursor.getString(12),
-                    cursor.getInt(13));
+                    cursor.getInt(13),
+                    cursor.getInt(14));
 
             cursor.close();
             db.close();
@@ -227,7 +231,8 @@ public class NotesDbHelper extends SQLiteOpenHelper {
                 NotesDb.Note.COLUMN_NAME_PINNED,
                 NotesDb.Note.COLUMN_NAME_TAG,
                 NotesDb.Note.COLUMN_NAME_REMINDER,
-                NotesDb.Note.COLUMN_NAME_CHECKLIST
+                NotesDb.Note.COLUMN_NAME_CHECKLIST,
+                NotesDb.Note.COLUMN_NAME_DELETED
         };
 
         SQLiteDatabase db = this.getWritableDatabase();
@@ -248,7 +253,8 @@ public class NotesDbHelper extends SQLiteOpenHelper {
                         cursor.getInt(10),
                         cursor.getInt(11),
                         cursor.getString(12),
-                        cursor.getInt(13));
+                        cursor.getInt(13),
+                        cursor.getInt(14));
                 mList.add(noteObj);
             } while (cursor.moveToNext());
         }
@@ -274,7 +280,8 @@ public class NotesDbHelper extends SQLiteOpenHelper {
                 NotesDb.Note.COLUMN_NAME_PINNED,
                 NotesDb.Note.COLUMN_NAME_TAG,
                 NotesDb.Note.COLUMN_NAME_REMINDER,
-                NotesDb.Note.COLUMN_NAME_CHECKLIST
+                NotesDb.Note.COLUMN_NAME_CHECKLIST,
+                NotesDb.Note.COLUMN_NAME_DELETED
         };
 
         SQLiteDatabase db = this.getWritableDatabase();
@@ -296,7 +303,8 @@ public class NotesDbHelper extends SQLiteOpenHelper {
                         cursor.getInt(10),
                         cursor.getInt(11),
                         cursor.getString(12),
-                        cursor.getInt(13));
+                        cursor.getInt(13),
+                        cursor.getInt(14));
                 mList.add(noteObj);
             } while (cursor.moveToNext());
         }
@@ -318,7 +326,10 @@ public class NotesDbHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    public int saveChecklist(int id, String title, String subtitle, String content, ArrayList<ChecklistData> checklistData, String time, String created_at, int archived, int notified, String color, int encrypted, int pinned, int tag, String reminder) {
+    public int saveChecklist(int id, String title, String subtitle, String content,
+                             ArrayList<ChecklistData> checklistData, String time, String created_at,
+                             int archived, int notified, String color, int encrypted, int pinned,
+                             int tag, String reminder, int deleted) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -334,6 +345,7 @@ public class NotesDbHelper extends SQLiteOpenHelper {
         values.put(NotesDb.Note.COLUMN_NAME_TAG, tag);
         values.put(NotesDb.Note.COLUMN_NAME_REMINDER, reminder);
         values.put(NotesDb.Note.COLUMN_NAME_CHECKLIST, 1);
+        values.put(NotesDb.Note.COLUMN_NAME_DELETED, deleted);
 
         int i = db.update(NotesDb.Note.TABLE_NAME, values,
                 NotesDb.Note.COLUMN_NAME_CREATED_AT + " = ? ",

@@ -77,6 +77,7 @@ public class NotesAdapter extends RecyclerViewCursorAdapter<RecyclerView.ViewHol
         final int tag = cursor.getInt(cursor.getColumnIndex(NotesDb.Note.COLUMN_NAME_TAG));
         final String reminder = cursor.getString(cursor.getColumnIndex(NotesDb.Note.COLUMN_NAME_REMINDER));
         final int checklist = cursor.getInt(cursor.getColumnIndex(NotesDb.Note.COLUMN_NAME_CHECKLIST));
+        final int deleted = cursor.getInt(cursor.getColumnIndex(NotesDb.Note.COLUMN_NAME_DELETED));
 
         if (vh.getItemViewType() == 0) {
             // note ViewHolder
@@ -110,6 +111,7 @@ public class NotesAdapter extends RecyclerViewCursorAdapter<RecyclerView.ViewHol
                     bundle.putInt(NotesDb.Note.COLUMN_NAME_TAG, tag);
                     bundle.putString(NotesDb.Note.COLUMN_NAME_REMINDER, reminder);
                     bundle.putInt(NotesDb.Note.COLUMN_NAME_CHECKLIST, checklist);
+                    bundle.putInt(NotesDb.Note.COLUMN_NAME_DELETED, deleted);
                     i.putExtra(Constants.NOTE_DETAILS_BUNDLE, bundle);
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -206,6 +208,7 @@ public class NotesAdapter extends RecyclerViewCursorAdapter<RecyclerView.ViewHol
                     bundle.putInt(NotesDb.Note.COLUMN_NAME_TAG, tag);
                     bundle.putString(NotesDb.Note.COLUMN_NAME_REMINDER, reminder);
                     bundle.putInt(NotesDb.Note.COLUMN_NAME_CHECKLIST, checklist);
+                    bundle.putInt(NotesDb.Note.COLUMN_NAME_DELETED, deleted);
                     i.putExtra(Constants.NOTE_DETAILS_BUNDLE, bundle);
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {

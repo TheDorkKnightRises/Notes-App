@@ -178,7 +178,8 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
                 NotesDb.Note.COLUMN_NAME_PINNED,
                 NotesDb.Note.COLUMN_NAME_TAG,
                 NotesDb.Note.COLUMN_NAME_REMINDER,
-                NotesDb.Note.COLUMN_NAME_CHECKLIST
+                NotesDb.Note.COLUMN_NAME_CHECKLIST,
+                NotesDb.Note.COLUMN_NAME_DELETED
         };
 
         int mode = pref.getInt(Constants.LIST_MODE, 0);
@@ -235,7 +236,8 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
                             cursor.getInt(10),
                             cursor.getInt(11),
                             cursor.getString(12),
-                            cursor.getInt(13));
+                            cursor.getInt(13),
+                            cursor.getInt(14));
                         noteObjArrayList.add(noteObj);
                 } while (cursor.moveToNext());
             }

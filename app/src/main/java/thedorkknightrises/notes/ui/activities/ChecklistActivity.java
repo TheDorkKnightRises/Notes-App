@@ -75,7 +75,7 @@ public class ChecklistActivity extends AppCompatActivity {
     private ChecklistView checklistView;
     private NotesDbHelper dbHelper;
     private int cx, cy;
-    private int id = -1, archived = 0, notified = 0, encrypted = 0, pinned = 0, tag = 0, checklist = 1;
+    private int id = -1, archived = 0, notified = 0, encrypted = 0, pinned = 0, tag = 0, checklist = 1, deleted = 0;
     private String title, subtitle, time, created_at, color = Constants.COLOR_NONE, reminder = Constants.REMINDER_NONE;
     private String oTitle, oSubtitle;
 
@@ -118,7 +118,10 @@ public class ChecklistActivity extends AppCompatActivity {
             tag = bundle.getInt(NotesDb.Note.COLUMN_NAME_TAG);
             reminder = bundle.getString(NotesDb.Note.COLUMN_NAME_REMINDER);
             checklist = bundle.getInt(NotesDb.Note.COLUMN_NAME_CHECKLIST);
+            deleted = bundle.getInt(NotesDb.Note.COLUMN_NAME_DELETED);
+
             checklistDatas = dbHelper.getChecklistData(id);
+
             if (!reminder.equals(Constants.REMINDER_NONE)) {
                 try {
                     Calendar c = Calendar.getInstance();
@@ -147,6 +150,8 @@ public class ChecklistActivity extends AppCompatActivity {
             tag = savedInstanceState.getInt(NotesDb.Note.COLUMN_NAME_TAG);
             reminder = savedInstanceState.getString(NotesDb.Note.COLUMN_NAME_REMINDER);
             checklist = savedInstanceState.getInt(NotesDb.Note.COLUMN_NAME_CHECKLIST);
+            deleted = savedInstanceState.getInt(NotesDb.Note.COLUMN_NAME_DELETED);
+
             checklistDatas = savedInstanceState.getParcelableArrayList(Constants.CHECKLIST_DATA);
 
             oTitle = savedInstanceState.getString("oTitle");
@@ -242,6 +247,7 @@ public class ChecklistActivity extends AppCompatActivity {
         bundle.putInt(NotesDb.Note.COLUMN_NAME_PINNED, pinned);
         bundle.putString(NotesDb.Note.COLUMN_NAME_REMINDER, reminder);
         bundle.putInt(NotesDb.Note.COLUMN_NAME_CHECKLIST, checklist);
+        bundle.putInt(NotesDb.Note.COLUMN_NAME_DELETED, deleted);
         bundle.putParcelableArrayList(Constants.CHECKLIST_DATA, checklistView.getChecklistData());
 
         bundle.putString("oTitle", oTitle);
@@ -484,6 +490,7 @@ public class ChecklistActivity extends AppCompatActivity {
             bundle.putInt(NotesDb.Note.COLUMN_NAME_TAG, tag);
             bundle.putString(NotesDb.Note.COLUMN_NAME_REMINDER, reminder);
             bundle.putInt(NotesDb.Note.COLUMN_NAME_CHECKLIST, checklist);
+            bundle.putInt(NotesDb.Note.COLUMN_NAME_DELETED, deleted);
             resultIntent.putExtra(Constants.NOTE_DETAILS_BUNDLE, bundle);
             resultIntent.setAction("ACTION_NOTE_" + id);
 
@@ -606,7 +613,7 @@ public class ChecklistActivity extends AppCompatActivity {
                 content.append("[    ] ").append(data.getText()).append("\n");
             }
         }
-        id = dbHelper.saveChecklist(id, title, subtitle, content.toString(), checklistDatas, time, created_at, archived, notified, color, encrypted, pinned, tag, reminder);
+        id = dbHelper.saveChecklist(id, title, subtitle, content.toString(), checklistDatas, time, created_at, archived, notified, color, encrypted, pinned, tag, reminder, deleted);
         notif(notified);
         onListChanged();
         return true;

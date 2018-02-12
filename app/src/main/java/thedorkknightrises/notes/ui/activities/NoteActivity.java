@@ -78,7 +78,7 @@ public class NoteActivity extends AppCompatActivity {
     // Counters to work around Android Date and Time Picker bugs on lower versions
     int noOfTimesCalledDate, noOfTimesCalledTime;
     private int cx, cy;
-    private int id = -1, archived = 0, notified = 0, encrypted = 0, pinned = 0, tag = 0, checklist = 0;
+    private int id = -1, archived = 0, notified = 0, encrypted = 0, pinned = 0, tag = 0, checklist = 0, deleted = 0;
     private String title, subtitle, content, time, created_at, color = Constants.COLOR_NONE, reminder = Constants.REMINDER_NONE;
 
     @Override
@@ -121,6 +121,7 @@ public class NoteActivity extends AppCompatActivity {
             tag = bundle.getInt(NotesDb.Note.COLUMN_NAME_TAG);
             reminder = bundle.getString(NotesDb.Note.COLUMN_NAME_REMINDER);
             checklist = bundle.getInt(NotesDb.Note.COLUMN_NAME_CHECKLIST);
+            deleted = bundle.getInt(NotesDb.Note.COLUMN_NAME_DELETED);
             if (!reminder.equals(Constants.REMINDER_NONE)) {
                 try {
                     Calendar c = Calendar.getInstance();
@@ -153,6 +154,7 @@ public class NoteActivity extends AppCompatActivity {
             tag = savedInstanceState.getInt(NotesDb.Note.COLUMN_NAME_TAG);
             reminder = savedInstanceState.getString(NotesDb.Note.COLUMN_NAME_REMINDER);
             checklist = savedInstanceState.getInt(NotesDb.Note.COLUMN_NAME_CHECKLIST);
+            deleted = savedInstanceState.getInt(NotesDb.Note.COLUMN_NAME_DELETED);
             bottom_bar.setVisibility(View.VISIBLE);
             if (!reminder.equals(Constants.REMINDER_NONE)) {
                 try {
@@ -271,6 +273,7 @@ public class NoteActivity extends AppCompatActivity {
         bundle.putInt(NotesDb.Note.COLUMN_NAME_PINNED, pinned);
         bundle.putString(NotesDb.Note.COLUMN_NAME_REMINDER, reminder);
         bundle.putInt(NotesDb.Note.COLUMN_NAME_CHECKLIST, checklist);
+        bundle.putInt(NotesDb.Note.COLUMN_NAME_DELETED, deleted);
 
         super.onSaveInstanceState(bundle);
     }
@@ -340,7 +343,7 @@ public class NoteActivity extends AppCompatActivity {
                 time = sdf.format(c.getTime());
                 Log.d("TIME", time);
                 notif(0);
-                id = dbHelper.addOrUpdateNote(id, title, subtitle, content, time, created_at, archived, notified, color, encrypted, pinned, tag, reminder, checklist);
+                id = dbHelper.addOrUpdateNote(id, title, subtitle, content, time, created_at, archived, notified, color, encrypted, pinned, tag, reminder, checklist, deleted);
                 editMode = false;
                 if (!title.equals("")) {
                     titleText.setEnabled(false);
@@ -446,11 +449,11 @@ public class NoteActivity extends AppCompatActivity {
                 notif(0);
                 if (notified == 1) {
                     notified = 0;
-                    id = dbHelper.addOrUpdateNote(id, title, subtitle, content, time, created_at, archived, notified, color, encrypted, pinned, tag, reminder, checklist);
+                    id = dbHelper.addOrUpdateNote(id, title, subtitle, content, time, created_at, archived, notified, color, encrypted, pinned, tag, reminder, checklist, deleted);
                     notif(notified);
                 } else {
                     notified = 1;
-                    id = dbHelper.addOrUpdateNote(id, title, subtitle, content, time, created_at, archived, notified, color, encrypted, pinned, tag, reminder, checklist);
+                    id = dbHelper.addOrUpdateNote(id, title, subtitle, content, time, created_at, archived, notified, color, encrypted, pinned, tag, reminder, checklist, deleted);
                     notif(notified);
                 }
             }
@@ -464,7 +467,7 @@ public class NoteActivity extends AppCompatActivity {
                 }
                 if (!b) {
                     reminder = Constants.REMINDER_NONE;
-                    id = dbHelper.addOrUpdateNote(id, title, subtitle, content, time, created_at, archived, notified, color, encrypted, pinned, tag, reminder, checklist);
+                    id = dbHelper.addOrUpdateNote(id, title, subtitle, content, time, created_at, archived, notified, color, encrypted, pinned, tag, reminder, checklist, deleted);
                     toggleReminder(false);
                     timeView.setVisibility(View.GONE);
                 } else {
@@ -488,7 +491,7 @@ public class NoteActivity extends AppCompatActivity {
                                                                 return;
                                                             }
                                                             reminder = readableDateFormat.format(calendar.getTime());
-                                                            id = dbHelper.addOrUpdateNote(id, title, subtitle, content, time, created_at, archived, notified, color, encrypted, pinned, tag, reminder, checklist);
+                                                            id = dbHelper.addOrUpdateNote(id, title, subtitle, content, time, created_at, archived, notified, color, encrypted, pinned, tag, reminder, checklist, deleted);
                                                             toggleReminder(true);
                                                             reminderSwitch.setTag(Boolean.TRUE);
                                                             reminderSwitch.setChecked(true);
@@ -588,6 +591,7 @@ public class NoteActivity extends AppCompatActivity {
             bundle.putInt(NotesDb.Note.COLUMN_NAME_TAG, tag);
             bundle.putString(NotesDb.Note.COLUMN_NAME_REMINDER, reminder);
             bundle.putInt(NotesDb.Note.COLUMN_NAME_CHECKLIST, checklist);
+            bundle.putInt(NotesDb.Note.COLUMN_NAME_DELETED, deleted);
             resultIntent.putExtra(Constants.NOTE_DETAILS_BUNDLE, bundle);
             resultIntent.setAction("ACTION_NOTE_" + id);
 
@@ -615,13 +619,13 @@ public class NoteActivity extends AppCompatActivity {
         if (archived == 1) {
             Toast.makeText(this, R.string.removed_archive, Toast.LENGTH_SHORT).show();
             archived = 0;
-            id = dbHelper.addOrUpdateNote(id, title, subtitle, content, time, created_at, archived, notified, color, encrypted, pinned, tag, reminder, checklist);
+            id = dbHelper.addOrUpdateNote(id, title, subtitle, content, time, created_at, archived, notified, color, encrypted, pinned, tag, reminder, checklist, deleted);
             notif(notified);
             finish();
         } else {
             Toast.makeText(this, R.string.added_archive, Toast.LENGTH_SHORT).show();
             archived = 1;
-            id = dbHelper.addOrUpdateNote(id, title, subtitle, content, time, created_at, archived, notified, color, encrypted, pinned, tag, reminder, checklist);
+            id = dbHelper.addOrUpdateNote(id, title, subtitle, content, time, created_at, archived, notified, color, encrypted, pinned, tag, reminder, checklist, deleted);
             notif(notified);
             finish();
         }

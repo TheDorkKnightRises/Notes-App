@@ -11,17 +11,20 @@ public class NoteObj implements Serializable {
     public String subtitle;
     public String content;
     public String time;
-    public String created_at;
-    public int archived;
-    public int notified;
     public String color;
-    public int encrypted;
-    public int pinned;
     public int tag;
-    public String reminder;
-    public int checklist;
+    public int deleted;
+    private String created_at;
+    private int archived;
+    private int notified;
+    private int encrypted;
+    private int pinned;
+    private String reminder;
+    private int checklist;
 
-    public NoteObj(int id, String title, String subtitle, String content, String time, String created_at, int archived, int notified, String color, int encrypted, int pinned, int tag, String reminder, int checklist) {
+    public NoteObj(int id, String title, String subtitle, String content, String time,
+                   String created_at, int archived, int notified, String color, int encrypted,
+                   int pinned, int tag, String reminder, int checklist, int deleted) {
         this.id = id;
         this.title = title;
         this.subtitle = subtitle;
@@ -36,6 +39,7 @@ public class NoteObj implements Serializable {
         this.tag = tag;
         this.reminder = reminder;
         this.checklist = checklist;
+        this.deleted = deleted;
     }
 
     public int getArchived() {
@@ -148,5 +152,13 @@ public class NoteObj implements Serializable {
 
     public void setChecklist(int checklist) {
         this.checklist = checklist;
+    }
+
+    public int getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(int deleted) {
+        this.deleted = deleted;
     }
 }

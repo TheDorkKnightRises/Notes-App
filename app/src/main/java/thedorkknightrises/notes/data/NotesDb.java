@@ -26,6 +26,7 @@ public class NotesDb {
         public static final String COLUMN_NAME_TAG = "tag";
         public static final String COLUMN_NAME_REMINDER = "reminder";
         public static final String COLUMN_NAME_CHECKLIST = "checklist";
+        public static final String COLUMN_NAME_DELETED = "deleted";
     }
 
     public static abstract class Checklist implements BaseColumns {

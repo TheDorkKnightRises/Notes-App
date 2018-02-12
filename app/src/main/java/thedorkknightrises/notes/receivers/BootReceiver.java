@@ -88,6 +88,7 @@ public class BootReceiver extends BroadcastReceiver {
             bundle.putInt(NotesDb.Note.COLUMN_NAME_TAG, note.getTag());
             bundle.putString(NotesDb.Note.COLUMN_NAME_REMINDER, note.getReminder());
             bundle.putInt(NotesDb.Note.COLUMN_NAME_CHECKLIST, note.getChecklist());
+            bundle.putInt(NotesDb.Note.COLUMN_NAME_DELETED, note.getDeleted());
 
             if (!note.getReminder().equals(Constants.REMINDER_NONE)) {
                 Intent resultIntent = new Intent(context, AlarmReceiver.class);

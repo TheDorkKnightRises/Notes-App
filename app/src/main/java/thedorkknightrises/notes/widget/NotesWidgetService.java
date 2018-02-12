@@ -86,6 +86,7 @@ public class NotesWidgetService extends RemoteViewsService {
                 bundle.putInt(NotesDb.Note.COLUMN_NAME_TAG, note.getTag());
                 bundle.putString(NotesDb.Note.COLUMN_NAME_REMINDER, note.getReminder());
                 bundle.putInt(NotesDb.Note.COLUMN_NAME_CHECKLIST, note.getChecklist());
+                bundle.putInt(NotesDb.Note.COLUMN_NAME_DELETED, note.getDeleted());
                 Intent fillInIntent = new Intent();
                 fillInIntent.putExtra(Constants.NOTE_DETAILS_BUNDLE, bundle);
                 // Make it possible to distinguish the individual on-click
