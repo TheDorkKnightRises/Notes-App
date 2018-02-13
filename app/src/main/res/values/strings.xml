@@ -30,6 +30,7 @@
     <string name="blank_notes">No notes saved\n Add one by tapping the floating button below</string>
     <string name="blank_checklists">No checklists saved\n Add one by tapping the floating button below</string>
     <string name="blank_archive">No notes archived</string>
+    <string name="blank_trash">Notes you delete will show up here</string>
 
     <string name="title">Title</string>
     <string name="subtitle">Short description (optional)</string>
@@ -67,6 +68,7 @@
     <string name="search_no_results">No results found :(</string>
     <string name="search_no_results_archive">No results found in archive :(</string>
     <string name="back_press">Press back again to discard changes</string>
+    <string name="trash">Trash</string>
 
     <string name="app_settings">App Settings</string>
     <string name="light_theme">Use light theme</string>
@@ -89,6 +91,7 @@
     <string name="local_restore">Restore from internal storage</string>
     <string name="restore_local_sub">Retrieve notes from local backup</string>
     <string name="storage_permission_rationale">Storage access permission is required to import and export local backups</string>
+    <string name="choose_backup_to_restore">Choose backup to restore</string>
 
     <string name="yes">Yes</string>
     <string name="no">No</string>
@@ -181,5 +184,8 @@
     <string name="channel_description_notes">Notifications for notes and checklists created by user</string>
     <string name="channel_name_reminders">Reminders</string>
     <string name="channel_description_reminders">Scheduled reminders and missed reminder notifications</string>
-    <string name="choose_backup_to_restore">Choose backup to restore</string>
+    <string name="deleted_note_cannot_be_edited">Deleted note cannot be edited</string>
+    <string name="deleted_checklist_cannot_be_edited">Deleted checklist cannot be edited</string>
+    <string name="permanently_delete">Delete this item permanently? This action cannot be undone</string>
+    <string name="moved_to_trash">Moved to trash</string>
 </resources>

@@ -19,9 +19,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -64,6 +66,7 @@ public class ChecklistActivity extends AppCompatActivity {
     protected CoordinatorLayout coordinatorLayout;
     protected EditText titleText, subtitleText;
     protected TextView timeText;
+    FloatingActionButton fab;
     SharedPreferences pref;
     boolean lightTheme;
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"), readableDateFormat = new SimpleDateFormat("EEE MMM dd yyyy HH:mm:ss");
@@ -95,6 +98,7 @@ public class ChecklistActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbar);
         toolbar_note = findViewById(R.id.toolbar_note);
         bottom_bar = findViewById(R.id.bottom_bar);
+        fab = findViewById(R.id.fab_note);
 
         titleText = findViewById(R.id.title);
         subtitleText = findViewById(R.id.subtitle);
@@ -200,17 +204,17 @@ public class ChecklistActivity extends AppCompatActivity {
             checklistView.setChecklistData(checklistDatas);
         }
 
-        // Toast.makeText(this, checklistDatas.get(0).getText(), Toast.LENGTH_SHORT).show();
-
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 toolbar.setVisibility(View.VISIBLE);
                 revealToolbar();
-                if (title == null || title.isEmpty())
-                    titleText.setVisibility(View.VISIBLE);
-                if (subtitle == null || subtitle.isEmpty())
-                    subtitleText.setVisibility(View.VISIBLE);
+                if (deleted == 0) {
+                    if (title == null || title.isEmpty())
+                        titleText.setVisibility(View.VISIBLE);
+                    if (subtitle == null || subtitle.isEmpty())
+                        subtitleText.setVisibility(View.VISIBLE);
+                }
             }
         }, 350);
 
@@ -220,6 +224,34 @@ public class ChecklistActivity extends AppCompatActivity {
 
         if (archived == 1) {
             ((ImageButton) findViewById(R.id.archive_button)).setImageDrawable(getResources().getDrawable(R.drawable.ic_unarchive_white_24dp));
+        }
+
+
+        if (deleted == 1) {
+            if (!title.equals("")) {
+                titleText.setEnabled(false);
+            } else titleText.setVisibility(View.GONE);
+
+            if (!subtitle.equals("")) {
+                subtitleText.setEnabled(false);
+            } else subtitleText.setVisibility(View.GONE);
+
+            checklistView.setEditable(false);
+
+            fab.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_restore_white_24dp));
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dbHelper.updateFlag(id, NotesDb.Note.COLUMN_NAME_DELETED, 0);
+                    onListChanged();
+                    finish();
+                }
+            });
+
+            toolbar_note.setVisibility(View.GONE);
+            TextView textBar = bottom_bar.findViewById(R.id.textbar_note);
+            textBar.setText(R.string.deleted_checklist_cannot_be_edited);
+            textBar.setVisibility(View.VISIBLE);
         }
 
         if (lightTheme)
@@ -548,10 +580,36 @@ public class ChecklistActivity extends AppCompatActivity {
     public void delete(View v) {
         notif(0);
         toggleReminder(false);
-        dbHelper.deleteNote(created_at);
-        dbHelper.deleteChecklistData(id);
-        onListChanged();
-        finish();
+        dbHelper.updateFlag(id, NotesDb.Note.COLUMN_NAME_ARCHIVED, 0);
+        dbHelper.updateFlag(id, NotesDb.Note.COLUMN_NAME_PINNED, 0);
+        dbHelper.updateFlag(id, NotesDb.Note.COLUMN_NAME_NOTIFIED, 0);
+        dbHelper.updateFlag(id, NotesDb.Note.COLUMN_NAME_REMINDER, Constants.REMINDER_NONE);
+
+        if (deleted == 1) {
+            new AlertDialog.Builder(this)
+                    .setMessage(R.string.permanently_delete)
+                    .setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dbHelper.deleteNote(created_at);
+                            dbHelper.deleteChecklistData(id);
+                            onListChanged();
+                            finish();
+                        }
+                    })
+                    .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    })
+                    .show();
+        } else {
+            Toast.makeText(this, R.string.moved_to_trash, Toast.LENGTH_SHORT).show();
+            dbHelper.updateFlag(id, NotesDb.Note.COLUMN_NAME_DELETED, 1);
+            onListChanged();
+            finish();
+        }
     }
 
     public void archive(View v) {

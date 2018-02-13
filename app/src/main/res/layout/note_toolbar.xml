@@ -25,6 +25,18 @@
         android:layout_gravity="bottom"
         android:background="#44000000" />
 
+    <TextView
+        android:id="@+id/textbar_note"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/note_toolbar_height"
+        android:layout_gravity="bottom"
+        android:background="#363636"
+        android:gravity="center_vertical"
+        android:padding="@dimen/activity_horizontal_margin"
+        android:textAppearance="@style/TextAppearance.AppCompat"
+        android:textColor="#ccc"
+        android:visibility="gone" />
+
     <LinearLayout
         android:id="@+id/toolbar_note"
         android:layout_width="match_parent"

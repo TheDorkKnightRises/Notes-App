@@ -213,6 +213,26 @@ public class NoteActivity extends AppCompatActivity {
             timeText.setText("");
         }
 
+        if (archived == 1) {
+            ((ImageButton) findViewById(R.id.archive_button)).setImageDrawable(getResources().getDrawable(R.drawable.ic_unarchive_white_24dp));
+        }
+
+        if (deleted == 1) {
+            fab.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_restore_white_24dp));
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dbHelper.updateFlag(id, NotesDb.Note.COLUMN_NAME_DELETED, 0);
+                    onListChanged();
+                    finish();
+                }
+            });
+            toolbar_note.setVisibility(View.GONE);
+            TextView textBar = bottom_bar.findViewById(R.id.textbar_note);
+            textBar.setText(R.string.deleted_note_cannot_be_edited);
+            textBar.setVisibility(View.VISIBLE);
+        }
+
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -220,10 +240,6 @@ public class NoteActivity extends AppCompatActivity {
                 if (savedInstanceState == null && !editMode) revealToolbar();
             }
         }, 350);
-
-        if (archived == 1) {
-            ((ImageButton) findViewById(R.id.archive_button)).setImageDrawable(getResources().getDrawable(R.drawable.ic_unarchive_white_24dp));
-        }
 
         Log.d("Note:", "id: " + id + " created_at: " + created_at);
         Intent intent = getIntent();
@@ -639,9 +655,35 @@ public class NoteActivity extends AppCompatActivity {
     public void delete(View v) {
         notif(0);
         toggleReminder(false);
-        dbHelper.deleteNote(created_at);
-        onListChanged();
-        finish();
+        dbHelper.updateFlag(id, NotesDb.Note.COLUMN_NAME_ARCHIVED, 0);
+        dbHelper.updateFlag(id, NotesDb.Note.COLUMN_NAME_PINNED, 0);
+        dbHelper.updateFlag(id, NotesDb.Note.COLUMN_NAME_NOTIFIED, 0);
+        dbHelper.updateFlag(id, NotesDb.Note.COLUMN_NAME_REMINDER, Constants.REMINDER_NONE);
+
+        if (deleted == 1) {
+            new AlertDialog.Builder(this)
+                    .setMessage(R.string.permanently_delete)
+                    .setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dbHelper.deleteNote(created_at);
+                            onListChanged();
+                            finish();
+                        }
+                    })
+                    .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    })
+                    .show();
+        } else {
+            Toast.makeText(this, R.string.moved_to_trash, Toast.LENGTH_SHORT).show();
+            dbHelper.updateFlag(id, NotesDb.Note.COLUMN_NAME_DELETED, 1);
+            onListChanged();
+            finish();
+        }
     }
 
     @Override

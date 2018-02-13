@@ -268,14 +268,35 @@ public class MainActivity extends AppCompatActivity
         }, 300);
     }
 
-
-    @Override
-    public void onResume() {
-        if (pref.getBoolean(Constants.ARCHIVE, false)) {
+    // setup the UI to match the currently selected section
+    private void setupUI() {
+        boolean archive = pref.getBoolean(Constants.ARCHIVE, false);
+        boolean trash = pref.getBoolean(Constants.TRASH, false);
+        int list_mode = pref.getInt(Constants.LIST_MODE, 0);
+        if (trash) {
+            getSupportActionBar().setTitle(R.string.trash);
+            blankText.setText(R.string.blank_trash);
+            fab.setVisibility(View.GONE);
+        } else if (archive) {
             getSupportActionBar().setTitle(R.string.archive);
             blankText.setText(R.string.blank_archive);
             fab.setVisibility(View.GONE);
+        } else if (list_mode == 1) {
+            getSupportActionBar().setTitle(R.string.notes);
+            blankText.setText(R.string.blank_notes);
+            getLoaderManager().restartLoader(0, null, this);
+            fab.setVisibility(View.VISIBLE);
+        } else if (list_mode == 2) {
+            getSupportActionBar().setTitle(R.string.checklists);
+            blankText.setText(R.string.blank_checklists);
+            getLoaderManager().restartLoader(0, null, this);
+            fab.setVisibility(View.VISIBLE);
         }
+    }
+
+    @Override
+    public void onResume() {
+        setupUI();
 
         if (changed) {
             getLoaderManager().restartLoader(0, null, this);
@@ -355,8 +376,6 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
@@ -364,6 +383,7 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.nav_home) {
             pref.edit()
                     .putBoolean(Constants.ARCHIVE, false)
+                    .putBoolean(Constants.TRASH, false)
                     .putInt(Constants.LIST_MODE, 0).apply();
             getSupportActionBar().setTitle(R.string.app_name);
             blankText.setText(R.string.blank);
@@ -372,6 +392,7 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_notes) {
             pref.edit()
                     .putBoolean(Constants.ARCHIVE, false)
+                    .putBoolean(Constants.TRASH, false)
                     .putInt(Constants.LIST_MODE, 1).apply();
             getSupportActionBar().setTitle(R.string.notes);
             blankText.setText(R.string.blank_notes);
@@ -380,6 +401,7 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_checklists) {
             pref.edit()
                     .putBoolean(Constants.ARCHIVE, false)
+                    .putBoolean(Constants.TRASH, false)
                     .putInt(Constants.LIST_MODE, 2).apply();
             getSupportActionBar().setTitle(R.string.checklists);
             blankText.setText(R.string.blank_checklists);
@@ -388,9 +410,19 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_archive) {
             pref.edit()
                     .putBoolean(Constants.ARCHIVE, true)
+                    .putBoolean(Constants.TRASH, false)
                     .putInt(Constants.LIST_MODE, 0).apply();
             getSupportActionBar().setTitle(R.string.archive);
             blankText.setText(R.string.blank_archive);
+            getLoaderManager().restartLoader(0, null, this);
+            fab.setVisibility(View.GONE);
+        } else if (id == R.id.nav_trash) {
+            pref.edit()
+                    .putBoolean(Constants.ARCHIVE, false)
+                    .putBoolean(Constants.TRASH, true)
+                    .putInt(Constants.LIST_MODE, 0).apply();
+            getSupportActionBar().setTitle(R.string.trash);
+            blankText.setText(R.string.blank_trash);
             getLoaderManager().restartLoader(0, null, this);
             fab.setVisibility(View.GONE);
         } else if (id == R.id.nav_about) {
@@ -457,8 +489,13 @@ public class MainActivity extends AppCompatActivity
                 break;
         }
 
-        int archive = pref.getBoolean(Constants.ARCHIVE, false) ? 1 : 0;
-        selection.append(NotesDb.Note.COLUMN_NAME_ARCHIVED).append(" LIKE ").append(archive);
+        if (pref.getBoolean(Constants.TRASH, false)) {
+            selection.append(NotesDb.Note.COLUMN_NAME_DELETED).append(" LIKE ").append(1);
+        } else {
+            selection.append(NotesDb.Note.COLUMN_NAME_DELETED).append(" LIKE ").append(0).append(" AND ");
+            int archive = pref.getBoolean(Constants.ARCHIVE, false) ? 1 : 0;
+            selection.append(NotesDb.Note.COLUMN_NAME_ARCHIVED).append(" LIKE ").append(archive);
+        }
         return new CursorLoader(this, baseUri,
                 projection, selection.toString(), null,
                 NotesDb.Note.COLUMN_NAME_TIME + sort);

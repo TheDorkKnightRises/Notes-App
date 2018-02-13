@@ -193,8 +193,13 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
                 break;
         }
 
-        int archive = pref.getBoolean(Constants.ARCHIVE, false) ? 1 : 0;
-        selection.append(NotesDb.Note.COLUMN_NAME_ARCHIVED).append(" LIKE ").append(archive);
+        if (pref.getBoolean(Constants.TRASH, false)) {
+            selection.append(NotesDb.Note.COLUMN_NAME_DELETED).append(" LIKE ").append(1);
+        } else {
+            selection.append(NotesDb.Note.COLUMN_NAME_DELETED).append(" LIKE ").append(0).append(" AND ");
+            int archive = pref.getBoolean(Constants.ARCHIVE, false) ? 1 : 0;
+            selection.append(NotesDb.Note.COLUMN_NAME_ARCHIVED).append(" LIKE ").append(archive);
+        }
         selection.append(" AND ( ")
                 .append(NotesDb.Note.COLUMN_NAME_TITLE).append(" LIKE '%").append(query)
                 .append("%' OR ")

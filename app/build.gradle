@@ -15,8 +15,8 @@ android {
         applicationId "thedorkknightrises.notes"
         minSdkVersion 16
         targetSdkVersion 27
-        versionCode 55
-        versionName "3.1.1"
+        versionCode 56
+        versionName "3.2"
     }
     buildTypes {
         release {
@@ -48,7 +48,7 @@ dependencies {
     compile 'com.google.firebase:firebase-crash:11.8.0'
     compile 'de.hdodenhof:circleimageview:2.1.0'
     compile 'com.heinrichreimersoftware:material-intro:1.6.2'
-    compile 'thedorkknightrises.lib:checklistview:0.3.7'
+    compile 'thedorkknightrises.lib:checklistview:0.4.0'
     testCompile 'junit:junit:4.12'
 }
 
