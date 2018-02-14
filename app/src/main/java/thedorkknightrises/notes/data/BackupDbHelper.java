@@ -48,10 +48,6 @@ public class BackupDbHelper extends SQLiteOpenHelper {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
-    public BackupDbHelper(Context context, String fileName) {
-        super(context, DATABASE_NAME, null, DATABASE_VERSION);
-    }
-
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(SQL_CREATE_ENTRIES);
         db.execSQL(SQL_CREATE_ENTRIES_CHECKLIST);
@@ -141,6 +137,9 @@ public class BackupDbHelper extends SQLiteOpenHelper {
 
                 if (checklistCursor.moveToFirst()) {
                     do {
+                        db1.delete(NotesDb.Checklist.TABLE_NAME,
+                                NotesDb.Checklist.COLUMN_NAME_NOTE_ID + " = ? AND "
+                                        + NotesDb.Checklist.COLUMN_NAME_ITEM + " = '" + checklistCursor.getString(1) + "'", new String[]{String.valueOf(new_id)});
                         ContentValues checklistValues = new ContentValues();
                         checklistValues.put(NotesDb.Checklist.COLUMN_NAME_NOTE_ID, new_id);
                         checklistValues.put(NotesDb.Checklist.COLUMN_NAME_ITEM, checklistCursor.getString(1));

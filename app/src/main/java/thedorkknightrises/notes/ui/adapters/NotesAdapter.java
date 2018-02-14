@@ -154,6 +154,7 @@ public class NotesAdapter extends RecyclerViewCursorAdapter<RecyclerView.ViewHol
 
             NotesDbHelper helper = new NotesDbHelper(context);
             arrayList = helper.getChecklistData(id);
+
             if (arrayList.size() == 0) {
                 return;
             }
@@ -162,21 +163,32 @@ public class NotesAdapter extends RecyclerViewCursorAdapter<RecyclerView.ViewHol
                 holder.checkBox1.setChecked(arrayList.get(0).isChecked());
                 holder.checklist1.setVisibility(View.VISIBLE);
                 holder.checkBox1.setVisibility(View.VISIBLE);
+            } else {
+                holder.checklist1.setVisibility(View.GONE);
+                holder.checkBox1.setVisibility(View.GONE);
             }
             if (arrayList.size() > 1) {
                 holder.checklist2.setText(arrayList.get(1).getText());
                 holder.checkBox2.setChecked(arrayList.get(1).isChecked());
                 holder.checklist2.setVisibility(View.VISIBLE);
                 holder.checkBox2.setVisibility(View.VISIBLE);
+            } else {
+                holder.checklist2.setVisibility(View.GONE);
+                holder.checkBox2.setVisibility(View.GONE);
             }
             if (arrayList.size() > 2) {
                 holder.checklist3.setText(arrayList.get(2).getText());
                 holder.checkBox3.setChecked(arrayList.get(2).isChecked());
                 holder.checklist3.setVisibility(View.VISIBLE);
                 holder.checkBox3.setVisibility(View.VISIBLE);
+            } else {
+                holder.checklist3.setVisibility(View.GONE);
+                holder.checkBox3.setVisibility(View.GONE);
             }
             if (arrayList.size() > 3) {
                 holder.more.setVisibility(View.VISIBLE);
+            } else {
+                holder.more.setVisibility(View.GONE);
             }
 
             if (TextUtils.isEmpty(title)) {

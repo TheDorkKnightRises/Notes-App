@@ -454,7 +454,7 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
         Log.d(getLocalClassName(), "Number of backups: " + files.length);
 
         if (files.length > 0) {
-            BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this, (pref.getBoolean(Constants.LIGHT_THEME, false)) ? R.style.BottomSheet_Light : R.style.BottomSheet_Dark);
+            final BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this, (pref.getBoolean(Constants.LIGHT_THEME, false)) ? R.style.BottomSheet_Light : R.style.BottomSheet_Dark);
             bottomSheetDialog.setContentView(R.layout.backups_list_bottom_sheet_layout);
             LinearLayout linearLayout = bottomSheetDialog.findViewById(R.id.linearLayout);
             for (final File file : files) {
@@ -482,6 +482,7 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
                             Toast.makeText(SettingsActivity.this, R.string.error, Toast.LENGTH_SHORT).show();
                         }
                         progress.dismiss();
+                        bottomSheetDialog.dismiss();
                     }
                 });
                 linearLayout.addView(textView);
