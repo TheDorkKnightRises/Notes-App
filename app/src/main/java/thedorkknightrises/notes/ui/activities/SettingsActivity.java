@@ -68,7 +68,8 @@ import thedorkknightrises.notes.util.NetworkUtils;
  */
 public class SettingsActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     private static final int REQUEST_CODE_RESOLUTION = 3;
-    private static final int STORAGE_PERMISSION_REQUEST_CODE = 101;
+    private static final int STORAGE_PERMISSION_REQUEST_CODE_BACKUP = 101;
+    private static final int STORAGE_PERMISSION_REQUEST_CODE_RESTORE = 102;
     GoogleApiClient mGoogleApiClient;
     NotificationManager mNotifyMgr;
     ProgressDialog progress;
@@ -415,7 +416,7 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
 
     public void localBackup(View view) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, STORAGE_PERMISSION_REQUEST_CODE);
+            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, STORAGE_PERMISSION_REQUEST_CODE_BACKUP);
             return;
         }
 
@@ -441,7 +442,7 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
 
     public void localRestore(View view) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, STORAGE_PERMISSION_REQUEST_CODE);
+            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, STORAGE_PERMISSION_REQUEST_CODE_RESTORE);
             return;
         }
 
@@ -493,12 +494,17 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == STORAGE_PERMISSION_REQUEST_CODE) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                localBackup(null);
-            } else {
-                Toast.makeText(this, R.string.storage_permission_rationale, Toast.LENGTH_LONG).show();
+        if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            switch (requestCode) {
+                case STORAGE_PERMISSION_REQUEST_CODE_BACKUP:
+                    localBackup(null);
+                    break;
+                case STORAGE_PERMISSION_REQUEST_CODE_RESTORE:
+                    localRestore(null);
+                    break;
             }
+        } else if (permissions[0].equals(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            Toast.makeText(this, R.string.storage_permission_rationale, Toast.LENGTH_LONG).show();
         }
     }
 
