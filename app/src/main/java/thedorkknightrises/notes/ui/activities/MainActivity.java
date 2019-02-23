@@ -19,7 +19,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.LocalBroadcastManager;
@@ -37,12 +36,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import com.google.android.gms.ads.AdListener;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdSize;
-import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.NativeExpressAdView;
-
 import java.util.ArrayList;
 
 import thedorkknightrises.notes.Constants;
@@ -53,7 +46,6 @@ import thedorkknightrises.notes.data.NotesDbHelper;
 import thedorkknightrises.notes.data.NotesProvider;
 import thedorkknightrises.notes.receivers.BootReceiver;
 import thedorkknightrises.notes.ui.adapters.NotesAdapter;
-import thedorkknightrises.notes.util.NetworkUtils;
 import thedorkknightrises.notes.widget.NotesWidget;
 
 
@@ -66,9 +58,8 @@ public class MainActivity extends AppCompatActivity
     RecyclerView recyclerView;
     StaggeredGridLayoutManager layoutManager;
     TextView blankText;
-    FloatingActionButton fab;
+    View fab;
     SharedPreferences pref;
-    NativeExpressAdView adView;
     CardView adContainer;
     View addNoteView, addListView, shadow;
     View.OnClickListener fabClickListener, addNoteListener, addListListener;
@@ -182,33 +173,6 @@ public class MainActivity extends AppCompatActivity
 
         recyclerView = findViewById(R.id.recyclerView);
 
-        adContainer = findViewById(R.id.ad_container);
-
-        MobileAds.initialize(this, getString(R.string.admob_app_id));
-        adView = new NativeExpressAdView(this);
-        if (lightTheme)
-            adView.setAdUnitId(getString(R.string.small_banner_ad_unit_id_light));
-        else
-            adView.setAdUnitId(getString(R.string.small_banner_ad_unit_id));
-        adView.setAdSize(new AdSize(AdSize.FULL_WIDTH, 100));
-        adContainer.addView(adView);
-        adView.setTag(false);
-        adView.setAdListener(new AdListener() {
-
-            @Override
-            public void onAdLoaded() {
-                adView.setTag(true);
-                super.onAdLoaded();
-            }
-
-            @Override
-            public void onAdFailedToLoad(int i) {
-                adView.setTag(false);
-                adContainer.setVisibility(View.GONE);
-                super.onAdFailedToLoad(i);
-            }
-        });
-
         LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,
                 new IntentFilter("note-list-changed"));
 
@@ -310,16 +274,6 @@ public class MainActivity extends AppCompatActivity
             else setTheme(R.style.AppTheme_Light_NoActionBar);
             lightTheme = !lightTheme;
             recreate();
-        }
-
-        if (!pref.getBoolean(Constants.ADS_ENABLED, true) || !NetworkUtils.isNetworkConnected(this)) {
-            adContainer.setVisibility(View.GONE);
-        } else {
-            adContainer.setVisibility(View.VISIBLE);
-            if (adView.getTag() != null && !(boolean) adView.getTag()) {
-                AdRequest request = new AdRequest.Builder().build();
-                adView.loadAd(request);
-            }
         }
 
         super.onResume();

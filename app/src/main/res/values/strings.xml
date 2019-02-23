@@ -147,9 +147,6 @@
     <string name="clear_notifications_sub">Remove all notifications for notes</string>
     <string name="quick_notify">Enable notification shortcut</string>
     <string name="quick_notify_sub">Show a notification to quickly create notes</string>
-    <string name="test_banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
-    <string name="ads_enabled">Enable ads</string>
-    <string name="ads_enabled_sub">Show ads to support development</string>
     <string name="no_connection">No network connection</string>
     <string name="connecting">Connecting…</string>
     <string name="reminders">Reminders</string>

@@ -37,13 +37,13 @@ public class NotesWidgetService extends RemoteViewsService {
         @Override
         public void onCreate() {
             NotesDbHelper notesDbHelper = new NotesDbHelper(context);
-            notes = notesDbHelper.getAllNotes(0);
+            notes = notesDbHelper.getAllNotes(0, 0);
         }
 
         @Override
         public void onDataSetChanged() {
             NotesDbHelper notesDbHelper = new NotesDbHelper(context);
-            notes = notesDbHelper.getAllNotes(0);
+            notes = notesDbHelper.getAllNotes(0, 0);
         }
 
         @Override

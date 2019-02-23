@@ -74,8 +74,7 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
     NotificationManager mNotifyMgr;
     ProgressDialog progress;
     private SharedPreferences pref;
-    private SwitchCompat theme_switch, notif_switch, ad_switch, reminder_sound_switch, reminder_vibrate_switch, reminder_led_switch, share_info_switch;
-    private int type = 0;
+    private SwitchCompat theme_switch, notif_switch, reminder_sound_switch, reminder_vibrate_switch, reminder_led_switch, share_info_switch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,17 +123,6 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
                     mNotifyMgr.cancel(0);
                 else
                     createQuickNotification();
-            }
-        });
-
-        ad_switch = findViewById(R.id.ads_switch);
-        ad_switch.setChecked(pref.getBoolean(Constants.ADS_ENABLED, true));
-        ad_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                SharedPreferences.Editor e = pref.edit();
-                e.putBoolean(Constants.ADS_ENABLED, isChecked);
-                e.apply();
             }
         });
 
@@ -213,8 +201,6 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
             theme_switch.toggle();
         } else if (v.equals(findViewById(R.id.notification_switch_row))) {
             notif_switch.toggle();
-        } else if (v.equals(findViewById(R.id.ads_switch_row))) {
-            ad_switch.toggle();
         } else if (v.equals(findViewById(R.id.reminder_sound_switch_row))) {
             reminder_sound_switch.toggle();
         } else if (v.equals(findViewById(R.id.reminder_vibrate_switch_row))) {

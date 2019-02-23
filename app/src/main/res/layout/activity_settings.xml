@@ -254,54 +254,6 @@
 
                         </LinearLayout>
 
-                        <LinearLayout
-                            android:id="@+id/ads_switch_row"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:background="?android:attr/selectableItemBackground"
-                            android:clickable="true"
-                            android:gravity="center_vertical"
-                            android:minHeight="80dp"
-                            android:onClick="onCheckedChange"
-                            android:paddingBottom="@dimen/activity_horizontal_margin"
-                            android:paddingEnd="8dp"
-                            android:paddingLeft="8dp"
-                            android:paddingRight="8dp"
-                            android:paddingStart="8dp"
-                            android:paddingTop="@dimen/activity_horizontal_margin">
-
-                            <LinearLayout
-                                android:id="@+id/ads_setting"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_marginLeft="8dp"
-                                android:layout_marginStart="8dp"
-                                android:layout_weight="1"
-                                android:orientation="vertical">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:gravity="center_vertical"
-                                    android:paddingTop="4dp"
-                                    android:text="@string/ads_enabled"
-                                    android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-                                    android:textSize="18sp" />
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="@string/ads_enabled_sub" />
-
-                            </LinearLayout>
-
-                            <android.support.v7.widget.SwitchCompat
-                                android:id="@+id/ads_switch"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content" />
-
-                        </LinearLayout>
-
                     </LinearLayout>
 
                 </android.support.v7.widget.CardView>

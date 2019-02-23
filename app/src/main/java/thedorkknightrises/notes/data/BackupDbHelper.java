@@ -56,15 +56,15 @@ public class BackupDbHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         switch (oldVersion) {
             case 4:
-                db.execSQL("ALTER TABLE " + NotesDb.Note.TABLE_NAME + " ADD COLUMN " + NotesDb.Note.COLUMN_NAME_CHECKLIST + " INTEGER DEFAULT 0;" +
-                        "UPDATE " + NotesDb.Note.TABLE_NAME + " SET " + NotesDb.Note.COLUMN_NAME_CHECKLIST + " = 0");
+                db.execSQL("ALTER TABLE " + NotesDb.Note.TABLE_NAME + " ADD COLUMN " + NotesDb.Note.COLUMN_NAME_CHECKLIST + " INTEGER DEFAULT 0");
+                db.execSQL("UPDATE " + NotesDb.Note.TABLE_NAME + " SET " + NotesDb.Note.COLUMN_NAME_CHECKLIST + " = 0");
                 Log.d(getClass().getName(), "Database updated successfully to version 5 (added checklist column)");
             case 5:
                 db.execSQL(SQL_CREATE_ENTRIES_CHECKLIST);
                 Log.d(getClass().getName(), "Database updated successfully to version 6 (created checklist table)");
             case 6:
-                db.execSQL("ALTER TABLE " + NotesDb.Note.TABLE_NAME + " ADD COLUMN " + NotesDb.Note.COLUMN_NAME_DELETED + " INTEGER DEFAULT 0;" +
-                        "UPDATE " + NotesDb.Note.TABLE_NAME + " SET " + NotesDb.Note.COLUMN_NAME_DELETED + " = 0");
+                db.execSQL("ALTER TABLE " + NotesDb.Note.TABLE_NAME + " ADD COLUMN " + NotesDb.Note.COLUMN_NAME_DELETED + " INTEGER DEFAULT 0");
+                db.execSQL("UPDATE " + NotesDb.Note.TABLE_NAME + " SET " + NotesDb.Note.COLUMN_NAME_DELETED + " = 0");
                 Log.d(getClass().getName(), "Database updated successfully to version 7 (added deleted column)");
                 break;
             default:
